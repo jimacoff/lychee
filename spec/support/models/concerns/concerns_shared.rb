@@ -6,3 +6,10 @@ RSpec.shared_examples 'taggable' do
                                                           default: [])
   end
 end
+
+RSpec.shared_examples 'metadata' do
+  it 'has defined metadata field as hstore' do
+    expect(subject).to have_db_column(:metadata)
+                                                .of_type(:hstore)
+  end
+end

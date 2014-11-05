@@ -22,7 +22,7 @@ RSpec.configure do |config|
     mocks.verify_partial_doubles = true
   end
 
-  config.alias_it_should_behave_like_to :has_behavior, 'has behavior:'
+  config.alias_it_should_behave_like_to :has_context, 'has context'
 
   # config.profile_examples = 10
 end
