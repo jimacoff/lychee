@@ -5,6 +5,6 @@ Documentation:
 AllCops:
   Exclude:
     - config/initializers/secret_token.rb
-    - bin/*
-    - db/*
+    - bin/**/*
+    - db/**/*
     - Guardfile
