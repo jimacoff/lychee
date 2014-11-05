@@ -34,4 +34,5 @@ group :development, :test do
   gem 'pry-theme'
   gem 'pry-rails'
   gem 'brakeman'
+  gem 'temping'
 end
