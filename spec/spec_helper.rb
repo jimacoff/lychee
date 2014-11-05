@@ -26,3 +26,5 @@ RSpec.configure do |config|
 
   # config.profile_examples = 10
 end
+
+RSpec::Matchers.define_negated_matcher :exclude, :include
