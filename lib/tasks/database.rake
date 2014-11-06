@@ -9,11 +9,11 @@ module ActiveRecord
           SET datallowconn=false WHERE datname='#{name}'
         SQL
 
-        terminate_backend
+        terminate_backend name
         execute "DROP DATABASE IF EXISTS #{quote_table_name(name)}"
       end
 
-      def terminate_backend
+      def terminate_backend(name)
         execute <<-SQL
           SELECT pg_terminate_backend(pg_stat_activity.pid)
           FROM pg_stat_activity
