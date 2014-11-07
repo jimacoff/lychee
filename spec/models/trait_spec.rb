@@ -19,11 +19,11 @@ RSpec.describe Trait, type: :model do
       end
       it 'stores a value' do
         expect { add value }.to change(subject, :default_values)
-                            .to contain_exactly(value)
+          .to contain_exactly(value)
       end
       it 'has #changed?' do
         expect { add value }.to change(subject, :default_values_changed?)
-                            .to(true)
+          .to(true)
       end
     end
 
@@ -38,11 +38,11 @@ RSpec.describe Trait, type: :model do
 
       it 'deletes a value' do
         expect { del value }.to change(subject, :default_values)
-                            .to be_empty
+          .to be_empty
       end
       it 'has #changed?' do
         expect { del value }.to change(subject, :default_values_changed?)
-                            .to(true)
+          .to(true)
       end
     end
   end
