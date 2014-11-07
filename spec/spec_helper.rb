@@ -1,4 +1,5 @@
 require 'simplecov'
+require 'factory_girl_rails'
 
 SimpleCov.start do
   add_filter '/spec'
@@ -21,6 +22,8 @@ RSpec.configure do |config|
     mocks.syntax = :expect
     mocks.verify_partial_doubles = true
   end
+
+  config.include FactoryGirl::Syntax::Methods
 
   config.alias_it_should_behave_like_to :has_context, 'has context'
 
