@@ -11,11 +11,22 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20141020031924) do
+ActiveRecord::Schema.define(version: 20141106100352) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
   enable_extension "hstore"
+
+  create_table "inventories", force: true do |t|
+    t.boolean  "tracked",       default: false, null: false
+    t.integer  "quantity",      default: 0
+    t.boolean  "back_orders",   default: false, null: false
+    t.datetime "replenish_eta"
+    t.datetime "exhausted_on"
+    t.hstore   "metadata"
+    t.datetime "created_at"
+    t.datetime "updated_at"
+  end
 
   create_table "traits", force: true do |t|
     t.string   "name",                        null: false
