@@ -30,7 +30,6 @@ group :development, :test do
   gem 'guard-bundler'
   gem 'guard-rubocop'
   gem 'guard-rspec'
-  gem 'terminal-notifier-guard'
   gem 'pry-theme'
   gem 'pry-rails'
   gem 'brakeman'
