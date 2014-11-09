@@ -3,6 +3,8 @@ source 'https://rubygems.org'
 gem 'rails', '4.1.7'
 gem 'pg'
 gem 'postgres_ext', '~> 2.3.0'
+gem 'money-rails', '~> 1.0.0'
+gem 'stringex', '~> 2.5.2'
 
 # Web
 gem 'uglifier', '~> 2.5.3'
