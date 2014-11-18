@@ -38,11 +38,11 @@ ActiveRecord::Schema.define(version: 20141109023312) do
     t.integer  "price_cents",    default: 0,     null: false
     t.string   "price_currency", default: "USD", null: false
     t.integer  "grams"
-    t.hstore   "specifications"
+    t.json     "specifications"
     t.boolean  "active"
     t.datetime "not_before"
     t.datetime "not_after"
-    t.hstore   "variations"
+    t.json     "variations"
     t.datetime "created_at"
     t.datetime "updated_at"
   end
@@ -67,7 +67,7 @@ ActiveRecord::Schema.define(version: 20141109023312) do
     t.integer  "price_cents"
     t.string   "price_currency"
     t.integer  "grams"
-    t.hstore   "specifications"
+    t.json     "specifications"
     t.hstore   "traits"
     t.datetime "created_at"
     t.datetime "updated_at"

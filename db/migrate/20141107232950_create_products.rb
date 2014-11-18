@@ -12,13 +12,13 @@ class CreateProducts < ActiveRecord::Migration
       t.money :price, null: false
 
       t.integer :grams
-      t.hstore :specifications
+      t.json :specifications
 
       t.boolean :active
       t.datetime :not_before
       t.datetime :not_after
 
-      t.hstore :variations
+      t.json :variations
 
       t.timestamps
     end

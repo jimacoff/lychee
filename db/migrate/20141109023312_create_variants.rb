@@ -12,7 +12,7 @@ class CreateVariants < ActiveRecord::Migration
                       currency: { null: true, default: nil }
 
       t.integer :grams
-      t.hstore :specifications
+      t.json :specifications
 
       t.hstore :traits
 
