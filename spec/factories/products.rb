@@ -1,6 +1,6 @@
 FactoryGirl.define do
   factory :product do
-    name { Faker::Lorem.sentence }
+    name { Faker::Commerce.product_name }
     description { Faker::Lorem.sentence }
 
     active true

@@ -26,8 +26,6 @@ RSpec.configure do |config|
   config.include FactoryGirl::Syntax::Methods
 
   config.alias_it_should_behave_like_to :has_context, 'has context'
-
-  # config.profile_examples = 10
 end
 
 RSpec::Matchers.define_negated_matcher :exclude, :include

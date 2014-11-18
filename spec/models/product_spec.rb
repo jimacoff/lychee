@@ -8,6 +8,8 @@ RSpec.describe Product, type: :model do
   it { is_expected.to validate_presence_of :price_cents }
   it { is_expected.to validate_presence_of :price_currency }
 
+  it { is_expected.to have_many :variants }
+
   context 'slugs' do
     subject { create :product }
     let(:specified_slug) { Faker::Lorem.sentence.to_url }

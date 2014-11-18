@@ -1,4 +1,6 @@
 class Product < ActiveRecord::Base
+  has_many :variants
+
   acts_as_url :name, url_attribute: :generated_slug, sync_url: true
   monetize :price_cents, with_model_currency: :price_currency
 
@@ -7,8 +9,7 @@ class Product < ActiveRecord::Base
   validates :price_cents, :price_currency, presence: true
 
   def slug
-    return generated_slug unless specified_slug
-    specified_slug
+    specified_slug || generated_slug
   end
 
   def slug=(specified_slug)
