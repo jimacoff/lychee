@@ -1,8 +1,4 @@
 class TraitValidator < ActiveModel::Validator
-  @errors = { empty: '',
-              invalid_trait: 'The trait represented by this variant ' \
-                             'no longer exists' }
-
   def validate(record)
     unless record.traits
       record.errors[:traits] << 'Variants must specify at least one trait ' \
