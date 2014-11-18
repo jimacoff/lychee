@@ -1,6 +1,6 @@
 source 'https://rubygems.org'
 
-gem 'rails', '4.1.7'
+gem 'rails', '4.1.8'
 gem 'pg'
 gem 'postgres_ext', '~> 2.3.0'
 gem 'money-rails', '~> 1.0.0'
