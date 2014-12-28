@@ -21,11 +21,11 @@ RSpec.describe Variant, type: :model do
     end
 
     describe '#add_trait' do
-      let(:trait_id) { Faker::Number.number(3) }
+      let(:trait) { create :trait }
       let(:trait_value) { Faker::Lorem.word }
 
       def run
-        subject.add_trait(trait_id, trait_value)
+        subject.add_trait(trait.id, trait_value)
       end
 
       it 'adds the specified trait id and value' do
@@ -35,15 +35,20 @@ RSpec.describe Variant, type: :model do
       it 'has #changed?' do
         expect { run }.to change(subject, :traits_changed?).to true
       end
+
+      it 'is valid' do
+        run
+        expect(subject).to be_valid
+      end
     end
 
     describe '#add_traits' do
-      let(:trait_id) { Faker::Number.number(3) }
+      let(:trait) { create :trait }
       let(:trait_value) { Faker::Lorem.word }
-      let(:trait_id2) { Faker::Number.number(3) }
-      let(:trait_value2) { Faker::Lorem.word }
+      let(:trait2) { create :trait }
+      let(:trait2_value) { Faker::Lorem.word }
 
-      let(:traits) { { trait_id => trait_value, trait_id2 => trait_value2 } }
+      let(:traits) { { trait.id => trait_value, trait2.id => trait2_value } }
 
       def run
         subject.add_traits(traits)
@@ -55,7 +60,7 @@ RSpec.describe Variant, type: :model do
 
       it 'adds traits uniquely' do
         run
-        expect { subject.add_trait(trait_id, 'newval') }.to \
+        expect { subject.add_trait(trait.id, 'newval') }.to \
           change { subject.traits }.and \
           change { subject.traits.count }.by 0
       end
@@ -63,26 +68,42 @@ RSpec.describe Variant, type: :model do
       it 'has #changed?' do
         expect { run }.to change(subject, :traits_changed?).to true
       end
+
+      it 'is valid' do
+        run
+        expect(subject).to be_valid
+      end
     end
 
     describe '#delete_trait' do
-      let(:trait_id) { Faker::Number.number(3) }
+      let(:trait) { create :trait }
       let(:trait_value) { Faker::Lorem.word }
 
       before :each do
-        subject.traits[trait_id] = trait_value
+        subject.traits[trait.id] = trait_value
+        expect(subject.traits[trait.id]).not_to be_nil
       end
 
       def run
-        subject.delete_trait(trait_id)
+        subject.delete_trait(trait.id)
       end
 
-      it 'deletes the specified trait id' do
+      it 'deletes a trait' do
         expect { run }.to change { subject.traits.count }.by(-1)
+      end
+
+      it 'deletes the specified trait' do
+        run
+        expect(subject.traits[trait.id]).to be_nil
       end
 
       it 'has #changed?' do
         expect { run }.to change(subject, :traits_changed?).to true
+      end
+
+      it 'is valid' do
+        run
+        expect(subject).to be_valid
       end
     end
   end
