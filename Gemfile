@@ -13,6 +13,7 @@ gem 'turbolinks'
 
 # JSON
 gem 'jbuilder', '~> 2.2.2'
+gem 'json-schema', '~> 2.5.0'
 
 # Security
 # Use ActiveModel has_secure_password
