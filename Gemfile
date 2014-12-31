@@ -12,7 +12,7 @@ gem 'therubyracer',  platforms: :ruby
 gem 'turbolinks'
 
 # JSON
-gem 'jbuilder', '~> 2.2.2'
+gem 'jbuilder', '~> 2.2.6'
 gem 'json-schema', '~> 2.5.0'
 
 # Security
