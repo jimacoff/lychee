@@ -1,6 +1,8 @@
 require 'rails_helper'
 
 RSpec.describe Variant, type: :model do
+  has_context 'specification'
+
   it { is_expected.to validate_presence_of :product }
 
   context 'traits' do
@@ -120,6 +122,7 @@ RSpec.describe Variant, type: :model do
           expect(subject.price).to eq(subject.product.price)
         end
       end
+
       context 'locally defined' do
         let(:local_price) { Money.new(Faker::Number.number(4)) }
         subject { create :variant, price: local_price }
@@ -133,14 +136,16 @@ RSpec.describe Variant, type: :model do
       end
     end
 
+    @specifications = { categories: [{ name: 'cat1',
+                                       values: [{ name: 'val1',
+                                                  value: 'val' }] }] }
     @overloaded_attributes = { description: Faker::Lorem.sentence,
                                gtin: Faker::Number.number(10),
                                sku: Faker::Number.number(10),
                                grams: Faker::Number.number(5),
-                               specifications: { 'key' => 'variant_value' } }
+                               specifications: @specifications }
     @overloaded_attributes.each do |k, v|
       describe "##{k}" do
-
         context 'not locally defined' do
           it "has no local #{k}" do
             expect(subject[k.to_sym]).to be_nil
@@ -150,7 +155,7 @@ RSpec.describe Variant, type: :model do
           end
         end
         context 'locally defined' do
-          subject { create :variant, "#{k}" => v }
+          subject { build :variant, "#{k}" => v }
           it "does not use the products #{k}" do
             expect(subject.send(k)).to_not eq(subject.product.send(k))
           end

@@ -1,0 +1,77 @@
+{
+  "$schema": "http://json-schema.org/draft-04/schema#",
+  "definitions": {
+    "specs": {
+        "type": "array",
+        "additionalProperties": false,
+        "items": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "name": {
+              "type": "string"
+            },
+            "value": {
+              "type": ["number", "string", "boolean"]
+            }
+          },
+          "required": [
+            "name",
+            "value"
+          ]
+        }
+    },
+    "subcategories": {
+        "type": "array",
+        "items": {
+          "type": "object",
+          "properties": {
+            "name": {
+              "type": "string",
+              "required": true
+            },
+            "values": {
+                "$ref": "#/definitions/specs",
+                "minItems": 1
+            },
+            "subcategories": {
+              "$ref": "#/definitions/subcategories",
+              "minItems": 1
+            }
+          },
+          "minProperties": 2,
+          "additionalProperties": false
+        }
+    }
+  },
+
+  "type": "object",
+  "additionalProperties": false,
+  "properties": {
+    "categories": {
+      "id": "#categories",
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string",
+            "required": true
+          },
+          "values": {
+            "$ref": "#/definitions/specs",
+            "minItems": 1
+          },
+          "subcategories": {
+            "$ref": "#/definitions/subcategories",
+            "minItems": 1
+          }
+        },
+        "minProperties": 2,
+        "additionalProperties": false
+      },
+      "minItems": 1
+    }
+  },
+  "required": ["categories"]
+}

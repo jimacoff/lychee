@@ -17,3 +17,12 @@ RSpec.shared_examples 'metadata' do
       .of_type(:hstore)
   end
 end
+
+RSpec.shared_examples 'specification' do
+  it { is_expected.to be_a_kind_of(Specification) }
+
+  it 'has defined specifications field as json' do
+    expect(subject).to have_db_column(:specifications)
+      .of_type(:json)
+  end
+end

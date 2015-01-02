@@ -1,4 +1,6 @@
 class Variant < ActiveRecord::Base
+  include Specification
+
   belongs_to :product
 
   monetize :price_cents, as: 'varied_price',
