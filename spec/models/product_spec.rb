@@ -2,6 +2,7 @@ require 'rails_helper'
 
 RSpec.describe Product, type: :model do
   has_context 'specification'
+  has_context 'metadata'
 
   it { is_expected.to validate_presence_of :name }
   it { is_expected.to validate_presence_of :generated_slug }

@@ -19,6 +19,7 @@ class CreateProducts < ActiveRecord::Migration
       t.datetime :not_after
 
       t.json :variations
+      t.hstore :metadata, null: true
 
       t.timestamps
     end
