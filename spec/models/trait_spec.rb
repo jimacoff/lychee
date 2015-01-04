@@ -11,7 +11,12 @@ RSpec.describe Trait, type: :model do
   it { is_expected.to validate_presence_of :display_name }
 
   context 'default values' do
+    subject { create :trait }
     let(:value) { Faker::Lorem.word }
+
+    it 'is valid without default values being specified' do
+      expect(subject).to be_valid
+    end
 
     context '#add_default_values' do
       def add(v)
