@@ -43,6 +43,7 @@ ActiveRecord::Schema.define(version: 20141109023312) do
     t.datetime "not_before"
     t.datetime "not_after"
     t.json     "variations"
+    t.hstore   "metadata"
     t.datetime "created_at"
     t.datetime "updated_at"
   end
@@ -69,6 +70,7 @@ ActiveRecord::Schema.define(version: 20141109023312) do
     t.integer  "grams"
     t.json     "specifications"
     t.hstore   "traits"
+    t.hstore   "metadata"
     t.datetime "created_at"
     t.datetime "updated_at"
   end

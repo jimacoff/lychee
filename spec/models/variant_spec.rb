@@ -2,6 +2,7 @@ require 'rails_helper'
 
 RSpec.describe Variant, type: :model do
   has_context 'specification'
+  has_context 'metadata'
 
   it { is_expected.to validate_presence_of :product }
 

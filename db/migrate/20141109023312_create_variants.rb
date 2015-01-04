@@ -15,6 +15,7 @@ class CreateVariants < ActiveRecord::Migration
       t.json :specifications
 
       t.hstore :traits
+      t.hstore :metadata, null: true
 
       t.timestamps
     end

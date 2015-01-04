@@ -1,5 +1,6 @@
 class Variant < ActiveRecord::Base
   include Specification
+  include Metadata
 
   belongs_to :product
 
