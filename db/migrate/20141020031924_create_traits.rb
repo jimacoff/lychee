@@ -14,8 +14,6 @@ class CreateTraits < ActiveRecord::Migration
       t.text :default_values, array: true, default:[]
       t.text :tags, array: true, default:[]
 
-      t.references :parent
-
       t.timestamps
     end
   end

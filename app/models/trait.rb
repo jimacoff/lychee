@@ -2,9 +2,6 @@ class Trait < ActiveRecord::Base
   include Taggable
   include Metadata
 
-  belongs_to :parent, class_name: 'Trait'
-  has_one :subtrait, class_name: 'Trait', foreign_key: 'parent_id'
-
   validates :name, presence: true
   validates :display_name, presence: true
 

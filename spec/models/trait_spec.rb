@@ -4,9 +4,6 @@ RSpec.describe Trait, type: :model do
   has_context 'taggable'
   has_context 'metadata'
 
-  it { is_expected.to belong_to :parent }
-  it { is_expected.to have_one(:subtrait).with_foreign_key 'parent_id' }
-
   it { is_expected.to validate_presence_of :name }
   it { is_expected.to validate_presence_of :display_name }
 

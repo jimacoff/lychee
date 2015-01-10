@@ -55,7 +55,6 @@ ActiveRecord::Schema.define(version: 20141109023312) do
     t.hstore   "metadata"
     t.text     "default_values", default: [],              array: true
     t.text     "tags",           default: [],              array: true
-    t.integer  "parent_id"
     t.datetime "created_at"
     t.datetime "updated_at"
   end
