@@ -1,7 +1,6 @@
 class Product < ActiveRecord::Base
   include Specification
   include Metadata
-  include Variations
 
   has_many :variants
 

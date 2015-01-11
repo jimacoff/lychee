@@ -12,7 +12,6 @@ RSpec.describe Product, type: :model do
   it { is_expected.to validate_presence_of :price_currency }
 
   it { is_expected.to have_many :variants }
-  it { is_expected.to have_db_column(:variations).of_type(:json) }
 
   context 'slugs' do
     subject { create :product }
@@ -92,22 +91,4 @@ RSpec.describe Product, type: :model do
     end
   end
 
-  context 'variations' do
-    subject { create :product }
-
-    it 'is valid without any variations' do
-      expect(subject).to be_valid
-      expect(subject.variants).to be_empty
-    end
-
-    it 'is invalid with variations but no variants' do
-      subject.variations = { trait: { id: 1 } }
-      expect(subject).not_to be_valid
-    end
-
-    it 'is invalid with variants but no variations' do
-      subject.variants << (create :variant)
-      expect(subject).not_to be_valid
-    end
-  end
 end
