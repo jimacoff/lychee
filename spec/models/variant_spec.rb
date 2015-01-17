@@ -4,114 +4,28 @@ RSpec.describe Variant, type: :model do
   has_context 'specification'
   has_context 'metadata'
 
-  it { is_expected.to validate_presence_of :product }
-
-  context 'traits' do
-    subject { create :variant }
-
-    it 'must exhibit at least one trait' do
-      subject.traits = nil
-      expect(subject).not_to be_valid
-    end
-
-    it 'must only exhibit registered traits' do
-      subject.add_trait('invalid_id', Faker::Lorem.word)
-      expect(subject).not_to be_valid
-    end
-
-    it 'stores multiple traits' do
-      expect(subject).to be_valid
-    end
-
-    describe '#add_trait' do
-      let(:trait) { create :trait }
-      let(:trait_value) { Faker::Lorem.word }
-
-      def run
-        subject.add_trait(trait.id, trait_value)
-      end
-
-      it 'adds the specified trait id and value' do
-        expect { run }.to change { subject.traits.count }.by 1
-      end
-
-      it 'has #changed?' do
-        expect { run }.to change(subject, :traits_changed?).to true
-      end
-
-      it 'is valid' do
-        run
-        expect(subject).to be_valid
-      end
-    end
-
-    describe '#add_traits' do
-      let(:trait) { create :trait }
-      let(:trait_value) { Faker::Lorem.word }
-      let(:trait2) { create :trait }
-      let(:trait2_value) { Faker::Lorem.word }
-
-      let(:traits) { { trait.id => trait_value, trait2.id => trait2_value } }
-
-      def run
-        subject.add_traits(traits)
-      end
-
-      it 'adds the specified traits' do
-        expect { run }.to change { subject.traits.count }.by 2
-      end
-
-      it 'adds traits uniquely' do
-        run
-        expect { subject.add_trait(trait.id, 'newval') }.to \
-          change { subject.traits }.and \
-          change { subject.traits.count }.by 0
-      end
-
-      it 'has #changed?' do
-        expect { run }.to change(subject, :traits_changed?).to true
-      end
-
-      it 'is valid' do
-        run
-        expect(subject).to be_valid
-      end
-    end
-
-    describe '#delete_trait' do
-      let(:trait) { create :trait }
-      let(:trait_value) { Faker::Lorem.word }
-
-      before :each do
-        subject.traits[trait.id] = trait_value
-        expect(subject.traits[trait.id]).not_to be_nil
-      end
-
-      def run
-        subject.delete_trait(trait.id)
-      end
-
-      it 'deletes a trait' do
-        expect { run }.to change { subject.traits.count }.by(-1)
-      end
-
-      it 'deletes the specified trait' do
-        run
-        expect(subject.traits[trait.id]).to be_nil
-      end
-
-      it 'has #changed?' do
-        expect { run }.to change(subject, :traits_changed?).to true
-      end
-
-      it 'is valid' do
-        run
-        expect(subject).to be_valid
-      end
-    end
+  context 'table structure' do
+    it { is_expected.to have_db_column(:description).of_type(:text)  }
+    it { is_expected.to have_db_column(:gtin).of_type(:string)  }
+    it { is_expected.to have_db_column(:sku).of_type(:string) }
+    it { is_expected.to have_db_column(:grams).of_type(:integer) }
+    it { is_expected.to have_db_column(:price_cents).of_type(:integer) }
   end
 
-  context 'potentially overloaded attributes' do
+  context 'relationships' do
+    it { is_expected.to belong_to :product }
+    it { is_expected.to have_many :variation_instances }
+    it { is_expected.to have_many :variations }
+    it { is_expected.to have_many :traits }
+  end
+
+  context 'validations' do
+    subject { create :variant }
+    it { is_expected.to validate_presence_of :product }
+    it { is_expected.to validate_presence_of :variation_instances }
+  end
+
+  context 'localized attributes' do
     subject { create :variant }
 
     describe '#price' do
@@ -137,31 +51,40 @@ RSpec.describe Variant, type: :model do
       end
     end
 
-    @specifications = { categories: [{ name: 'cat1',
-                                       values: [{ name: 'val1',
-                                                  value: 'val' }] }] }
-    @overloaded_attributes = { description: Faker::Lorem.sentence,
-                               gtin: Faker::Number.number(10),
-                               sku: Faker::Number.number(10),
-                               grams: Faker::Number.number(5),
-                               specifications: @specifications }
-    @overloaded_attributes.each do |k, v|
+    specifications = { 'categories' => [{ 'name' => 'cat1',
+                                          'values' => [{ 'name' => 'val1',
+                                                         'value' => 'val' }]
+                                        }] }
+    localized_attributes = { description: Faker::Lorem.sentence,
+                             gtin: Faker::Number.number(10),
+                             sku: Faker::Number.number(10),
+                             grams: Faker::Number.number(4).to_i,
+                             specifications: specifications }
+
+    localized_attributes.each do |k, v|
       describe "##{k}" do
         context 'not locally defined' do
+          before { subject.product.update(localized_attributes) }
           it "has no local #{k}" do
             expect(subject[k.to_sym]).to be_nil
           end
           it "uses the products #{k}" do
             expect(subject.send(k)).to eq(subject.product.send(k))
           end
+          it 'has the expected value' do
+            expect(subject.product.send(k)).to eq(v)
+          end
         end
         context 'locally defined' do
-          subject { build :variant, "#{k}" => v }
+          before { subject.update(localized_attributes) }
           it "does not use the products #{k}" do
             expect(subject.send(k)).to_not eq(subject.product.send(k))
           end
           it "uses the local #{k}" do
             expect(subject.send(k)).to eq(subject[k.to_sym])
+          end
+          it 'has the expected value' do
+            expect(subject.send(k)).to eq(v)
           end
         end
       end

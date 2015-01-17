@@ -4,8 +4,16 @@ RSpec.describe Trait, type: :model do
   has_context 'taggable'
   has_context 'metadata'
 
-  it { is_expected.to validate_presence_of :name }
-  it { is_expected.to validate_presence_of :display_name }
+  context 'table structure' do
+    it { is_expected.to have_db_column(:name).of_type(:string) }
+    it { is_expected.to have_db_column(:display_name).of_type(:string) }
+    it { is_expected.to have_db_column(:description).of_type(:text) }
+  end
+
+  context 'validations' do
+    it { is_expected.to validate_presence_of :name }
+    it { is_expected.to validate_presence_of :display_name }
+  end
 
   context 'default values' do
     subject { create :trait }
@@ -30,12 +38,9 @@ RSpec.describe Trait, type: :model do
     end
 
     context '#delete_default_value' do
+      subject { create :trait, default_values: [value] }
       def del(v)
         subject.delete_default_value v
-      end
-
-      before :each do
-        subject.default_values.push value
       end
 
       it 'deletes a value' do

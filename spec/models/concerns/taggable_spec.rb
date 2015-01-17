@@ -11,10 +11,9 @@ RSpec.describe Taggable do
     end
   end
 
-  subject { TaggableModel.new }
-
   context 'manipulating tag data' do
     let(:tag) { Faker::Lorem.word }
+    subject { TaggableModel.new }
 
     context 'addition' do
       before { expect(subject.tags).to be_empty }
@@ -31,8 +30,10 @@ RSpec.describe Taggable do
     end
 
     context 'deletion' do
-      before { subject.tags.push tag }
+      let(:tag) { Faker::Lorem.word }
+      subject { TaggableModel.new(tags: [tag]) }
 
+      before { subject.save }
       let(:run) { subject.delete_tag(tag) }
 
       it 'deletes data' do

@@ -4,5 +4,4 @@ FactoryGirl.define do
     display_name { name }
     description { Faker::Lorem.sentence }
   end
-
 end

@@ -8,13 +8,12 @@ class CreateVariants < ActiveRecord::Migration
       t.string :gtin
       t.string :sku
 
-      t.money :price, amount: { null: true, default: nil },
-                      currency: { null: true, default: nil }
+      t.monetize :price, amount: { null: true, default: nil },
+                         currency: { null: true, default: nil }
 
       t.integer :grams
-      t.json :specifications
 
-      t.hstore :traits
+      t.json :specifications
       t.hstore :metadata, null: true
 
       t.timestamps

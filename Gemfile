@@ -1,10 +1,13 @@
 source 'https://rubygems.org'
 
-gem 'rails', '4.1.8'
-gem 'pg'
-gem 'postgres_ext', '~> 2.3.0'
-gem 'money-rails', '~> 1.0.0'
-gem 'stringex', '~> 2.5.2'
+gem 'rails', '~> 4.2'
+gem 'pg', '~> 0.18'
+gem 'postgres_ext', '~> 2.3'
+
+# TODO: required for https://github.com/RubyMoney/money-rails/issues/263
+# Change to release greater than 1.2.0 when available
+gem 'money-rails', git: 'https://github.com/RubyMoney/money-rails.git'
+gem 'stringex', '~> 2.5'
 
 # Web
 gem 'uglifier', '~> 2.5.3'
@@ -23,7 +26,7 @@ gem 'bcrypt', '~> 3.1.7'
 gem 'unicorn', '~> 4.8.3'
 
 group :development, :test do
-  gem 'rspec-rails', '~> 3.1.0'
+  gem 'rspec-rails', '~> 3.0'
   gem 'shoulda-matchers'
   gem 'faker'
   gem 'factory_girl_rails'
@@ -33,7 +36,6 @@ group :development, :test do
   gem 'guard-bundler'
   gem 'guard-rubocop'
   gem 'guard-rspec'
-  gem 'pry-theme'
   gem 'pry-rails'
   gem 'brakeman'
   gem 'temping'

@@ -3,6 +3,8 @@ class Product < ActiveRecord::Base
   include Metadata
 
   has_many :variants
+  has_many :variations
+  has_many :traits, through: :variations
 
   monetize :price_cents, with_model_currency: :price_currency
 

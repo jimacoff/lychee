@@ -1,8 +1,8 @@
 class Inventory < ActiveRecord::Base
   include Metadata
 
-  with_options if: :tracked? do |v|
-    v.validates :quantity, presence: true
+  with_options if: :tracked? do |inv|
+    inv.validates :quantity, presence: true
   end
 
   def tracked?

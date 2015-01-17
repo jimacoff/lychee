@@ -11,13 +11,13 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20141109023312) do
+ActiveRecord::Schema.define(version: 20150112102311) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
   enable_extension "hstore"
 
-  create_table "inventories", force: true do |t|
+  create_table "inventories", force: :cascade do |t|
     t.boolean  "tracked",       default: false, null: false
     t.integer  "quantity",      default: 0
     t.boolean  "back_orders",   default: false, null: false
@@ -28,27 +28,26 @@ ActiveRecord::Schema.define(version: 20141109023312) do
     t.datetime "updated_at"
   end
 
-  create_table "products", force: true do |t|
+  create_table "products", force: :cascade do |t|
     t.string   "name",                           null: false
+    t.text     "description",                    null: false
     t.string   "generated_slug",                 null: false
     t.string   "specified_slug"
-    t.text     "description",                    null: false
     t.string   "gtin"
     t.string   "sku"
     t.integer  "price_cents",    default: 0,     null: false
     t.string   "price_currency", default: "USD", null: false
     t.integer  "grams"
-    t.json     "specifications"
     t.boolean  "active"
     t.datetime "not_before"
     t.datetime "not_after"
-    t.json     "variations"
+    t.json     "specifications"
     t.hstore   "metadata"
     t.datetime "created_at"
     t.datetime "updated_at"
   end
 
-  create_table "traits", force: true do |t|
+  create_table "traits", force: :cascade do |t|
     t.string   "name",                        null: false
     t.string   "display_name"
     t.text     "description"
@@ -59,7 +58,7 @@ ActiveRecord::Schema.define(version: 20141109023312) do
     t.datetime "updated_at"
   end
 
-  create_table "variants", force: true do |t|
+  create_table "variants", force: :cascade do |t|
     t.integer  "product_id",     null: false
     t.text     "description"
     t.string   "gtin"
@@ -68,7 +67,24 @@ ActiveRecord::Schema.define(version: 20141109023312) do
     t.string   "price_currency"
     t.integer  "grams"
     t.json     "specifications"
-    t.hstore   "traits"
+    t.hstore   "metadata"
+    t.datetime "created_at"
+    t.datetime "updated_at"
+  end
+
+  create_table "variation_instances", force: :cascade do |t|
+    t.integer  "variation_id"
+    t.integer  "variant_id"
+    t.string   "value"
+    t.hstore   "metadata"
+    t.datetime "created_at"
+    t.datetime "updated_at"
+  end
+
+  create_table "variations", force: :cascade do |t|
+    t.integer  "product_id", null: false
+    t.integer  "trait_id",   null: false
+    t.integer  "order",      null: false
     t.hstore   "metadata"
     t.datetime "created_at"
     t.datetime "updated_at"

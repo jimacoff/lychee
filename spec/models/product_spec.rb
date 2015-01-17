@@ -4,14 +4,34 @@ RSpec.describe Product, type: :model do
   has_context 'specification'
   has_context 'metadata'
 
-  it { is_expected.to validate_presence_of :name }
-  it { is_expected.to validate_presence_of :generated_slug }
-  it { is_expected.to validate_presence_of :description }
+  context 'table structure' do
+    it { is_expected.to have_db_column(:name).of_type(:string) }
+    it { is_expected.to have_db_column(:description).of_type(:text) }
+    it { is_expected.to have_db_column(:generated_slug).of_type(:string) }
+    it { is_expected.to have_db_column(:specified_slug).of_type(:string) }
+    it { is_expected.to have_db_column(:gtin).of_type(:string) }
+    it { is_expected.to have_db_column(:sku).of_type(:string) }
+    it { is_expected.to have_db_column(:price_cents).of_type(:integer) }
+    it { is_expected.to have_db_column(:grams).of_type(:integer) }
+    it { is_expected.to have_db_column(:active).of_type(:boolean) }
+    it { is_expected.to have_db_column(:not_before).of_type(:datetime) }
+    it { is_expected.to have_db_column(:not_after).of_type(:datetime) }
+  end
 
-  it { is_expected.to validate_presence_of :price_cents }
-  it { is_expected.to validate_presence_of :price_currency }
+  context 'relationships' do
+    it { is_expected.to have_many :variants }
+    it { is_expected.to have_many :variations }
+    it { is_expected.to have_many :traits }
+  end
 
-  it { is_expected.to have_many :variants }
+  context 'validations' do
+    it { is_expected.to validate_presence_of :name }
+    it { is_expected.to validate_presence_of :description }
+    it { is_expected.to validate_presence_of :generated_slug }
+
+    it { is_expected.to validate_presence_of :price_cents }
+    it { is_expected.to validate_presence_of :price_currency }
+  end
 
   context 'slugs' do
     subject { create :product }
@@ -69,11 +89,16 @@ RSpec.describe Product, type: :model do
         expect(subject.price_cents).to eq(111)
         expect(subject.price.fractional).to eq(111)
       end
-      it 'does per instance currency' do
-        aud_subject = create :product, price: Money.new(111, 'AUD')
-        subject.price = Money.new(111, 'USD')
-        expect(subject.price).not_to eq aud_subject.price
-        expect(subject.price.fractional).to eq aud_subject.price.fractional
+      context 'stores currency' do
+        let(:aud_subject) { create :product, price: Money.new(111, 'AUD') }
+        before { subject.price = Money.new(111, 'USD') }
+
+        it 'has different currencies per instance' do
+          expect(subject.price.currency).not_to eq(aud_subject.price.currency)
+        end
+        it 'has the same fractional per instance' do
+          expect(subject.price.fractional).to eq(aud_subject.price.fractional)
+        end
       end
     end
     describe '#price' do
@@ -90,5 +115,4 @@ RSpec.describe Product, type: :model do
       end
     end
   end
-
 end

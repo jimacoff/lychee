@@ -8,9 +8,6 @@ class CreateTraits < ActiveRecord::Migration
 
       t.hstore :metadata, null: true
 
-      # PostgreSQL arrays work with Rails out of the box for column
-      # types such as text and integer but then requires explicit type
-      # casts to work with string columns
       t.text :default_values, array: true, default:[]
       t.text :tags, array: true, default:[]
 

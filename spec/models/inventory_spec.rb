@@ -3,22 +3,36 @@ require 'rails_helper'
 RSpec.describe Inventory, type: :model do
   has_context 'metadata'
 
-  subject { create :tracked_inventory }
+  context 'table structure' do
+    it { is_expected.to have_db_column(:tracked).of_type(:boolean) }
+    it { is_expected.to have_db_column(:quantity).of_type(:integer) }
+    it { is_expected.to have_db_column(:back_orders).of_type(:boolean) }
+    it { is_expected.to have_db_column(:replenish_eta).of_type(:datetime) }
+    it { is_expected.to have_db_column(:exhausted_on).of_type(:datetime) }
+  end
 
-  it { is_expected.to validate_presence_of :quantity }
+  context 'relationships' do
+    it 'needs to be defined'
+  end
 
-  context '#tracked?' do
-    it 'is tracked' do
-      subject.tracked = true
-      expect(subject.tracked?).to be true
+  context 'validations' do
+    context 'when tracked' do
+      subject { create :tracked_inventory }
+      it { is_expected.to validate_presence_of :quantity }
+      it 'tracked? is true' do
+        expect(subject.tracked?).to be true
+      end
     end
-    it 'is not tracked' do
-      subject.tracked = false
-      expect(subject.tracked?).to be false
+    context 'not tracked' do
+      subject { create :untracked_inventory }
+      it { is_expected.not_to validate_presence_of :quantity }
+      it '#tracked? is false' do
+        expect(subject.tracked?).to be false
+      end
     end
   end
 
-  context '#stock?' do
+  describe '#stock?' do
     it 'is in stock' do
       subject.quantity = 1
       expect(subject.stock?).to be true

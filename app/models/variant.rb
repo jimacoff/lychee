@@ -3,12 +3,15 @@ class Variant < ActiveRecord::Base
   include Metadata
 
   belongs_to :product
+  has_many :variation_instances
+  has_many :variations, through: :variation_instances
+  has_many :traits, through: :variations
 
   monetize :price_cents, as: 'varied_price',
                          with_model_currency: :price_currency, allow_nil: true
 
   validates :product, presence: true
-  validates :traits, trait: true
+  validates :variation_instances, presence: true, on: :update
 
   def price
     varied_price || product.price
@@ -18,25 +21,9 @@ class Variant < ActiveRecord::Base
     self.varied_price = p
   end
 
-  @overloaded_attributes = %i(description gtin sku)
-  @overloaded_attributes.each do |n|
-    define_method(n) do
-      read_attribute(n) || product.send(n)
+  %i(specifications description gtin sku grams).each do |attr|
+    define_method(attr) do
+      read_attribute(attr) || product && product.read_attribute(attr)
     end
-  end
-
-  def add_trait(id, value)
-    traits[id] = value
-    traits_will_change!
-  end
-
-  def add_traits(new_traits)
-    traits.merge! new_traits
-    traits_will_change!
-  end
-
-  def delete_trait(id)
-    traits.delete id
-    traits_will_change!
   end
 end
