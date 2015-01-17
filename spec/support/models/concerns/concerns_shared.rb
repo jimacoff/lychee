@@ -10,17 +10,23 @@ end
 RSpec.shared_examples 'metadata' do
   it { is_expected.to be_a_kind_of(Metadata) }
 
-  it 'has defined metadata field as hstore' do
-    expect(subject).to have_db_column(:metadata)
-      .of_type(:hstore)
-  end
+  it { is_expected.to have_db_column(:metadata).of_type(:hstore) }
 end
 
 RSpec.shared_examples 'specification' do
   it { is_expected.to be_a_kind_of(Specification) }
 
-  it 'has defined specifications field as json' do
-    expect(subject).to have_db_column(:specifications)
-      .of_type(:json)
+  it { is_expected.to have_db_column(:specifications).of_type(:json) }
+end
+
+RSpec.shared_examples 'slug' do
+  it { is_expected.to be_a_kind_of(Slug) }
+  it { is_expected.to have_db_column(:generated_slug).of_type(:string) }
+  it { is_expected.to have_db_column(:specified_slug).of_type(:string) }
+
+  context 'generated slug' do
+    it 'is generated from name' do
+      expect(subject.generated_slug).to eq(subject.name.to_url)
+    end
   end
 end

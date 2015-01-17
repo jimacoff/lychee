@@ -3,6 +3,9 @@ require 'rails_helper'
 RSpec.describe Product, type: :model do
   has_context 'specification'
   has_context 'metadata'
+  has_context 'slug' do
+    subject { create :product }
+  end
 
   context 'table structure' do
     it { is_expected.to have_db_column(:name).of_type(:string) }
@@ -34,41 +37,6 @@ RSpec.describe Product, type: :model do
     it { is_expected.to validate_presence_of :price_currency }
 
     it { is_expected.to validate_presence_of :inventory }
-  end
-
-  context 'slugs' do
-    subject { create :product }
-    let(:specified_slug) { Faker::Lorem.sentence.to_url }
-
-    context 'generated slug' do
-      it 'is generated from name' do
-        expect(subject.generated_slug).to eq(subject.name.to_url)
-      end
-      it 'updates on name change' do
-        subject.name = Faker::Lorem.sentence
-        expect { subject.save }
-          .to change(subject, :generated_slug).to(subject.name.to_url)
-      end
-    end
-
-    describe '#slug' do
-      it 'provides generated_slug by default' do
-        expect(subject.slug).to eq(subject.generated_slug)
-      end
-      it 'provides specified_slug when set' do
-        subject.specified_slug = specified_slug
-        expect(subject.slug).to eq(subject.specified_slug)
-      end
-    end
-
-    describe '#slug=' do
-      it 'updates the specified_slug' do
-        expect { subject.slug = specified_slug }
-          .to change(subject, :specified_slug).to(specified_slug)
-          .and change(subject, :slug).to(specified_slug)
-          .and not_change(subject, :generated_slug)
-      end
-    end
   end
 
   context 'pricing' do
