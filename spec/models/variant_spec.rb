@@ -18,6 +18,7 @@ RSpec.describe Variant, type: :model do
     it { is_expected.to have_many :variations }
     it { is_expected.to have_many :traits }
     it { is_expected.to have_one :inventory }
+    it { is_expected.to have_and_belong_to_many :categories }
   end
 
   context 'validations' do
@@ -90,6 +91,16 @@ RSpec.describe Variant, type: :model do
           end
         end
       end
+    end
+  end
+
+  context 'categories' do
+    subject { create(:variant, :with_categories) }
+    it 'associated two subcategories' do
+      expect(subject.categories.size).to eq(2)
+    end
+    it 'category contains product' do
+      expect(subject.categories.first.variants.first).to eq(subject)
     end
   end
 end

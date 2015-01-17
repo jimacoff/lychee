@@ -26,12 +26,12 @@ RSpec.describe Product, type: :model do
     it { is_expected.to have_many :variations }
     it { is_expected.to have_many :traits }
     it { is_expected.to have_one :inventory }
+    it { is_expected.to have_and_belong_to_many :categories }
   end
 
   context 'validations' do
     it { is_expected.to validate_presence_of :name }
     it { is_expected.to validate_presence_of :description }
-    it { is_expected.to validate_presence_of :generated_slug }
 
     it { is_expected.to validate_presence_of :price_cents }
     it { is_expected.to validate_presence_of :price_currency }
@@ -84,6 +84,16 @@ RSpec.describe Product, type: :model do
       it 'returns amount as BigDecimal' do
         expect(subject.price.dollars).to be_a BigDecimal
       end
+    end
+  end
+
+  context 'categories' do
+    subject { create(:product, :with_categories) }
+    it 'associated two subcategories' do
+      expect(subject.categories.size).to eq(2)
+    end
+    it 'category contains product' do
+      expect(subject.categories.first.products.first).to eq(subject)
     end
   end
 end

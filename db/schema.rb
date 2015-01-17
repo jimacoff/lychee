@@ -11,11 +11,38 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20150117050106) do
+ActiveRecord::Schema.define(version: 20150117101406) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
   enable_extension "hstore"
+
+  create_table "categories", force: :cascade do |t|
+    t.integer  "parent_category_id"
+    t.string   "name"
+    t.text     "description"
+    t.string   "generated_slug",     null: false
+    t.string   "specified_slug"
+    t.hstore   "metadata"
+    t.datetime "created_at",         null: false
+    t.datetime "updated_at",         null: false
+  end
+
+  add_index "categories", ["parent_category_id"], name: "index_categories_on_parent_category_id", using: :btree
+
+  create_table "categories_products", id: false, force: :cascade do |t|
+    t.integer "category_id"
+    t.integer "product_id"
+  end
+
+  add_index "categories_products", ["category_id", "product_id"], name: "index_categories_products_on_category_id_and_product_id", using: :btree
+
+  create_table "categories_variants", id: false, force: :cascade do |t|
+    t.integer "category_id"
+    t.integer "variant_id"
+  end
+
+  add_index "categories_variants", ["category_id", "variant_id"], name: "index_categories_variants_on_category_id_and_variant_id", using: :btree
 
   create_table "inventories", force: :cascade do |t|
     t.boolean  "tracked",       default: false, null: false

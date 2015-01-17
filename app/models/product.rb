@@ -7,6 +7,7 @@ class Product < ActiveRecord::Base
   has_many :variations
   has_many :traits, through: :variations
   has_one :inventory
+  has_and_belongs_to_many :categories
 
   monetize :price_cents, with_model_currency: :price_currency
 

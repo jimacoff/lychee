@@ -2,7 +2,7 @@ module Slug
   extend ActiveSupport::Concern
 
   included do
-    validates :name, presence: true
+    validates :name, :generated_slug, presence: true
     acts_as_url :name, url_attribute: :generated_slug, sync_url: true
   end
 

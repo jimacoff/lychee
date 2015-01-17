@@ -9,5 +9,11 @@ FactoryGirl.define do
                                               variation: variation,
                                               variant: variant)
     end
+
+    trait :with_categories do
+      after(:create) do |v|
+        v.categories.push create_list(:category, 2)
+      end
+    end
   end
 end
