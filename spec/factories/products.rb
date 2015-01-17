@@ -4,5 +4,7 @@ FactoryGirl.define do
     description { Faker::Lorem.sentence }
 
     active true
+
+    association :inventory, factory: :tracked_inventory
   end
 end

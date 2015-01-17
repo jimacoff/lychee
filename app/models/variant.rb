@@ -6,11 +6,12 @@ class Variant < ActiveRecord::Base
   has_many :variation_instances
   has_many :variations, through: :variation_instances
   has_many :traits, through: :variations
+  has_one :inventory
 
   monetize :price_cents, as: 'varied_price',
                          with_model_currency: :price_currency, allow_nil: true
 
-  validates :product, presence: true
+  validates :product, :inventory, presence: true
   validates :variation_instances, presence: true, on: :update
 
   def price

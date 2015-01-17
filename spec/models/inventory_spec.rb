@@ -12,7 +12,8 @@ RSpec.describe Inventory, type: :model do
   end
 
   context 'relationships' do
-    it 'needs to be defined'
+    it { is_expected.to belong_to(:product) }
+    it { is_expected.to belong_to(:variant) }
   end
 
   context 'validations' do

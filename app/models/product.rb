@@ -5,12 +5,16 @@ class Product < ActiveRecord::Base
   has_many :variants
   has_many :variations
   has_many :traits, through: :variations
+  has_one :inventory
 
   monetize :price_cents, with_model_currency: :price_currency
 
-  validates :name, :description, presence: true
-  validates :slug, :generated_slug, presence: true
-  validates :price_cents, :price_currency, presence: true
+  with_options presence: true do |p|
+    p.validates :name, :description
+    p.validates :slug, :generated_slug
+    p.validates :price_cents, :price_currency
+    p.validates :inventory
+  end
 
   acts_as_url :name, url_attribute: :generated_slug, sync_url: true
 

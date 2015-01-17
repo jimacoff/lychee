@@ -17,12 +17,14 @@ RSpec.describe Variant, type: :model do
     it { is_expected.to have_many :variation_instances }
     it { is_expected.to have_many :variations }
     it { is_expected.to have_many :traits }
+    it { is_expected.to have_one :inventory }
   end
 
   context 'validations' do
     subject { create :variant }
     it { is_expected.to validate_presence_of :product }
     it { is_expected.to validate_presence_of :variation_instances }
+    it { is_expected.to validate_presence_of :inventory }
   end
 
   context 'localized attributes' do

@@ -22,6 +22,7 @@ RSpec.describe Product, type: :model do
     it { is_expected.to have_many :variants }
     it { is_expected.to have_many :variations }
     it { is_expected.to have_many :traits }
+    it { is_expected.to have_one :inventory }
   end
 
   context 'validations' do
@@ -31,6 +32,8 @@ RSpec.describe Product, type: :model do
 
     it { is_expected.to validate_presence_of :price_cents }
     it { is_expected.to validate_presence_of :price_currency }
+
+    it { is_expected.to validate_presence_of :inventory }
   end
 
   context 'slugs' do
@@ -102,7 +105,7 @@ RSpec.describe Product, type: :model do
       end
     end
     describe '#price' do
-      it 'returns dollars as BigDecimal' do
+      it 'returns dollars as Money' do
         expect(subject.price).to be_a Money
       end
       # Ensure any future library change doesn't bite us as this got
