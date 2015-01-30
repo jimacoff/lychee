@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20150117101406) do
+ActiveRecord::Schema.define(version: 20150130040757) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -57,6 +57,18 @@ ActiveRecord::Schema.define(version: 20150117101406) do
     t.integer  "product_id"
     t.integer  "variant_id"
   end
+
+  create_table "product_versions", force: :cascade do |t|
+    t.string   "item_type",                                                              null: false
+    t.integer  "item_id",        default: "nextval('product_version_id_seq'::regclass)", null: false
+    t.string   "event",                                                                  null: false
+    t.string   "whodunnit"
+    t.text     "object"
+    t.datetime "created_at"
+    t.integer  "transaction_id"
+  end
+
+  add_index "product_versions", ["item_type", "item_id", "transaction_id"], name: "index_on_item_type_and_item_id_and_transaction_id", using: :btree
 
   create_table "products", force: :cascade do |t|
     t.string   "name",                           null: false
@@ -121,5 +133,26 @@ ActiveRecord::Schema.define(version: 20150117101406) do
     t.datetime "created_at"
     t.datetime "updated_at"
   end
+
+  create_table "version_associations", force: :cascade do |t|
+    t.integer "version_id"
+    t.string  "foreign_key_name", null: false
+    t.integer "foreign_key_id"
+  end
+
+  add_index "version_associations", ["foreign_key_name", "foreign_key_id"], name: "index_version_associations_on_foreign_key", using: :btree
+  add_index "version_associations", ["version_id"], name: "index_version_associations_on_version_id", using: :btree
+
+  create_table "versions", force: :cascade do |t|
+    t.string   "item_type",      null: false
+    t.integer  "item_id",        null: false
+    t.string   "event",          null: false
+    t.string   "whodunnit"
+    t.text     "object"
+    t.datetime "created_at"
+    t.integer  "transaction_id"
+  end
+
+  add_index "versions", ["item_type", "item_id", "transaction_id"], name: "index_versions_on_item_type_and_item_id_and_transaction_id", using: :btree
 
 end
