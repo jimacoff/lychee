@@ -1,5 +1,5 @@
 class Product < ActiveRecord::Base
-  has_paper_trail class_name: 'ProductVersion'
+  has_paper_trail class_name: 'Versioning::ProductVersion'
 
   include Specification
   include Metadata
