@@ -10,23 +10,6 @@ class CreateProductVersions < ActiveRecord::Migration
       t.integer  :transaction_id
     end
     add_index :product_versions, [:item_type, :item_id, :transaction_id],
-              name: 'index_on_item_type_and_item_id_and_transaction_id'
-  end
-
-  def up
-    execute <<-SQL
-      CREATE SEQUENCE product_version_id_seq;
-      ALTER SEQUENCE product_version_id_seq OWNED BY product_versions.item_id;
-    SQL
-
-    execute <<-SQL
-          ALTER TABLE scores ALTER COLUMN job_id SET DEFAULT nextval('job_id_seq');
-        SQL
-  end
-
-  def down
-    execute <<-SQL
-      DROP SEQUENCE product_version_id_seq;
-    SQL
+              name: 'p_index_on_item_type_and_item_id_and_transaction_id'
   end
 end
