@@ -2,6 +2,7 @@ require 'rails_helper'
 
 RSpec.describe Category, type: :model do
   has_context 'metadata'
+  has_context 'taggable'
   has_context 'slug' do
     subject { create :category }
   end

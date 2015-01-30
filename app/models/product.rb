@@ -2,6 +2,7 @@ class Product < ActiveRecord::Base
   include Specification
   include Metadata
   include Slug
+  include Taggable
 
   has_many :variants
   has_many :variations
@@ -14,6 +15,6 @@ class Product < ActiveRecord::Base
   with_options presence: true do |p|
     p.validates :name, :description
     p.validates :price_cents, :price_currency
-    p.validates :inventory
+    p.validates :inventory  # TODO: This shouldn't be here if there are variants
   end
 end

@@ -6,6 +6,7 @@ RSpec.describe Product, type: :model do
   has_context 'slug' do
     subject { create :product }
   end
+  has_context 'taggable'
 
   context 'table structure' do
     it { is_expected.to have_db_column(:name).of_type(:string) }

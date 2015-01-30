@@ -1,6 +1,7 @@
 class Variant < ActiveRecord::Base
   include Specification
   include Metadata
+  include Taggable
 
   belongs_to :product
   has_many :variation_instances

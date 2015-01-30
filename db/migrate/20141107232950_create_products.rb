@@ -20,6 +20,7 @@ class CreateProducts < ActiveRecord::Migration
 
       t.json :specifications
       t.hstore :metadata, null: true
+      t.text :tags, array: true, default:[]
 
       t.timestamps
     end

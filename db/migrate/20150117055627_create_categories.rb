@@ -10,6 +10,7 @@ class CreateCategories < ActiveRecord::Migration
       t.string :specified_slug
 
       t.hstore :metadata, null: true
+      t.text :tags, array: true, default:[]
 
       t.timestamps null: false
     end
