@@ -8,3 +8,11 @@ AllCops:
     - bin/**/*
     - db/**/*
     - Guardfile
+
+MethodLength:
+  Exclude:
+    - spec/support/basic_shop.rb
+
+AbcSize:
+  Exclude:
+    - spec/support/basic_shop.rb

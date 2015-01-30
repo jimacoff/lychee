@@ -21,11 +21,12 @@ ActiveRecord::Schema.define(version: 20150117101406) do
     t.integer  "parent_category_id"
     t.string   "name"
     t.text     "description"
-    t.string   "generated_slug",     null: false
+    t.string   "generated_slug",                  null: false
     t.string   "specified_slug"
     t.hstore   "metadata"
-    t.datetime "created_at",         null: false
-    t.datetime "updated_at",         null: false
+    t.text     "tags",               default: [],              array: true
+    t.datetime "created_at",                      null: false
+    t.datetime "updated_at",                      null: false
   end
 
   add_index "categories", ["parent_category_id"], name: "index_categories_on_parent_category_id", using: :btree
@@ -72,6 +73,7 @@ ActiveRecord::Schema.define(version: 20150117101406) do
     t.datetime "not_after"
     t.json     "specifications"
     t.hstore   "metadata"
+    t.text     "tags",           default: [],                 array: true
     t.datetime "created_at"
     t.datetime "updated_at"
   end
@@ -88,7 +90,7 @@ ActiveRecord::Schema.define(version: 20150117101406) do
   end
 
   create_table "variants", force: :cascade do |t|
-    t.integer  "product_id",     null: false
+    t.integer  "product_id",                  null: false
     t.text     "description"
     t.string   "gtin"
     t.string   "sku"
@@ -97,6 +99,7 @@ ActiveRecord::Schema.define(version: 20150117101406) do
     t.integer  "grams"
     t.json     "specifications"
     t.hstore   "metadata"
+    t.text     "tags",           default: [],              array: true
     t.datetime "created_at"
     t.datetime "updated_at"
   end

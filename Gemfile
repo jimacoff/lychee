@@ -39,4 +39,5 @@ group :development, :test do
   gem 'pry-rails'
   gem 'brakeman'
   gem 'temping'
+  gem 'database_cleaner'
 end
