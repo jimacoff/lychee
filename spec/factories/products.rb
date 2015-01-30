@@ -5,8 +5,6 @@ FactoryGirl.define do
 
     active true
 
-    association :inventory, factory: :tracked_inventory
-
     trait :with_categories do
       after(:create) do |p|
         p.categories.push create_list(:category, 2)

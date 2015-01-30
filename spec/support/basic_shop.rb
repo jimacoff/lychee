@@ -36,11 +36,7 @@ class BasicShop
       name = "Casual #{Faker::Lorem.word} shirt"
       desc = "A casual shirt made from 100% #{Faker::Lorem.word}"
 
-      inventory = Inventory.create(tracked: true,
-                                   quantity: Faker::Number.number(3),
-                                   back_orders: false)
       product = Product.create(name: name, description: desc,
-                               inventory: inventory,
                                categories: [men, men_casual])
 
       variation = Variation.create(order: 1, product: product,
@@ -72,11 +68,7 @@ class BasicShop
       name = "Casual #{Faker::Lorem.word} shirt"
       desc = "A casual shirt made from 100% #{Faker::Lorem.word}"
 
-      inventory = Inventory.create(tracked: true,
-                                   quantity: Faker::Number.number(3),
-                                   back_orders: false)
       product = Product.create(name: name, description: desc,
-                               inventory: inventory,
                                categories: [women, women_casual])
 
       variation = Variation.create(order: 1, product: product,

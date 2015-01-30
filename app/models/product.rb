@@ -12,9 +12,26 @@ class Product < ActiveRecord::Base
 
   monetize :price_cents, with_model_currency: :price_currency
 
+  validate :inventory, :validate_inventory
   with_options presence: true do |p|
     p.validates :name, :description
     p.validates :price_cents, :price_currency
-    p.validates :inventory  # TODO: This shouldn't be here if there are variants
+  end
+
+  def validate_inventory
+    return if new_record?
+    inventory_required
+    inventory_not_required
+  end
+
+  def inventory_required
+    return unless variants.empty? && inventory.nil?
+    errors.add(:inventory,
+               'must be provided if product does not define variants')
+  end
+
+  def inventory_not_required
+    return unless inventory.present? && variants.present?
+    errors.add(:inventory, 'must not be provided if product defines variants')
   end
 end

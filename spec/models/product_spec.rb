@@ -37,7 +37,35 @@ RSpec.describe Product, type: :model do
     it { is_expected.to validate_presence_of :price_cents }
     it { is_expected.to validate_presence_of :price_currency }
 
-    it { is_expected.to validate_presence_of :inventory }
+    context 'inventory' do
+      subject { create :product }
+      context 'without variants' do
+        it 'is invalid with no inventory specified' do
+          expect(subject).not_to be_valid
+          expect(subject.errors.full_messages)
+            .to include('Inventory must be provided if product '\
+                        'does not define variants')
+        end
+        it 'is valid with an inventory specified' do
+          subject.inventory = create(:tracked_inventory)
+          expect(subject).to be_valid
+        end
+      end
+
+      context 'with variants' do
+        before { create_list(:variant, 2, product: subject) }
+        it 'is valid with no inventory specified' do
+          expect(subject).to be_valid
+        end
+        it 'is invalid with an inventory specified' do
+          subject.inventory = create(:tracked_inventory)
+          expect(subject).not_to be_valid
+          expect(subject.errors.full_messages)
+            .to include('Inventory must not be provided if product '\
+                        'defines variants')
+        end
+      end
+    end
   end
 
   context 'pricing' do
