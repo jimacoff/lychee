@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20150130040757) do
+ActiveRecord::Schema.define(version: 20150130053749) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -45,6 +45,18 @@ ActiveRecord::Schema.define(version: 20150130040757) do
 
   add_index "categories_variants", ["category_id", "variant_id"], name: "index_categories_variants_on_category_id_and_variant_id", using: :btree
 
+  create_table "category_versions", force: :cascade do |t|
+    t.string   "item_type",                                                               null: false
+    t.integer  "item_id",        default: "nextval('category_version_id_seq'::regclass)", null: false
+    t.string   "event",                                                                   null: false
+    t.string   "whodunnit"
+    t.text     "object"
+    t.datetime "created_at"
+    t.integer  "transaction_id"
+  end
+
+  add_index "category_versions", ["item_type", "item_id", "transaction_id"], name: "ci_index_on_item_type_and_item_id_and_transaction_id", using: :btree
+
   create_table "inventories", force: :cascade do |t|
     t.boolean  "tracked",       default: false, null: false
     t.integer  "quantity",      default: 0
@@ -68,7 +80,7 @@ ActiveRecord::Schema.define(version: 20150130040757) do
     t.integer  "transaction_id"
   end
 
-  add_index "product_versions", ["item_type", "item_id", "transaction_id"], name: "index_on_item_type_and_item_id_and_transaction_id", using: :btree
+  add_index "product_versions", ["item_type", "item_id", "transaction_id"], name: "p_index_on_item_type_and_item_id_and_transaction_id", using: :btree
 
   create_table "products", force: :cascade do |t|
     t.string   "name",                           null: false

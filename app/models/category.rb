@@ -1,4 +1,6 @@
 class Category < ActiveRecord::Base
+  has_paper_trail class_name: 'Versioning::CategoryVersion'
+
   include Metadata
   include Slug
   include Taggable
