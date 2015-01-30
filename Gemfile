@@ -9,6 +9,8 @@ gem 'postgres_ext', '~> 2.3'
 gem 'money-rails', git: 'https://github.com/RubyMoney/money-rails.git'
 gem 'stringex', '~> 2.5'
 
+gem 'paper_trail', '~>4.0.0.beta2'
+
 # Web
 gem 'uglifier', '~> 2.5.3'
 gem 'therubyracer',  platforms: :ruby
