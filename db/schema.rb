@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20150131002134) do
+ActiveRecord::Schema.define(version: 20150131023829) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -31,39 +31,13 @@ ActiveRecord::Schema.define(version: 20150131002134) do
 
   add_index "categories", ["parent_category_id"], name: "index_categories_on_parent_category_id", using: :btree
 
-  create_table "category_member_versions", force: :cascade do |t|
-    t.string   "item_type",                                                                      null: false
-    t.integer  "item_id",        default: "nextval('category_member_version_id_seq'::regclass)", null: false
-    t.string   "event",                                                                          null: false
-    t.string   "whodunnit"
-    t.text     "object"
-    t.datetime "created_at"
-    t.integer  "transaction_id"
-  end
-
-  add_index "category_member_versions", ["item_type", "item_id", "transaction_id"], name: "cm_index_on_item_type_and_item_id_and_transaction_id", using: :btree
-
   create_table "category_members", force: :cascade do |t|
     t.integer  "category_id"
     t.integer  "product_id"
     t.integer  "variant_id"
-    t.datetime "created_at",  null: false
-    t.datetime "updated_at",  null: false
-  end
-
-  add_index "category_members", ["category_id", "product_id", "variant_id"], name: "cm_index_on_category_and_product_and_variant", using: :btree
-
-  create_table "category_versions", force: :cascade do |t|
-    t.string   "item_type",                                                               null: false
-    t.integer  "item_id",        default: "nextval('category_version_id_seq'::regclass)", null: false
-    t.string   "event",                                                                   null: false
-    t.string   "whodunnit"
-    t.text     "object"
     t.datetime "created_at"
-    t.integer  "transaction_id"
+    t.datetime "updated_at"
   end
-
-  add_index "category_versions", ["item_type", "item_id", "transaction_id"], name: "ci_index_on_item_type_and_item_id_and_transaction_id", using: :btree
 
   create_table "inventories", force: :cascade do |t|
     t.boolean  "tracked",       default: false, null: false
@@ -77,18 +51,6 @@ ActiveRecord::Schema.define(version: 20150131002134) do
     t.integer  "product_id"
     t.integer  "variant_id"
   end
-
-  create_table "product_versions", force: :cascade do |t|
-    t.string   "item_type",                                                              null: false
-    t.integer  "item_id",        default: "nextval('product_version_id_seq'::regclass)", null: false
-    t.string   "event",                                                                  null: false
-    t.string   "whodunnit"
-    t.text     "object"
-    t.datetime "created_at"
-    t.integer  "transaction_id"
-  end
-
-  add_index "product_versions", ["item_type", "item_id", "transaction_id"], name: "p_index_on_item_type_and_item_id_and_transaction_id", using: :btree
 
   create_table "products", force: :cascade do |t|
     t.string   "name",                           null: false
