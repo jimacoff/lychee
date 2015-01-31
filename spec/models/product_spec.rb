@@ -27,7 +27,8 @@ RSpec.describe Product, type: :model do
     it { is_expected.to have_many :variations }
     it { is_expected.to have_many :traits }
     it { is_expected.to have_one :inventory }
-    it { is_expected.to have_and_belong_to_many :categories }
+    it { is_expected.to have_many :category_members }
+    it { is_expected.to have_many :categories }
   end
 
   context 'validations' do

@@ -1,5 +1,5 @@
 class Category < ActiveRecord::Base
-  has_paper_trail class_name: 'Versioning::CategoryVersion'
+  has_paper_trail
 
   include Metadata
   include Slug
@@ -9,8 +9,9 @@ class Category < ActiveRecord::Base
   has_many :subcategories, class_name: 'Category',
                            foreign_key: 'parent_category_id'
 
-  has_and_belongs_to_many :products
-  has_and_belongs_to_many :variants
+  has_many :category_members
+  has_many :products, through: :category_members
+  has_many :variants, through: :category_members
 
   validates :name, :description, presence: true
 end

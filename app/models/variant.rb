@@ -1,4 +1,6 @@
 class Variant < ActiveRecord::Base
+  has_paper_trail
+
   include Specification
   include Metadata
   include Taggable
@@ -7,8 +9,9 @@ class Variant < ActiveRecord::Base
   has_many :variation_instances
   has_many :variations, through: :variation_instances
   has_many :traits, through: :variations
+  has_many :category_members
+  has_many :categories, through: :category_members
   has_one :inventory
-  has_and_belongs_to_many :categories
 
   monetize :price_cents, as: 'varied_price',
                          with_model_currency: :price_currency, allow_nil: true
