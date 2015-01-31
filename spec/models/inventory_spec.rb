@@ -1,6 +1,7 @@
 require 'rails_helper'
 
 RSpec.describe Inventory, type: :model do
+  has_context 'versioned'
   has_context 'metadata'
 
   context 'table structure' do

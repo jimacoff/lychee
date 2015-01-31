@@ -1,6 +1,7 @@
 require 'rails_helper'
 
 RSpec.describe Trait, type: :model do
+  has_context 'versioned'
   has_context 'taggable'
   has_context 'metadata'
 

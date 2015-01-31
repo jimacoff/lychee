@@ -1,4 +1,6 @@
 class Inventory < ActiveRecord::Base
+  has_paper_trail
+
   include Metadata
 
   belongs_to :product

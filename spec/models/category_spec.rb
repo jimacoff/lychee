@@ -1,6 +1,7 @@
 require 'rails_helper'
 
 RSpec.describe Category, type: :model do
+  has_context 'versioned'
   has_context 'metadata'
   has_context 'taggable'
   has_context 'slug' do
