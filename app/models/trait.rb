@@ -1,6 +1,7 @@
 class Trait < ActiveRecord::Base
   has_paper_trail
 
+  include ParentSite
   include Taggable
   include Metadata
 

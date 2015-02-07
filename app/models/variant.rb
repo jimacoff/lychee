@@ -1,6 +1,8 @@
 class Variant < ActiveRecord::Base
   has_paper_trail
 
+  include ParentSite
+
   include Specification
   include Metadata
   include Taggable

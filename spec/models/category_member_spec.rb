@@ -1,16 +1,18 @@
 require 'rails_helper'
 
-RSpec.describe CategoryMember, type: :model do
+RSpec.describe CategoryMember, type: :model, site_scoped: true do
+  has_context 'parent site'
+
   has_context 'versioned'
 
   context 'validations' do
     it { is_expected.to validate_presence_of(:category) }
 
     context 'instance validations' do
-      subject(:category) { create :category }
-      subject(:product) { create :product }
-      subject(:variant) { create :variant }
-      subject { CategoryMember.new(category: category) }
+      let(:category) { create :category }
+      let(:product) { create :product }
+      let(:variant) { create :variant }
+      subject { build(:category_member, category: category) }
 
       it 'is invalid if both product and variant are populated' do
         subject.product = product

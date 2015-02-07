@@ -1,6 +1,8 @@
 require 'rails_helper'
 
-RSpec.describe Variant, type: :model do
+RSpec.describe Variant, type: :model, site_scoped: true do
+  has_context 'parent site'
+
   has_context 'versioned'
   has_context 'specification'
   has_context 'metadata'

@@ -1,10 +1,11 @@
 require 'rails_helper'
 
-RSpec.describe Trait, type: :model do
+RSpec.describe Trait, type: :model, site_scoped: true do
+  has_context 'parent site'
+
   has_context 'versioned'
   has_context 'taggable'
   has_context 'metadata'
-  has_context 'parent site'
 
   context 'table structure' do
     it { is_expected.to have_db_column(:name).of_type(:string) }

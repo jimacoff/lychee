@@ -13,7 +13,7 @@ RSpec.describe Metadata do
 
   let(:key) { Faker::Lorem.word }
   let(:value) { Faker::Lorem.sentence }
-  let(:subject) { create :trait, metadata: { key => value } }
+  let(:subject) { MetadataModel.new(metadata: { key => value }) }
 
   it 'stores json backed metadata' do
     expect(subject).to be_valid

@@ -1,6 +1,7 @@
 class Category < ActiveRecord::Base
   has_paper_trail
 
+  include ParentSite
   include Metadata
   include Slug
   include Taggable

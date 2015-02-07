@@ -1,6 +1,8 @@
 class CategoryMember < ActiveRecord::Base
   has_paper_trail
 
+  include ParentSite
+
   belongs_to :category
   belongs_to :product
   belongs_to :variant

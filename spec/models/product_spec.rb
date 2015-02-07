@@ -1,6 +1,8 @@
 require 'rails_helper'
 
-RSpec.describe Product, type: :model do
+RSpec.describe Product, type: :model, site_scoped: true do
+  has_context 'parent site'
+
   has_context 'versioned'
   has_context 'specification'
   has_context 'metadata'
@@ -71,7 +73,7 @@ RSpec.describe Product, type: :model do
   end
 
   context 'pricing' do
-    subject { create :product }
+    subject { create :standalone_product }
 
     describe '#price=' do
       it 'sets price by decimal' do
@@ -119,7 +121,7 @@ RSpec.describe Product, type: :model do
   end
 
   context 'categories' do
-    subject { create(:product, :with_categories) }
+    subject { create(:standalone_product, :with_categories) }
     it 'associated two subcategories' do
       expect(subject.categories.size).to eq(2)
     end

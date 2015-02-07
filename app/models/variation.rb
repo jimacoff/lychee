@@ -1,6 +1,7 @@
 class Variation < ActiveRecord::Base
   has_paper_trail
 
+  include ParentSite
   include Metadata
 
   belongs_to :product

@@ -1,6 +1,8 @@
 require 'rails_helper'
 
-RSpec.describe Inventory, type: :model do
+RSpec.describe Inventory, type: :model, site_scoped: true do
+  has_context 'parent site'
+
   has_context 'versioned'
   has_context 'metadata'
 
