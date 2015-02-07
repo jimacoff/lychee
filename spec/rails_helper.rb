@@ -9,7 +9,7 @@ Dir[Rails.root.join('spec/support/**/*.rb')].each { |f| require f }
 # Checks for pending migrations before tests are run.
 ActiveRecord::Migration.maintain_test_schema!
 
-spec_site = FactoryGirl.create(:site)
+spec_site = nil
 
 RSpec.configure do |config|
   config.fixture_path = "#{::Rails.root}/spec/fixtures"
@@ -20,10 +20,18 @@ RSpec.configure do |config|
 
   config.infer_spec_type_from_file_location!
 
+  config.before(:suite) do
+    spec_site = FactoryGirl.create(:site)
+  end
+
   # Supply a site scope when requested
   config.around(:example, :site_scoped) do |example|
     Site.current = spec_site
     example.run
     Site.current = nil
+  end
+
+  config.after(:suite) do
+    spec_site.delete
   end
 end
