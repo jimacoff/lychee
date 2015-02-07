@@ -1,7 +1,9 @@
 require 'rails_helper'
 
 RSpec.describe VariationInstance, type: :model, site_scoped: true do
-  has_context 'parent site'
+  has_context 'parent site' do
+    let(:factory) { :variation_instance }
+  end
 
   has_context 'versioned'
   has_context 'metadata'

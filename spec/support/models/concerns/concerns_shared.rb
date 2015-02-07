@@ -59,4 +59,18 @@ RSpec.shared_examples 'parent site' do
       end
     end
   end
+
+  context 'scoping' do
+    let(:site) { create(:site) }
+
+    def run
+      create(factory)
+      create(factory, site: site)
+    end
+
+    subject { -> { run } }
+
+    it { is_expected.to change(described_class, :count).by(1) }
+    it { is_expected.to change(described_class.unscoped, :count).by(2) }
+  end
 end

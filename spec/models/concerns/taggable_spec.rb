@@ -1,19 +1,21 @@
 require 'rails_helper'
 
-RSpec.describe Taggable do
+RSpec.describe Taggable, site_scoped: true do
   before(:all) do
     Temping.create :taggable_model do
       include Taggable
+      include ParentSite
 
       with_columns do |t|
         t.text :tags, array: true, default: []
+        t.belongs_to :site, null: false
       end
     end
   end
 
   context 'manipulating tag data' do
     let(:tag) { Faker::Lorem.word }
-    subject { TaggableModel.new }
+    subject { TaggableModel.create }
 
     context 'addition' do
       before { expect(subject.tags).to be_empty }
@@ -47,7 +49,7 @@ RSpec.describe Taggable do
   end
 
   context 'querying tagged objects' do
-    before :context do
+    before :example do
       @tag1 = Faker::Lorem.word
       @tag2 = Faker::Lorem.word
       @tag3 = Faker::Lorem.word
