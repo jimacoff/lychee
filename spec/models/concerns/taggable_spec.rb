@@ -50,10 +50,10 @@ RSpec.describe Taggable, site_scoped: true do
 
   context 'querying tagged objects' do
     before :example do
-      @tag1 = Faker::Lorem.word
-      @tag2 = Faker::Lorem.word
-      @tag3 = Faker::Lorem.word
-      @tag4 = Faker::Lorem.word
+      @tag1 = "#{Faker::Lorem.word}_#{Faker::Number.number(4)}"
+      @tag2 = "#{Faker::Lorem.word}_#{Faker::Number.number(4)}"
+      @tag3 = "#{Faker::Lorem.word}_#{Faker::Number.number(4)}"
+      @tag4 = "#{Faker::Lorem.word}_#{Faker::Number.number(4)}"
 
       @obj1 = TaggableModel.create tags: [@tag1]
       @obj2 = TaggableModel.create tags: [@tag2, @tag3, @tag4]
