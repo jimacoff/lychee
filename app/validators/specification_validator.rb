@@ -1,6 +1,6 @@
 class SpecificationValidator < ActiveModel::Validator
-  SPECIFICATION_SCHEMA = File.read(Rails.root.join(
-                        *%w(config schemas json specifications.json)))
+  SPECIFICATION_SCHEMA = File.read(Rails.root.join(*%w(config schemas json
+                                                       specifications.json)))
 
   def validate(record)
     return unless record.specifications

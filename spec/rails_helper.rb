@@ -32,6 +32,6 @@ RSpec.configure do |config|
   end
 
   config.after(:suite) do
-    spec_site.delete
+    spec_site.delete if spec_site
   end
 end

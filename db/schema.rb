@@ -11,11 +11,21 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20150205100208) do
+ActiveRecord::Schema.define(version: 20150223102913) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
   enable_extension "hstore"
+
+  create_table "blacklisted_countries", force: :cascade do |t|
+    t.integer  "site_id",    null: false
+    t.integer  "country_id", null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+  end
+
+  add_index "blacklisted_countries", ["country_id"], name: "index_blacklisted_countries_on_country_id", using: :btree
+  add_index "blacklisted_countries", ["site_id"], name: "index_blacklisted_countries_on_site_id", using: :btree
 
   create_table "categories", force: :cascade do |t|
     t.integer  "parent_category_id"
@@ -44,6 +54,14 @@ ActiveRecord::Schema.define(version: 20150205100208) do
 
   add_index "category_members", ["site_id"], name: "index_category_members_on_site_id", using: :btree
 
+  create_table "countries", force: :cascade do |t|
+    t.string   "name",       null: false
+    t.string   "iso_alpha2", null: false
+    t.string   "iso_alpha3", null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+  end
+
   create_table "inventories", force: :cascade do |t|
     t.boolean  "tracked",       default: false, null: false
     t.integer  "quantity",      default: 0
@@ -59,6 +77,16 @@ ActiveRecord::Schema.define(version: 20150205100208) do
   end
 
   add_index "inventories", ["site_id"], name: "index_inventories_on_site_id", using: :btree
+
+  create_table "prioritized_countries", force: :cascade do |t|
+    t.integer  "site_id",    null: false
+    t.integer  "country_id", null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+  end
+
+  add_index "prioritized_countries", ["country_id"], name: "index_prioritized_countries_on_country_id", using: :btree
+  add_index "prioritized_countries", ["site_id"], name: "index_prioritized_countries_on_site_id", using: :btree
 
   create_table "products", force: :cascade do |t|
     t.string   "name",                           null: false
@@ -84,9 +112,12 @@ ActiveRecord::Schema.define(version: 20150205100208) do
   add_index "products", ["site_id"], name: "index_products_on_site_id", using: :btree
 
   create_table "sites", force: :cascade do |t|
-    t.string   "name",       null: false
-    t.datetime "created_at", null: false
-    t.datetime "updated_at", null: false
+    t.string   "name",                               null: false
+    t.text     "whitelisted_countries", default: [],              array: true
+    t.text     "blacklisted_countries", default: [],              array: true
+    t.text     "priority_countries",    default: [],              array: true
+    t.datetime "created_at",                         null: false
+    t.datetime "updated_at",                         null: false
   end
 
   create_table "tenants", force: :cascade do |t|
@@ -175,4 +206,20 @@ ActiveRecord::Schema.define(version: 20150205100208) do
 
   add_index "versions", ["item_type", "item_id", "transaction_id"], name: "index_versions_on_item_type_and_item_id_and_transaction_id", using: :btree
 
+  create_table "whitelisted_countries", force: :cascade do |t|
+    t.integer  "site_id",    null: false
+    t.integer  "country_id", null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+  end
+
+  add_index "whitelisted_countries", ["country_id"], name: "index_whitelisted_countries_on_country_id", using: :btree
+  add_index "whitelisted_countries", ["site_id"], name: "index_whitelisted_countries_on_site_id", using: :btree
+
+  add_foreign_key "blacklisted_countries", "countries"
+  add_foreign_key "blacklisted_countries", "sites"
+  add_foreign_key "prioritized_countries", "countries"
+  add_foreign_key "prioritized_countries", "sites"
+  add_foreign_key "whitelisted_countries", "countries"
+  add_foreign_key "whitelisted_countries", "sites"
 end
