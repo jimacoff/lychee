@@ -26,7 +26,7 @@ RSpec.describe Address, type: :model, site_scoped: true do
     it { is_expected.to validate_presence_of :country }
 
     context 'instance validations' do
-      #none
+      # None
     end
   end
 end

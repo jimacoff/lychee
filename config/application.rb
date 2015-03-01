@@ -10,8 +10,8 @@ require 'sprockets/railtie'
 # Require the gems listed in Gemfile
 Bundler.require(*Rails.groups)
 
-  # TODO: fuck this off
-  ActiveRecord::Base.extend Valhammer::Validations
+# TODO: fuck this off
+ActiveRecord::Base.extend Valhammer::Validations
 
 module Lychee
   class Application < Rails::Application
