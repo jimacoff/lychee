@@ -5,8 +5,6 @@ class Site < ActiveRecord::Base
 
   has_many :whitelisted_countries
   has_many :blacklisted_countries
-  has_many :countries, through: :whitelisted_countries
-  has_many :countries, through: :blacklisted_countries
 
   has_many :prioritized_countries
 
