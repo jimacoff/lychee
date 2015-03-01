@@ -1,7 +1,7 @@
 require 'rails_helper'
 
 <% module_namespacing do -%>
-RSpec.describe <%= class_name %>, <%= type_metatag(:model) %> do
+RSpec.describe <%= class_name %>, <%= type_metatag(:model) %>, site_scoped: true do
   has_context 'parent site' do
     let(:factory) { :<%= class_name.downcase %> }
   end
