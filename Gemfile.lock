@@ -8,10 +8,8 @@ GIT
       money (~> 6.5.0)
       railties (>= 3.0)
 
-GIT
-  remote: https://github.com/bradleybeddoes/valhammer.git
-  revision: b69ede9e2d81118241047c37aec1c4541b151ad0
-  branch: develop
+PATH
+  remote: /Users/bradleybeddoes/Development/busylittlebirds/valhammer
   specs:
     valhammer (0.0.1)
       activerecord (~> 4.1)

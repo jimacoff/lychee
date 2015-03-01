@@ -11,8 +11,11 @@ gem 'stringex', '~> 2.5'
 
 gem 'paper_trail', '~>4.0.0.beta2'
 
-gem 'valhammer', git: 'https://github.com/bradleybeddoes/valhammer.git',
-                 branch: 'develop'
+gem 'valhammer',
+    path: '/Users/bradleybeddoes/Development/busylittlebirds/valhammer'
+
+# gem 'valhammer', git: 'https://github.com/bradleybeddoes/valhammer.git',
+#                  branch: 'develop'
 
 # Web
 gem 'uglifier', '~> 2.5.3'
