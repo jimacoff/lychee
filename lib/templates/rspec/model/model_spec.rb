@@ -5,6 +5,7 @@ RSpec.describe <%= class_name %>, <%= type_metatag(:model) %>, site_scoped: true
   has_context 'parent site' do
     let(:factory) { :<%= class_name.downcase %> }
   end
+  has_context 'versioned'
   # Add additonal shared contexts
 
   context 'table structure' do
