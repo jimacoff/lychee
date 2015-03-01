@@ -48,7 +48,7 @@ RSpec.describe Site, type: :model do
         end
 
         context 'with whitelist' do
-          RSpec.shared_examples 'expected country state' do
+          RSpec.shared_examples 'expected whitelisted country state' do
             it 'has prioritized_countries' do
               expect(subject.prioritized_countries).to be_present
             end
@@ -74,7 +74,7 @@ RSpec.describe Site, type: :model do
             end
 
             it { is_expected.to be_valid }
-            has_context 'expected country state'
+            has_context 'expected whitelisted country state'
           end
           context 'prioritized countries are whitelisted' do
             before do
@@ -90,7 +90,7 @@ RSpec.describe Site, type: :model do
             end
 
             it { is_expected.to be_valid }
-            has_context 'expected country state'
+            has_context 'expected whitelisted country state'
           end
           context 'prioritized countries are not whitelisted' do
             before do
@@ -106,12 +106,12 @@ RSpec.describe Site, type: :model do
             end
 
             it { is_expected.not_to be_valid }
-            has_context 'expected country state'
+            has_context 'expected whitelisted country state'
           end
         end
 
         context 'with blacklist' do
-          RSpec.shared_examples 'expected country state' do
+          RSpec.shared_examples 'expected blacklisted country state' do
             it 'has prioritized_countries' do
               expect(subject.prioritized_countries).to be_present
             end
@@ -134,7 +134,7 @@ RSpec.describe Site, type: :model do
             end
 
             it { is_expected.to be_valid }
-            has_context 'expected country state'
+            has_context 'expected blacklisted country state'
           end
           context 'prioritized countries are blacklisted' do
             before do
@@ -150,7 +150,7 @@ RSpec.describe Site, type: :model do
             end
 
             it { is_expected.not_to be_valid }
-            has_context 'expected country state'
+            has_context 'expected blacklisted country state'
           end
         end
       end
