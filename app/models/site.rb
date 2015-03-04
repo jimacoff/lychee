@@ -1,12 +1,11 @@
 class Site < ActiveRecord::Base
-  has_paper_trail
-
-  validates :name, presence: true
-
   has_many :whitelisted_countries
   has_many :blacklisted_countries
 
   has_many :prioritized_countries
+
+  has_paper_trail
+  valhammer
 
   validate :only_whitelisted_or_blacklisted_countries
   validate :prioritized_countries_are_valid

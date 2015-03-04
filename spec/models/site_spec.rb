@@ -3,8 +3,23 @@ require 'rails_helper'
 RSpec.describe Site, type: :model do
   has_context 'versioned'
 
+  context 'table structure' do
+    it { is_expected.to have_db_column(:name).of_type(:string) }
+    it do
+      is_expected.to have_db_column(:operating_currency)
+        .of_type(:string).with_options(default: 'USD')
+    end
+  end
+
+  context 'relationships' do
+    it { is_expected.to have_many :whitelisted_countries }
+    it { is_expected.to have_many :blacklisted_countries }
+    it { is_expected.to have_many :prioritized_countries }
+  end
+
   context 'validations' do
     it { is_expected.to validate_presence_of :name }
+    it { is_expected.to validate_presence_of :operating_currency }
 
     context 'instance validations' do
       subject { create(:site) }

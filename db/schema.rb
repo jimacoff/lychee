@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20150301024808) do
+ActiveRecord::Schema.define(version: 20150304120319) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -145,12 +145,13 @@ ActiveRecord::Schema.define(version: 20150301024808) do
   add_index "products", ["site_id"], name: "index_products_on_site_id", using: :btree
 
   create_table "sites", force: :cascade do |t|
-    t.string   "name",                               null: false
-    t.text     "whitelisted_countries", default: [],              array: true
-    t.text     "blacklisted_countries", default: [],              array: true
-    t.text     "priority_countries",    default: [],              array: true
-    t.datetime "created_at",                         null: false
-    t.datetime "updated_at",                         null: false
+    t.string   "name",                                  null: false
+    t.text     "whitelisted_countries", default: [],                 array: true
+    t.text     "blacklisted_countries", default: [],                 array: true
+    t.text     "priority_countries",    default: [],                 array: true
+    t.datetime "created_at",                            null: false
+    t.datetime "updated_at",                            null: false
+    t.string   "operating_currency",    default: "USD", null: false
   end
 
   create_table "tenants", force: :cascade do |t|
