@@ -11,14 +11,14 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20150228024621) do
+ActiveRecord::Schema.define(version: 20150301024808) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
   enable_extension "hstore"
 
   create_table "addresses", force: :cascade do |t|
-    t.string   "line1",      null: false
+    t.string   "line1",                   null: false
     t.string   "line2"
     t.string   "line3"
     t.string   "line4"
@@ -26,13 +26,17 @@ ActiveRecord::Schema.define(version: 20150228024621) do
     t.string   "region"
     t.string   "postcode"
     t.hstore   "metadata"
-    t.integer  "country_id", null: false
-    t.integer  "site_id",    null: false
-    t.datetime "created_at", null: false
-    t.datetime "updated_at", null: false
+    t.integer  "country_id",              null: false
+    t.integer  "site_id",                 null: false
+    t.datetime "created_at",              null: false
+    t.datetime "updated_at",              null: false
+    t.integer  "customer_address_for_id"
+    t.integer  "delivery_address_for_id"
   end
 
   add_index "addresses", ["country_id"], name: "index_addresses_on_country_id", using: :btree
+  add_index "addresses", ["customer_address_for_id"], name: "index_addresses_on_customer_address_for_id", using: :btree
+  add_index "addresses", ["delivery_address_for_id"], name: "index_addresses_on_delivery_address_for_id", using: :btree
   add_index "addresses", ["site_id"], name: "index_addresses_on_site_id", using: :btree
 
   create_table "blacklisted_countries", force: :cascade do |t|
@@ -95,6 +99,17 @@ ActiveRecord::Schema.define(version: 20150228024621) do
   end
 
   add_index "inventories", ["site_id"], name: "index_inventories_on_site_id", using: :btree
+
+  create_table "orders", force: :cascade do |t|
+    t.integer  "number",                 null: false
+    t.string   "status",     limit: 255, null: false
+    t.hstore   "metadata"
+    t.integer  "site_id",                null: false
+    t.datetime "created_at",             null: false
+    t.datetime "updated_at",             null: false
+  end
+
+  add_index "orders", ["site_id"], name: "index_orders_on_site_id", using: :btree
 
   create_table "prioritized_countries", force: :cascade do |t|
     t.integer  "site_id",    null: false
