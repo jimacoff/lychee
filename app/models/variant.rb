@@ -1,6 +1,4 @@
 class Variant < ActiveRecord::Base
-  has_paper_trail
-
   include ParentSite
 
   include Specification
@@ -18,7 +16,10 @@ class Variant < ActiveRecord::Base
   monetize :price_cents, as: 'varied_price',
                          with_model_currency: :price_currency, allow_nil: true
 
-  validates :product, :inventory, presence: true
+  has_paper_trail
+  valhammer
+
+  validates :inventory, presence: true
   validates :variation_instances, presence: true, on: :update
 
   def price
