@@ -4,11 +4,16 @@ class Site < ActiveRecord::Base
 
   has_many :prioritized_countries
 
+  has_many :products
+  has_many :variants
+
   has_paper_trail
   valhammer
 
   validate :only_whitelisted_or_blacklisted_countries
   validate :prioritized_countries_are_valid
+
+  after_save :reload_current
 
   def restricts_countries?
     whitelisted_countries.present? || blacklisted_countries.present?
@@ -44,6 +49,19 @@ class Site < ActiveRecord::Base
     intersection(blacklisted_countries).count > 0
   end
 
+  def currency=(currency)
+    cur = Money::Currency.new(currency)
+    write_attribute(:currency_iso_code, cur.iso_code)
+  end
+
+  def currency
+    Money::Currency.new(currency_iso_code)
+  end
+
+  def currency_iso_code=(_code)
+    fail 'Site#currency_iso_code= cannot be called, used Site#currency='
+  end
+
   class << self
     def current
       Thread.current[:current_site]
@@ -55,6 +73,10 @@ class Site < ActiveRecord::Base
   end
 
   private
+
+  def reload_current
+    Site.current.reload if Site.current == self
+  end
 
   def intersection(country_type)
     country_type.where(country_id: prioritized_country_ids)

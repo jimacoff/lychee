@@ -1,5 +1,5 @@
 class AddOperatingCurrencyToSite < ActiveRecord::Migration
   change_table :sites do |t|
-    t.string :operating_currency, default: 'USD', null: false
+    t.string :currency_iso_code, null: false
   end
 end

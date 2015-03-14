@@ -31,8 +31,9 @@ gem 'bcrypt', '~> 3.1.7'
 gem 'unicorn', '~> 4.8.3'
 
 group :development, :test do
-  gem 'rspec-rails', '~> 3.0'
+  gem 'rspec-rails', '~> 3.2'
   gem 'shoulda-matchers'
+  gem 'shoulda-callback-matchers'
   gem 'faker'
   gem 'factory_girl_rails'
   gem 'simplecov'
@@ -42,6 +43,7 @@ group :development, :test do
   gem 'guard-rubocop'
   gem 'guard-rspec'
   gem 'pry-rails'
+  gem 'pry-byebug'
   gem 'brakeman'
   gem 'temping'
   gem 'database_cleaner'
