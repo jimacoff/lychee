@@ -122,36 +122,32 @@ ActiveRecord::Schema.define(version: 20150304120319) do
   add_index "prioritized_countries", ["site_id"], name: "index_prioritized_countries_on_site_id", using: :btree
 
   create_table "products", force: :cascade do |t|
-    t.string   "name",                           null: false
-    t.text     "description",                    null: false
-    t.string   "generated_slug",                 null: false
+    t.string   "name",                        null: false
+    t.text     "description",                 null: false
+    t.string   "generated_slug",              null: false
     t.string   "specified_slug"
     t.string   "gtin"
     t.string   "sku"
-    t.integer  "price_cents",    default: 0,     null: false
-    t.string   "price_currency", default: "USD", null: false
+    t.integer  "price_cents",                 null: false
     t.integer  "grams"
     t.boolean  "active"
     t.datetime "not_before"
     t.datetime "not_after"
     t.json     "specifications"
     t.hstore   "metadata"
-    t.text     "tags",           default: [],                 array: true
+    t.text     "tags",           default: [],              array: true
     t.datetime "created_at"
     t.datetime "updated_at"
-    t.integer  "site_id",                        null: false
+    t.integer  "site_id",                     null: false
   end
 
   add_index "products", ["site_id"], name: "index_products_on_site_id", using: :btree
 
   create_table "sites", force: :cascade do |t|
-    t.string   "name",                                  null: false
-    t.text     "whitelisted_countries", default: [],                 array: true
-    t.text     "blacklisted_countries", default: [],                 array: true
-    t.text     "priority_countries",    default: [],                 array: true
-    t.datetime "created_at",                            null: false
-    t.datetime "updated_at",                            null: false
-    t.string   "operating_currency",    default: "USD", null: false
+    t.string   "name",              null: false
+    t.datetime "created_at",        null: false
+    t.datetime "updated_at",        null: false
+    t.string   "currency_iso_code", null: false
   end
 
   create_table "tenants", force: :cascade do |t|
@@ -183,7 +179,6 @@ ActiveRecord::Schema.define(version: 20150304120319) do
     t.string   "gtin"
     t.string   "sku"
     t.integer  "price_cents"
-    t.string   "price_currency"
     t.integer  "grams"
     t.json     "specifications"
     t.hstore   "metadata"

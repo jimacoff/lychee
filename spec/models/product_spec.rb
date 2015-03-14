@@ -12,6 +12,9 @@ RSpec.describe Product, type: :model, site_scoped: true do
     subject { create :product }
   end
   has_context 'taggable'
+  has_context 'pricing' do
+    subject { create :standalone_product }
+  end
 
   context 'table structure' do
     it { is_expected.to have_db_column(:name).of_type(:string) }
@@ -39,9 +42,6 @@ RSpec.describe Product, type: :model, site_scoped: true do
   context 'validations' do
     it { is_expected.to validate_presence_of :name }
     it { is_expected.to validate_presence_of :description }
-
-    it { is_expected.to validate_presence_of :price_cents }
-    it { is_expected.to validate_presence_of :price_currency }
 
     context 'instance validations' do
       context 'inventory' do
@@ -72,54 +72,6 @@ RSpec.describe Product, type: :model, site_scoped: true do
                           'defines variants')
           end
         end
-      end
-    end
-  end
-
-  context 'pricing' do
-    subject { create :standalone_product }
-
-    describe '#price=' do
-      it 'sets price by decimal' do
-        subject.price = 1.11
-        expect(subject.price).to eq 1.11
-        expect(subject.price.currency).to eq MoneyRails.default_currency
-      end
-      it 'sets price by Money object' do
-        money = Money.new 222
-        subject.price = money
-        expect(subject.price).to equal money
-        expect(subject.price).to eq 2.22
-        expect(subject.price.currency).to eq MoneyRails.default_currency
-      end
-      it 'stores price in cents' do
-        subject.price = 1.11
-        expect(subject.price_cents).to eq(111)
-        expect(subject.price.fractional).to eq(111)
-      end
-      context 'stores currency' do
-        let(:aud_subject) { create :product, price: Money.new(111, 'AUD') }
-        before { subject.price = Money.new(111, 'USD') }
-
-        it 'has different currencies per instance' do
-          expect(subject.price.currency).not_to eq(aud_subject.price.currency)
-        end
-        it 'has the same fractional per instance' do
-          expect(subject.price.fractional).to eq(aud_subject.price.fractional)
-        end
-      end
-    end
-    describe '#price' do
-      it 'returns dollars as Money' do
-        expect(subject.price).to be_a Money
-      end
-      # Ensure any future library change doesn't bite us as this got
-      # modified between 5.y and 6.y
-      it 'returns dollars as BigDecimal' do
-        expect(subject.price.dollars).to be_a BigDecimal
-      end
-      it 'returns amount as BigDecimal' do
-        expect(subject.price.dollars).to be_a BigDecimal
       end
     end
   end

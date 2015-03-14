@@ -4,6 +4,7 @@ class Variant < ActiveRecord::Base
   include Specification
   include Metadata
   include Taggable
+  include Pricing
 
   belongs_to :product
   has_many :variation_instances
@@ -13,8 +14,7 @@ class Variant < ActiveRecord::Base
   has_many :categories, through: :category_members
   has_one :inventory
 
-  monetize :price_cents, as: 'varied_price',
-                         with_model_currency: :price_currency, allow_nil: true
+  monetize :price_cents, as: 'varied_price', allow_nil: true
 
   has_paper_trail
   valhammer
@@ -26,8 +26,25 @@ class Variant < ActiveRecord::Base
     varied_price || product.price
   end
 
-  def price=(p)
-    self.varied_price = p
+  def price=(value)
+    change_price(value)
+  end
+
+  def currency_for_price
+    site.currency
+  end
+  alias_method :currency_for_varied_price, :currency_for_price
+
+  def varied_price=(_price)
+    fail 'varied_price cannot be directly set use #price='
+  end
+
+  def price_cents=(_value)
+    fail 'price_cents cannot be directly set, use #price'
+  end
+
+  def price_currency=(_value)
+    fail 'Currency cannot be set, use Site.current#currency'
   end
 
   %i(specifications description gtin sku grams).each do |attr|

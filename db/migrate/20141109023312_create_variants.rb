@@ -8,8 +8,7 @@ class CreateVariants < ActiveRecord::Migration
       t.string :gtin
       t.string :sku
 
-      t.monetize :price, amount: { null: true, default: nil },
-                         currency: { null: true, default: nil }
+      t.integer :price_cents, null: true
 
       t.integer :grams
 

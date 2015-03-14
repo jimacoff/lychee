@@ -10,7 +10,7 @@ class CreateProducts < ActiveRecord::Migration
       t.string :gtin
       t.string :sku
 
-      t.monetize :price, null: false
+      t.integer :price_cents, null: false
 
       t.integer :grams
 

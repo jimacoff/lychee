@@ -4,6 +4,10 @@ FactoryGirl.define do
     description { Faker::Lorem.sentence }
     active true
 
+    after(:build) do |p|
+      p.price = Faker::Number.number(4).to_i
+    end
+
     factory :standalone_product do
       association :inventory, factory: :tracked_inventory
     end

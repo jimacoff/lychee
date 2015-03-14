@@ -9,6 +9,9 @@ RSpec.describe Variant, type: :model, site_scoped: true do
   has_context 'specification'
   has_context 'metadata'
   has_context 'taggable'
+  has_context 'pricing' do
+    subject { create :variant, price: Faker::Number.number(4).to_i }
+  end
 
   context 'table structure' do
     it { is_expected.to have_db_column(:description).of_type(:text)  }
@@ -49,15 +52,25 @@ RSpec.describe Variant, type: :model, site_scoped: true do
       end
 
       context 'locally defined' do
-        let(:local_price) { Money.new(Faker::Number.number(4)) }
+        let(:local_price) { Faker::Number.number(4).to_i }
         subject { create :variant, price: local_price }
 
         it 'does not use the products price' do
           expect(subject.price).to_not eq(subject.product.price)
         end
         it 'uses the local price' do
-          expect(subject.price).to eq(local_price)
+          expect(subject.price.fractional).to eq(local_price)
         end
+        it 'has the sites currency' do
+          expect(subject.price.currency).to eq(subject.site.currency)
+        end
+      end
+    end
+
+    describe '#varied_price=' do
+      it 'is not callable' do
+        expect { subject.varied_price = 1 }.to raise_error
+          .with_message('varied_price cannot be directly set use #price=')
       end
     end
 
