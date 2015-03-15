@@ -6,6 +6,9 @@ class Site < ActiveRecord::Base
 
   has_many :products
   has_many :variants
+  has_many :categories
+  has_many :primary_categories, -> { primary }, foreign_key: :site_id,
+                                                class_name: 'Category'
 
   has_paper_trail
   valhammer

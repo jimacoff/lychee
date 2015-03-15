@@ -12,6 +12,11 @@ RSpec.describe Site, type: :model do
     it { is_expected.to have_many :whitelisted_countries }
     it { is_expected.to have_many :blacklisted_countries }
     it { is_expected.to have_many :prioritized_countries }
+
+    it { is_expected.to have_many :products }
+    it { is_expected.to have_many :variants }
+    it { is_expected.to have_many :categories }
+    it { is_expected.to have_many :primary_categories }
   end
 
   context 'validations' do

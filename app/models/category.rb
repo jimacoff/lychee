@@ -15,4 +15,6 @@ class Category < ActiveRecord::Base
   has_many :variants, through: :category_members
 
   validates :name, :description, presence: true
+
+  scope :primary, -> { where(parent_category: nil) }
 end
