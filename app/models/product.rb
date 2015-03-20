@@ -14,14 +14,12 @@ class Product < ActiveRecord::Base
   has_many :categories, through: :category_members
   has_one :inventory
 
-  validate :inventory, :validate_inventory
-  with_options presence: true do |p|
-    p.validates :name, :description
-    p.validates :price_cents
-  end
+  monetize :price_cents
 
   has_paper_trail
-  monetize :price_cents
+  valhammer
+
+  validate :inventory, :validate_inventory
 
   def validate_inventory
     return if new_record?

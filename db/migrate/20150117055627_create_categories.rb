@@ -3,8 +3,8 @@ class CreateCategories < ActiveRecord::Migration
     create_table :categories do |t|
       t.references :parent_category, index: true
 
-      t.string :name
-      t.text :description
+      t.string :name, null: false
+      t.text :description, null: false
 
       t.string :generated_slug, null: false
       t.string :specified_slug

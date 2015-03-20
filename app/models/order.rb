@@ -7,8 +7,8 @@ class Order < ActiveRecord::Base
   has_one :delivery_address, class_name: 'Address',
                              foreign_key: 'delivery_address_for_id'
 
-  valhammer
   has_paper_trail
+  valhammer
 
   validates :customer_address, :delivery_address, presence: true
 end

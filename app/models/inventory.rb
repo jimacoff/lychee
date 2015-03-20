@@ -1,6 +1,4 @@
 class Inventory < ActiveRecord::Base
-  has_paper_trail
-
   include ParentSite
   include Metadata
 
@@ -10,6 +8,9 @@ class Inventory < ActiveRecord::Base
   with_options if: :tracked? do |inv|
     inv.validates :quantity, presence: true
   end
+
+  has_paper_trail
+  valhammer
 
   def tracked?
     tracked

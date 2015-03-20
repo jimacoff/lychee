@@ -2,7 +2,7 @@ require 'rails_helper'
 
 RSpec.describe Inventory, type: :model, site_scoped: true do
   has_context 'parent site' do
-    let(:factory) { :tracked_inventory }
+    let(:factory) { :tracked_product_inventory }
   end
 
   has_context 'versioned'
@@ -23,14 +23,14 @@ RSpec.describe Inventory, type: :model, site_scoped: true do
 
   context 'validations' do
     context 'when tracked' do
-      subject { create :tracked_inventory }
+      subject { create :tracked_inventory, product: (create :product) }
       it { is_expected.to validate_presence_of :quantity }
       it 'tracked? is true' do
         expect(subject.tracked?).to be true
       end
     end
     context 'not tracked' do
-      subject { create :untracked_inventory }
+      subject { create :untracked_inventory, product: (create :product) }
       it { is_expected.not_to validate_presence_of :quantity }
       it '#tracked? is false' do
         expect(subject.tracked?).to be false

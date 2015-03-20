@@ -1,13 +1,13 @@
 class CategoryMember < ActiveRecord::Base
-  has_paper_trail
-
   include ParentSite
 
   belongs_to :category
   belongs_to :product
   belongs_to :variant
 
-  validates :category, presence: true
+  has_paper_trail
+  valhammer
+
   validate :validate_members
 
   def validate_members

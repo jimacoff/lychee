@@ -51,8 +51,8 @@ ActiveRecord::Schema.define(version: 20150304120319) do
 
   create_table "categories", force: :cascade do |t|
     t.integer  "parent_category_id"
-    t.string   "name"
-    t.text     "description"
+    t.string   "name",                            null: false
+    t.text     "description",                     null: false
     t.string   "generated_slug",                  null: false
     t.string   "specified_slug"
     t.hstore   "metadata"
@@ -66,7 +66,7 @@ ActiveRecord::Schema.define(version: 20150304120319) do
   add_index "categories", ["site_id"], name: "index_categories_on_site_id", using: :btree
 
   create_table "category_members", force: :cascade do |t|
-    t.integer  "category_id"
+    t.integer  "category_id", null: false
     t.integer  "product_id"
     t.integer  "variant_id"
     t.datetime "created_at"
@@ -151,7 +151,7 @@ ActiveRecord::Schema.define(version: 20150304120319) do
   end
 
   create_table "tenants", force: :cascade do |t|
-    t.integer  "site_id"
+    t.integer  "site_id",    null: false
     t.string   "identifier", null: false
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
@@ -161,7 +161,7 @@ ActiveRecord::Schema.define(version: 20150304120319) do
 
   create_table "traits", force: :cascade do |t|
     t.string   "name",                        null: false
-    t.string   "display_name"
+    t.string   "display_name",                null: false
     t.text     "description"
     t.hstore   "metadata"
     t.text     "default_values", default: [],              array: true
@@ -191,9 +191,9 @@ ActiveRecord::Schema.define(version: 20150304120319) do
   add_index "variants", ["site_id"], name: "index_variants_on_site_id", using: :btree
 
   create_table "variation_instances", force: :cascade do |t|
-    t.integer  "variation_id"
-    t.integer  "variant_id"
-    t.string   "value"
+    t.integer  "variation_id", null: false
+    t.integer  "variant_id",   null: false
+    t.string   "value",        null: false
     t.hstore   "metadata"
     t.datetime "created_at"
     t.datetime "updated_at"
@@ -212,6 +212,7 @@ ActiveRecord::Schema.define(version: 20150304120319) do
     t.integer  "site_id",    null: false
   end
 
+  add_index "variations", ["product_id", "order"], name: "index_variations_on_product_id_and_order", unique: true, using: :btree
   add_index "variations", ["site_id"], name: "index_variations_on_site_id", using: :btree
 
   create_table "version_associations", force: :cascade do |t|

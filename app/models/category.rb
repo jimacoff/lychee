@@ -1,6 +1,4 @@
 class Category < ActiveRecord::Base
-  has_paper_trail
-
   include ParentSite
   include Metadata
   include Slug
@@ -14,7 +12,8 @@ class Category < ActiveRecord::Base
   has_many :products, through: :category_members
   has_many :variants, through: :category_members
 
-  validates :name, :description, presence: true
+  has_paper_trail
+  valhammer
 
   scope :primary, -> { where(parent_category: nil) }
 end

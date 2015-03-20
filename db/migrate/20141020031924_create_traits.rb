@@ -3,7 +3,7 @@ class CreateTraits < ActiveRecord::Migration
     create_table :traits do |t|
 
       t.string :name, null: false
-      t.string :display_name, null: true
+      t.string :display_name, null: false
       t.text :description, null: true
 
       t.hstore :metadata, null: true

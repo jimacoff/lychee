@@ -19,7 +19,7 @@ class Variant < ActiveRecord::Base
   has_paper_trail
   valhammer
 
-  validates :inventory, presence: true
+  validates :inventory, presence: true, on: :update
   validates :variation_instances, presence: true, on: :update
 
   def price

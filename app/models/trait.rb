@@ -1,12 +1,10 @@
 class Trait < ActiveRecord::Base
-  has_paper_trail
-
   include ParentSite
   include Taggable
   include Metadata
 
-  validates :name, presence: true
-  validates :display_name, presence: true
+  has_paper_trail
+  valhammer
 
   def add_default_value(value)
     default_values_will_change!
