@@ -31,6 +31,7 @@ class Variant < ActiveRecord::Base
   end
 
   def currency_for_price
+    return Money::Currency.new('USD') unless site
     site.currency
   end
   alias_method :currency_for_varied_price, :currency_for_price

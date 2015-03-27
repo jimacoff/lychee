@@ -51,6 +51,7 @@ class Product < ActiveRecord::Base
   end
 
   def currency_for_price
+    return Money::Currency.new('USD') unless site
     site.currency
   end
 end

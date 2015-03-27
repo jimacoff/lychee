@@ -34,6 +34,7 @@ end
 RSpec.shared_examples 'parent site' do
   it { is_expected.to be_a_kind_of(ParentSite) }
   it { is_expected.to belong_to(:site) }
+  it { is_expected.to validate_presence_of :site }
 
   context 'default_scope' do
     Thread.new do
