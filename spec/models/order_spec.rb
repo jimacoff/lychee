@@ -15,6 +15,7 @@ RSpec.describe Order, type: :model, site_scoped: true do
   context 'relationships' do
     it { is_expected.to have_one :customer_address }
     it { is_expected.to have_one :delivery_address }
+    it { is_expected.to have_many :order_lines }
   end
 
   context 'validations' do

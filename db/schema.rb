@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20150304120319) do
+ActiveRecord::Schema.define(version: 20150320235812) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -100,13 +100,30 @@ ActiveRecord::Schema.define(version: 20150304120319) do
 
   add_index "inventories", ["site_id"], name: "index_inventories_on_site_id", using: :btree
 
-  create_table "orders", force: :cascade do |t|
-    t.integer  "number",                 null: false
-    t.string   "status",     limit: 255, null: false
+  create_table "order_lines", force: :cascade do |t|
+    t.string   "customisation"
+    t.integer  "price_cents",                null: false
+    t.integer  "quantity",                   null: false
+    t.integer  "site_id",                    null: false
+    t.integer  "order_id",                   null: false
+    t.integer  "product_id"
+    t.integer  "variant_id"
     t.hstore   "metadata"
-    t.integer  "site_id",                null: false
-    t.datetime "created_at",             null: false
-    t.datetime "updated_at",             null: false
+    t.text     "tags",          default: [],              array: true
+    t.datetime "created_at",                 null: false
+    t.datetime "updated_at",                 null: false
+  end
+
+  add_index "order_lines", ["order_id"], name: "index_order_lines_on_order_id", using: :btree
+  add_index "order_lines", ["site_id"], name: "index_order_lines_on_site_id", using: :btree
+
+  create_table "orders", force: :cascade do |t|
+    t.integer  "price_cents",             null: false
+    t.string   "status",      limit: 255, null: false
+    t.hstore   "metadata"
+    t.integer  "site_id",                 null: false
+    t.datetime "created_at",              null: false
+    t.datetime "updated_at",              null: false
   end
 
   add_index "orders", ["site_id"], name: "index_orders_on_site_id", using: :btree
