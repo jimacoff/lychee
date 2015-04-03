@@ -75,67 +75,6 @@ RSpec.shared_examples 'parent site' do
   end
 end
 
-RSpec.shared_examples 'pricing' do
-  it { is_expected.to be_a_kind_of(Pricing) }
-
-  describe '#price_cents=' do
-    it 'is not callable' do
-      expect { (subject.price_cents = 1) }.to raise_error
-        .with_message('price_cents cannot be directly set, use #price')
-    end
-  end
-  describe '#price_currency=' do
-    it 'is not callable' do
-      expect { subject.price_currency = 'JPY' }.to raise_error
-        .with_message('Currency cannot be set, use Site.current#currency')
-    end
-  end
-
-  describe '#price=' do
-    it 'sets price by decimal' do
-      subject.price = 1.11
-      expect(subject.price.fractional).to eq(111)
-      expect(subject.price.currency).to eq(Site.current.currency)
-    end
-    it 'sets price by cents' do
-      subject.price = 999
-      expect(subject.price.fractional).to eq(999)
-      expect(subject.price.currency).to eq(Site.current.currency)
-    end
-    context 'currency' do
-      before do
-        subject.site.currency = 'CAD'
-        subject.site.save!
-        subject.price = 111
-      end
-      it 'has the same currency as parent site' do
-        expect(subject.price.currency).to eq(Site.current.currency)
-      end
-      it 'has a site currency of CAD' do
-        expect(Site.current.currency.iso_code).to eq('CAD')
-      end
-      after do
-        subject.site.currency = 'AUD'
-        subject.site.save!
-      end
-    end
-  end
-
-  describe '#price' do
-    it 'returns dollars as Money' do
-      expect(subject.price).to be_a Money
-    end
-    # Ensure any future library change doesn't bite us as this got
-    # modified between 5.y and 6.y
-    it 'returns dollars as BigDecimal' do
-      expect(subject.price.dollars).to be_a BigDecimal
-    end
-    it 'returns amount as BigDecimal' do
-      expect(subject.price.dollars).to be_a BigDecimal
-    end
-  end
-end
-
 RSpec.shared_examples 'item reference' do
   context 'validations' do
     context 'instance validations' do

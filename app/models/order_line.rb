@@ -1,38 +1,42 @@
 class OrderLine < ActiveRecord::Base
   include ParentSite
-  include Metadata
-  include Taggable
-  include Pricing
   include ItemReference
 
-  belongs_to :order
+  include Monies
+
+  include Metadata
+  include Taggable
+
+  belongs_to :order, touch: true
   belongs_to :product
   belongs_to :variant
 
-  monetize :price_cents
+  monies [{ field: :price }, { field: :total, calculated: true }]
 
   has_paper_trail
   valhammer
 
+  after_initialize do
+    write_attribute(:currency, Site.current.currency.iso_code)
+    change_total(0)
+  end
+
   def price=(value)
     change_price(value)
+    calculate_total
   end
 
-  def price_cents=(_value)
-    fail 'price_cents cannot be directly set, use #price'
+  def quantity=(value)
+    super(value)
+    calculate_total
   end
 
-  def price_currency=(_value)
-    fail 'Currency cannot be set, use Site.current#currency'
-  end
+  private
 
-  def currency_for_price
-    return Money::Currency.new('USD') unless site
-    site.currency
-  end
+  def calculate_total
+    change_total(0) && return unless price.present? && quantity.present?
 
-  def total
-    # TODO: Taxation concerns
-    Money.new((price * quantity), currency_for_price)
+    # TODO: Taxation
+    change_total(price.cents * quantity)
   end
 end

@@ -102,28 +102,32 @@ ActiveRecord::Schema.define(version: 20150320235812) do
 
   create_table "order_lines", force: :cascade do |t|
     t.string   "customisation"
-    t.integer  "price_cents",                null: false
-    t.integer  "quantity",                   null: false
-    t.integer  "site_id",                    null: false
-    t.integer  "order_id",                   null: false
+    t.integer  "quantity",                      null: false
+    t.integer  "price_cents",                   null: false
+    t.integer  "total_cents",   default: 0,     null: false
+    t.string   "currency",      default: "USD", null: false
+    t.integer  "site_id",                       null: false
+    t.integer  "order_id",                      null: false
     t.integer  "product_id"
     t.integer  "variant_id"
     t.hstore   "metadata"
-    t.text     "tags",          default: [],              array: true
-    t.datetime "created_at",                 null: false
-    t.datetime "updated_at",                 null: false
+    t.text     "tags",          default: [],                 array: true
+    t.datetime "created_at",                    null: false
+    t.datetime "updated_at",                    null: false
   end
 
   add_index "order_lines", ["order_id"], name: "index_order_lines_on_order_id", using: :btree
   add_index "order_lines", ["site_id"], name: "index_order_lines_on_site_id", using: :btree
 
   create_table "orders", force: :cascade do |t|
-    t.integer  "price_cents",             null: false
-    t.string   "status",      limit: 255, null: false
+    t.integer  "total_cents",                             null: false
+    t.string   "currency",                default: "USD", null: false
+    t.string   "status",      limit: 255,                 null: false
     t.hstore   "metadata"
-    t.integer  "site_id",                 null: false
-    t.datetime "created_at",              null: false
-    t.datetime "updated_at",              null: false
+    t.text     "tags",                    default: [],                 array: true
+    t.integer  "site_id",                                 null: false
+    t.datetime "created_at",                              null: false
+    t.datetime "updated_at",                              null: false
   end
 
   add_index "orders", ["site_id"], name: "index_orders_on_site_id", using: :btree
@@ -139,23 +143,24 @@ ActiveRecord::Schema.define(version: 20150320235812) do
   add_index "prioritized_countries", ["site_id"], name: "index_prioritized_countries_on_site_id", using: :btree
 
   create_table "products", force: :cascade do |t|
-    t.string   "name",                        null: false
-    t.text     "description",                 null: false
-    t.string   "generated_slug",              null: false
+    t.string   "name",                           null: false
+    t.text     "description",                    null: false
+    t.string   "generated_slug",                 null: false
     t.string   "specified_slug"
     t.string   "gtin"
     t.string   "sku"
-    t.integer  "price_cents",                 null: false
+    t.integer  "price_cents",                    null: false
+    t.string   "currency",       default: "USD", null: false
     t.integer  "grams"
     t.boolean  "active"
     t.datetime "not_before"
     t.datetime "not_after"
     t.json     "specifications"
     t.hstore   "metadata"
-    t.text     "tags",           default: [],              array: true
+    t.text     "tags",           default: [],                 array: true
     t.datetime "created_at"
     t.datetime "updated_at"
-    t.integer  "site_id",                     null: false
+    t.integer  "site_id",                        null: false
   end
 
   add_index "products", ["site_id"], name: "index_products_on_site_id", using: :btree
@@ -191,18 +196,19 @@ ActiveRecord::Schema.define(version: 20150320235812) do
   add_index "traits", ["site_id"], name: "index_traits_on_site_id", using: :btree
 
   create_table "variants", force: :cascade do |t|
-    t.integer  "product_id",                  null: false
+    t.integer  "product_id",                         null: false
     t.text     "description"
     t.string   "gtin"
     t.string   "sku"
-    t.integer  "price_cents"
+    t.integer  "varied_price_cents"
+    t.string   "currency",           default: "USD", null: false
     t.integer  "grams"
     t.json     "specifications"
     t.hstore   "metadata"
-    t.text     "tags",           default: [],              array: true
+    t.text     "tags",               default: [],                 array: true
     t.datetime "created_at"
     t.datetime "updated_at"
-    t.integer  "site_id",                     null: false
+    t.integer  "site_id",                            null: false
   end
 
   add_index "variants", ["site_id"], name: "index_variants_on_site_id", using: :btree

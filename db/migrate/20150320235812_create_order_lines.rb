@@ -3,8 +3,11 @@ class CreateOrderLines < ActiveRecord::Migration
     create_table :order_lines do |t|
       t.string :customisation
 
-      t.integer :price_cents, null: false
       t.integer :quantity, null: false
+
+      t.integer :price_cents, null: false
+      t.integer :total_cents, null: false, default: 0
+      t.string :currency, null: false, default: 'USD'
 
       t.belongs_to :site, null: false, index: true
       t.belongs_to :order, null: false, index: true

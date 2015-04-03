@@ -5,7 +5,7 @@ class Product < ActiveRecord::Base
   include Metadata
   include Slug
   include Taggable
-  include Pricing
+  include Monies
 
   has_many :variants
   has_many :variations
@@ -14,12 +14,16 @@ class Product < ActiveRecord::Base
   has_many :categories, through: :category_members
   has_one :inventory
 
-  monetize :price_cents
+  monies [{ field: :price }]
 
   has_paper_trail
   valhammer
 
   validate :inventory, :validate_inventory
+
+  after_initialize do
+    write_attribute(:currency, Site.current.currency.iso_code)
+  end
 
   def validate_inventory
     return if new_record?
@@ -36,22 +40,5 @@ class Product < ActiveRecord::Base
   def inventory_not_required
     return unless inventory.present? && variants.present?
     errors.add(:inventory, 'must not be provided if product defines variants')
-  end
-
-  def price=(value)
-    change_price(value)
-  end
-
-  def price_cents=(_value)
-    fail 'price_cents cannot be directly set, use #price'
-  end
-
-  def price_currency=(_value)
-    fail 'Currency cannot be set, use Site.current#currency'
-  end
-
-  def currency_for_price
-    return Money::Currency.new('USD') unless site
-    site.currency
   end
 end

@@ -8,7 +8,8 @@ class CreateVariants < ActiveRecord::Migration
       t.string :gtin
       t.string :sku
 
-      t.integer :price_cents, null: true
+      t.integer :varied_price_cents, null: true
+      t.string :currency, null: false, default: 'USD'
 
       t.integer :grams
 

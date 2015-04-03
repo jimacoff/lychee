@@ -11,6 +11,7 @@ class CreateProducts < ActiveRecord::Migration
       t.string :sku
 
       t.integer :price_cents, null: false
+      t.string :currency, null: false, default: 'USD'
 
       t.integer :grams
 

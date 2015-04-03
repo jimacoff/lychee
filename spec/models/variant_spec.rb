@@ -9,16 +9,15 @@ RSpec.describe Variant, type: :model, site_scoped: true do
   has_context 'specification'
   has_context 'metadata'
   has_context 'taggable'
-  has_context 'pricing' do
-    subject { create :variant, price: Faker::Number.number(4).to_i }
-  end
+  has_context 'monies', :variant_with_varied_price,
+              [{ field: :varied_price, calculated: true }]
 
   context 'table structure' do
     it { is_expected.to have_db_column(:description).of_type(:text)  }
     it { is_expected.to have_db_column(:gtin).of_type(:string)  }
     it { is_expected.to have_db_column(:sku).of_type(:string) }
     it { is_expected.to have_db_column(:grams).of_type(:integer) }
-    it { is_expected.to have_db_column(:price_cents).of_type(:integer) }
+    it { is_expected.to have_db_column(:varied_price_cents).of_type(:integer) }
   end
 
   context 'relationships' do
@@ -68,13 +67,6 @@ RSpec.describe Variant, type: :model, site_scoped: true do
         it 'has the sites currency' do
           expect(subject.price.currency).to eq(subject.site.currency)
         end
-      end
-    end
-
-    describe '#varied_price=' do
-      it 'is not callable' do
-        expect { subject.varied_price = 1 }.to raise_error
-          .with_message('varied_price cannot be directly set use #price=')
       end
     end
 
