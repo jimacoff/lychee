@@ -6,7 +6,7 @@ class CreateAddresses < ActiveRecord::Migration
       t.string :line3
       t.string :line4
       t.string :locality
-      t.string :region
+      t.string :state
       t.string :postcode
 
       t.hstore :metadata, null: true
