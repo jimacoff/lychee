@@ -39,4 +39,14 @@ RSpec.describe Address, type: :model, site_scoped: true do
       end
     end
   end
+
+  describe '#to_s' do
+    let(:country) { FactoryGirl.create(:country) }
+    subject { FactoryGirl.create(:address, country: country) }
+
+    it 'calls the countries format address method' do
+      expect(country).to receive(:format_postal_address).with(subject)
+      subject.to_s
+    end
+  end
 end

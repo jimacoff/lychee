@@ -5,6 +5,8 @@ class CreateCountries < ActiveRecord::Migration
       t.string :iso_alpha2, null: false
       t.string :iso_alpha3, null: false
 
+      t.string :postal_address_template, null: false
+
       t.timestamps null: false
     end
   end

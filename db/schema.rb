@@ -23,7 +23,7 @@ ActiveRecord::Schema.define(version: 20150320235812) do
     t.string   "line3"
     t.string   "line4"
     t.string   "locality"
-    t.string   "region"
+    t.string   "state"
     t.string   "postcode"
     t.hstore   "metadata"
     t.integer  "country_id",              null: false
@@ -77,11 +77,12 @@ ActiveRecord::Schema.define(version: 20150320235812) do
   add_index "category_members", ["site_id"], name: "index_category_members_on_site_id", using: :btree
 
   create_table "countries", force: :cascade do |t|
-    t.string   "name",       null: false
-    t.string   "iso_alpha2", null: false
-    t.string   "iso_alpha3", null: false
-    t.datetime "created_at", null: false
-    t.datetime "updated_at", null: false
+    t.string   "name",                    null: false
+    t.string   "iso_alpha2",              null: false
+    t.string   "iso_alpha3",              null: false
+    t.string   "postal_address_template", null: false
+    t.datetime "created_at",              null: false
+    t.datetime "updated_at",              null: false
   end
 
   create_table "inventories", force: :cascade do |t|

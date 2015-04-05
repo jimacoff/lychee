@@ -13,6 +13,17 @@ class Address < ActiveRecord::Base
 
   validate :associated_with_order, on: :update
 
+  # Address Format:
+  # line1 - 4: Addresse, building, street etc per local requirements
+  # locality: locality, suburb, city, post town
+  # state: state, province, region
+  # postcode: postal code, zip code
+  # country
+
+  def to_s
+    country.format_postal_address(self)
+  end
+
   private
 
   def associated_with_order
