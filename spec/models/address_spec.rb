@@ -52,12 +52,8 @@ RSpec.describe Address, type: :model, site_scoped: true do
         end
       end
       context 'site' do
-        context 'customer association' do
+        context 'subscriber association' do
           subject { create(:address, site_subscriber_address: Site.current) }
-          it { is_expected.to be_valid }
-        end
-        context 'delivery association' do
-          subject { create(:address, site_distribution_address: Site.current) }
           it { is_expected.to be_valid }
         end
       end
@@ -68,10 +64,29 @@ RSpec.describe Address, type: :model, site_scoped: true do
     let(:country) { FactoryGirl.create(:country) }
     subject { FactoryGirl.create(:address, country: country) }
 
-    it 'calls the countries format address method' do
+    context 'domestic' do
+      context 'site country is the same as address country' do
+        subject { FactoryGirl.create(:address, country: Site.current.country) }
+        it 'country is not requested in address format' do
+          expect(Site.current.country).to receive(:format_postal_address)
+            .with(subject, false)
+          subject.to_s
+        end
+      end
+
+      context 'site country differs from address country' do
+        it 'country is not requested in address format' do
+          expect(country).to receive(:format_postal_address)
+            .with(subject, true)
+          subject.to_s
+        end
+      end
+    end
+
+    it 'calls the countries address method forcing international format' do
       expect(country).to receive(:format_postal_address)
-        .with(subject, subject.site.subscriber_address)
-      subject.to_s
+        .with(subject, true)
+      subject.to_s(true)
     end
   end
 end

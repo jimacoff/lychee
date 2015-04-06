@@ -12,8 +12,7 @@ class Site < ActiveRecord::Base
 
   has_one :subscriber_address, class_name: 'Address',
                                foreign_key: 'site_subscriber_address_id'
-  has_one :distribution_address, class_name: 'Address',
-                                 foreign_key: 'site_distribution_address_id'
+  delegate :country, to: :subscriber_address
 
   has_paper_trail
   valhammer

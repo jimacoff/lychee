@@ -29,7 +29,7 @@ RSpec.describe Country, type: :model do
         it 'provides valid address' do
           address.line3 = Faker::Address.secondary_address
           address.line4 = Faker::Address.secondary_address
-          expect(subject.format_postal_address(address, destination_country))
+          expect(subject.format_postal_address(address, international))
             .to eq(expected_full_address)
         end
       end
@@ -37,7 +37,7 @@ RSpec.describe Country, type: :model do
       context 'only some address fields are populated' do
         it 'provides valid address' do
           address.state = nil
-          expect(subject.format_postal_address(address, destination_country))
+          expect(subject.format_postal_address(address, international))
             .to eq(expected_partial_address)
         end
       end
@@ -49,14 +49,14 @@ RSpec.describe Country, type: :model do
                              cust_postal_address_format)
         end
         it 'provides valid address' do
-          expect(subject.format_postal_address(address, destination_country))
+          expect(subject.format_postal_address(address, international))
             .to eq(expected_custom_address)
         end
       end
     end
 
     context 'international postage' do
-      let(:destination_country) { FactoryGirl.create(:country) }
+      let(:international) { true }
       let(:expected_full_address) do
         %(#{address.line1}
 #{address.line2}
@@ -89,7 +89,7 @@ RSpec.describe Country, type: :model do
     end
 
     context 'domestic postage' do
-      let(:destination_country) { subject }
+      let(:international) { false }
       let(:expected_full_address) do
         %(#{address.line1}
 #{address.line2}

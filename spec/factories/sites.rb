@@ -7,12 +7,5 @@ FactoryGirl.define do
       s.subscriber_address = create :address, site_subscriber_address: s,
                                               site: s
     end
-
-    trait :distribution_address do
-      after(:create) do |s|
-        s.distribution_address = create :address, site_distribution_address: s,
-                                                  site: s
-      end
-    end
   end
 end

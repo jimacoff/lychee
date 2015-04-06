@@ -11,9 +11,7 @@ class Address < ActiveRecord::Base
 
   belongs_to :site_subscriber_address, class_name: 'Site',
                                        foreign_key: 'site_subscriber_address_id'
-  belongs_to :site_distribution_address, class_name: 'Site',
-                                         foreign_key:
-                                         'site_distribution_address_id'
+
   has_paper_trail
   valhammer
 
@@ -26,15 +24,16 @@ class Address < ActiveRecord::Base
   # postcode: postal code, zip code
   # country
 
-  def to_s
-    country.format_postal_address(self, site.distribution_address)
+  def to_s(force_country = false)
+    requires_country = force_country || (country != site.country)
+    country.format_postal_address(self, requires_country)
   end
 
   private
 
   def belongs_to_order_or_site
     addresses = [:order_customer_address, :order_delivery_address,
-                 :site_subscriber_address, :site_distribution_address]
+                 :site_subscriber_address]
     address_instances = addresses.map { |address| send(address) }.compact
     return if address_instances.one?
 

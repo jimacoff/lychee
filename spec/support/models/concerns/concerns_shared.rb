@@ -75,7 +75,10 @@ RSpec.shared_examples 'parent site' do
     subject { -> { run } }
 
     it { is_expected.to change(described_class, :count).by(scoped_instances) }
-    it { is_expected.to change(described_class.unscoped, :count).by(unscoped_instances) }
+    it do
+      is_expected.to change(described_class.unscoped, :count)
+        .by(unscoped_instances)
+    end
   end
 end
 

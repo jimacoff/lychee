@@ -19,7 +19,6 @@ RSpec.describe Site, type: :model do
     it { is_expected.to have_many :primary_categories }
 
     it { is_expected.to have_one :subscriber_address }
-    it { is_expected.to have_one :distribution_address }
   end
 
   context 'validations' do
@@ -33,22 +32,6 @@ RSpec.describe Site, type: :model do
         subject { create(:site, subscriber_address: nil) }
         it 'is invalid' do
           expect(subject.reload).not_to be_valid
-        end
-      end
-
-      context 'distribution_address' do
-        context 'when unspecified' do
-          it 'falls back to subscriber_address' do
-            expect(subject.distribution_address)
-              .to eq(subject.subscriber_address)
-          end
-        end
-        context 'when specified' do
-          subject { create(:site, :distribution_address) }
-          it 'uses explict value' do
-            expect(subject.distribution_address)
-              .not_to eq(subject.subscriber_address)
-          end
         end
       end
 
