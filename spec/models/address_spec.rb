@@ -29,13 +29,36 @@ RSpec.describe Address, type: :model, site_scoped: true do
     it { is_expected.to validate_presence_of :country }
 
     context 'instance validations' do
-      context 'order customer association' do
-        subject { create(:address, order_customer_address: (create :order)) }
-        it { is_expected.to be_valid }
+      context 'without order or site address reference' do
+        subject { create(:address) }
+        it { is_expected.not_to be_valid }
       end
-      context 'order delivery association' do
-        subject { create(:address, order_delivery_address: (create :order)) }
-        it { is_expected.to be_valid }
+      context 'with multiple address references' do
+        subject do
+          create(:address, order_customer_address: (create :order),
+                           site_subscriber_address: Site.current)
+        end
+        it { is_expected.not_to be_valid }
+      end
+      context 'orders' do
+        context 'customer association' do
+          subject { create(:address, order_customer_address: (create :order)) }
+          it { is_expected.to be_valid }
+        end
+        context 'delivery association' do
+          subject { create(:address, order_delivery_address: (create :order)) }
+          it { is_expected.to be_valid }
+        end
+      end
+      context 'site' do
+        context 'customer association' do
+          subject { create(:address, site_subscriber_address: Site.current) }
+          it { is_expected.to be_valid }
+        end
+        context 'delivery association' do
+          subject { create(:address, site_distribution_address: Site.current) }
+          it { is_expected.to be_valid }
+        end
       end
     end
   end
@@ -45,7 +68,8 @@ RSpec.describe Address, type: :model, site_scoped: true do
     subject { FactoryGirl.create(:address, country: country) }
 
     it 'calls the countries format address method' do
-      expect(country).to receive(:format_postal_address).with(subject)
+      expect(country).to receive(:format_postal_address)
+        .with(subject, subject.site.subscriber_address)
       subject.to_s
     end
   end

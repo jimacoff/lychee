@@ -6,9 +6,9 @@ class Order < ActiveRecord::Base
   include Taggable
 
   has_one :customer_address, class_name: 'Address',
-                             foreign_key: 'customer_address_for_id'
+                             foreign_key: 'order_customer_address_id'
   has_one :delivery_address, class_name: 'Address',
-                             foreign_key: 'delivery_address_for_id'
+                             foreign_key: 'order_delivery_address_id'
 
   has_many :order_lines
 

@@ -17,6 +17,9 @@ RSpec.describe Site, type: :model do
     it { is_expected.to have_many :variants }
     it { is_expected.to have_many :categories }
     it { is_expected.to have_many :primary_categories }
+
+    it { is_expected.to have_one :subscriber_address }
+    it { is_expected.to have_one :distribution_address }
   end
 
   context 'validations' do
@@ -25,6 +28,29 @@ RSpec.describe Site, type: :model do
     context 'instance validations' do
       subject { create(:site) }
       it { is_expected.to be_valid }
+
+      context 'without subscriber address' do
+        subject { create(:site, subscriber_address: nil) }
+        it 'is invalid' do
+          expect(subject.reload).not_to be_valid
+        end
+      end
+
+      context 'distribution_address' do
+        context 'when unspecified' do
+          it 'falls back to subscriber_address' do
+            expect(subject.distribution_address)
+              .to eq(subject.subscriber_address)
+          end
+        end
+        context 'when specified' do
+          subject { create(:site, :distribution_address) }
+          it 'uses explict value' do
+            expect(subject.distribution_address)
+              .not_to eq(subject.subscriber_address)
+          end
+        end
+      end
 
       context 'countries' do
         it 'is valid with whitelisted countries specified' do
@@ -44,6 +70,7 @@ RSpec.describe Site, type: :model do
                                                   site: subject)
           expect(subject).not_to be_valid
         end
+
         context 'prioritized countries' do
           let(:country1) { create :country }
           let(:country2) { create :country }
@@ -94,6 +121,7 @@ RSpec.describe Site, type: :model do
               it { is_expected.to be_valid }
               has_context 'expected whitelisted country state'
             end
+
             context 'prioritized countries are whitelisted' do
               before do
                 subject.whitelisted_countries << create(:whitelisted_country,
@@ -110,6 +138,7 @@ RSpec.describe Site, type: :model do
               it { is_expected.to be_valid }
               has_context 'expected whitelisted country state'
             end
+
             context 'prioritized countries are not whitelisted' do
               before do
                 subject.whitelisted_countries << create(:whitelisted_country,
@@ -154,6 +183,7 @@ RSpec.describe Site, type: :model do
               it { is_expected.to be_valid }
               has_context 'expected blacklisted country state'
             end
+
             context 'prioritized countries are blacklisted' do
               before do
                 subject.blacklisted_countries << create(:blacklisted_country,

@@ -10,11 +10,17 @@ class Site < ActiveRecord::Base
   has_many :primary_categories, -> { primary }, foreign_key: :site_id,
                                                 class_name: 'Category'
 
+  has_one :subscriber_address, class_name: 'Address',
+                               foreign_key: 'site_subscriber_address_id'
+  has_one :distribution_address, class_name: 'Address',
+                                 foreign_key: 'site_distribution_address_id'
+
   has_paper_trail
   valhammer
 
   validate :only_whitelisted_or_blacklisted_countries
   validate :prioritized_countries_are_valid
+  validates :subscriber_address, presence: true, on: :update
 
   after_save :reload_current
 
@@ -63,6 +69,10 @@ class Site < ActiveRecord::Base
 
   def currency_iso_code=(_code)
     fail 'Site#currency_iso_code= cannot be called, used Site#currency='
+  end
+
+  def distribution_address
+    super || subscriber_address
   end
 
   class << self
