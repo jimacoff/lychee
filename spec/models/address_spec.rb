@@ -19,8 +19,8 @@ RSpec.describe Address, type: :model, site_scoped: true do
   end
 
   context 'relationships' do
-    it { is_expected.to belong_to(:customer_address_for) }
-    it { is_expected.to belong_to(:delivery_address_for) }
+    it { is_expected.to belong_to(:order_customer_address) }
+    it { is_expected.to belong_to(:order_delivery_address) }
     it { is_expected.to belong_to(:country) }
   end
 
@@ -30,11 +30,11 @@ RSpec.describe Address, type: :model, site_scoped: true do
 
     context 'instance validations' do
       context 'order customer association' do
-        subject { create(:address, customer_address_for: (create :order)) }
+        subject { create(:address, order_customer_address: (create :order)) }
         it { is_expected.to be_valid }
       end
       context 'order delivery association' do
-        subject { create(:address, delivery_address_for: (create :order)) }
+        subject { create(:address, order_delivery_address: (create :order)) }
         it { is_expected.to be_valid }
       end
     end

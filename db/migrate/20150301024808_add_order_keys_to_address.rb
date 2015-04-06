@@ -1,6 +1,6 @@
 class AddOrderKeysToAddress < ActiveRecord::Migration
   def change
-    add_reference :addresses, :customer_address_for, index: true
-    add_reference :addresses, :delivery_address_for, index: true
+    add_reference :addresses, :order_customer_address, index: true
+    add_reference :addresses, :order_delivery_address, index: true
   end
 end

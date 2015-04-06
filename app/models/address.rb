@@ -3,10 +3,10 @@ class Address < ActiveRecord::Base
   include Metadata
 
   belongs_to :country
-  belongs_to :customer_address_for, class_name: 'Order',
-                                    foreign_key: 'customer_address_for_id'
-  belongs_to :delivery_address_for, class_name: 'Order',
-                                    foreign_key: 'delivery_address_for_id'
+  belongs_to :order_customer_address, class_name: 'Order',
+                                    foreign_key: 'order_customer_address_id'
+  belongs_to :order_delivery_address, class_name: 'Order',
+                                    foreign_key: 'order_delivery_address_id'
 
   has_paper_trail
   valhammer
@@ -27,7 +27,7 @@ class Address < ActiveRecord::Base
   private
 
   def associated_with_order
-    return if customer_address_for.present? || delivery_address_for.present?
+    return if order_customer_address.present? || order_delivery_address.present?
     errors.add(:base, 'Addresses must be associated with an order')
   end
 end
