@@ -32,6 +32,8 @@ RSpec.shared_examples 'slug' do
 end
 
 RSpec.shared_examples 'parent site' do
+  let(:site_factory_instances) { 0 }
+
   it { is_expected.to be_a_kind_of(ParentSite) }
   it { is_expected.to belong_to(:site) }
   it { is_expected.to validate_presence_of :site }
@@ -62,6 +64,8 @@ RSpec.shared_examples 'parent site' do
 
   context 'scoping' do
     let(:site) { create(:site) }
+    let(:scoped_instances) { 1 }
+    let(:unscoped_instances) { site_factory_instances + 2 }
 
     def run
       create(factory)
@@ -70,8 +74,8 @@ RSpec.shared_examples 'parent site' do
 
     subject { -> { run } }
 
-    it { is_expected.to change(described_class, :count).by(1) }
-    it { is_expected.to change(described_class.unscoped, :count).by(2) }
+    it { is_expected.to change(described_class, :count).by(scoped_instances) }
+    it { is_expected.to change(described_class.unscoped, :count).by(unscoped_instances) }
   end
 end
 

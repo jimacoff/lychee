@@ -8,7 +8,8 @@ FactoryGirl.define do
 %{line2}
 %{line3}
 %{line4}
-%{locality} %{state}  %{postcode})
+%{locality} %{state}  %{postcode}
+%{country})
     end
   end
 end

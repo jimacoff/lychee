@@ -11,14 +11,14 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20150320235812) do
+ActiveRecord::Schema.define(version: 20150406011912) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
   enable_extension "hstore"
 
   create_table "addresses", force: :cascade do |t|
-    t.string   "line1",                   null: false
+    t.string   "line1",                        null: false
     t.string   "line2"
     t.string   "line3"
     t.string   "line4"
@@ -26,18 +26,22 @@ ActiveRecord::Schema.define(version: 20150320235812) do
     t.string   "state"
     t.string   "postcode"
     t.hstore   "metadata"
-    t.integer  "country_id",              null: false
-    t.integer  "site_id",                 null: false
-    t.datetime "created_at",              null: false
-    t.datetime "updated_at",              null: false
-    t.integer  "customer_address_for_id"
-    t.integer  "delivery_address_for_id"
+    t.integer  "country_id",                   null: false
+    t.integer  "site_id",                      null: false
+    t.datetime "created_at",                   null: false
+    t.datetime "updated_at",                   null: false
+    t.integer  "order_customer_address_id"
+    t.integer  "order_delivery_address_id"
+    t.integer  "site_subscriber_address_id"
+    t.integer  "site_distribution_address_id"
   end
 
   add_index "addresses", ["country_id"], name: "index_addresses_on_country_id", using: :btree
-  add_index "addresses", ["customer_address_for_id"], name: "index_addresses_on_customer_address_for_id", using: :btree
-  add_index "addresses", ["delivery_address_for_id"], name: "index_addresses_on_delivery_address_for_id", using: :btree
+  add_index "addresses", ["order_customer_address_id"], name: "index_addresses_on_order_customer_address_id", using: :btree
+  add_index "addresses", ["order_delivery_address_id"], name: "index_addresses_on_order_delivery_address_id", using: :btree
+  add_index "addresses", ["site_distribution_address_id"], name: "index_addresses_on_site_distribution_address_id", using: :btree
   add_index "addresses", ["site_id"], name: "index_addresses_on_site_id", using: :btree
+  add_index "addresses", ["site_subscriber_address_id"], name: "index_addresses_on_site_subscriber_address_id", using: :btree
 
   create_table "blacklisted_countries", force: :cascade do |t|
     t.integer  "site_id",    null: false
