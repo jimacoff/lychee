@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20150410001807) do
+ActiveRecord::Schema.define(version: 20150410032029) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -147,27 +147,29 @@ ActiveRecord::Schema.define(version: 20150410001807) do
   add_index "prioritized_countries", ["site_id"], name: "index_prioritized_countries_on_site_id", using: :btree
 
   create_table "products", force: :cascade do |t|
-    t.string   "name",                           null: false
-    t.text     "description",                    null: false
-    t.string   "generated_slug",                 null: false
+    t.string   "name",                            null: false
+    t.text     "description",                     null: false
+    t.string   "generated_slug",                  null: false
     t.string   "specified_slug"
     t.string   "gtin"
     t.string   "sku"
-    t.integer  "price_cents",                    null: false
-    t.string   "currency",       default: "USD", null: false
+    t.integer  "price_cents",                     null: false
+    t.string   "currency",        default: "USD", null: false
     t.integer  "grams"
     t.boolean  "active"
     t.datetime "not_before"
     t.datetime "not_after"
     t.json     "specifications"
     t.hstore   "metadata"
-    t.text     "tags",           default: [],                 array: true
+    t.text     "tags",            default: [],                 array: true
     t.datetime "created_at"
     t.datetime "updated_at"
-    t.integer  "site_id",                        null: false
+    t.integer  "site_id",                         null: false
+    t.integer  "tax_override_id"
   end
 
   add_index "products", ["site_id"], name: "index_products_on_site_id", using: :btree
+  add_index "products", ["tax_override_id"], name: "index_products_on_tax_override_id", using: :btree
 
   create_table "sites", force: :cascade do |t|
     t.string   "name",              null: false
@@ -312,6 +314,7 @@ ActiveRecord::Schema.define(version: 20150410001807) do
   add_foreign_key "blacklisted_countries", "sites"
   add_foreign_key "prioritized_countries", "countries"
   add_foreign_key "prioritized_countries", "sites"
+  add_foreign_key "products", "tax_categories", column: "tax_override_id", on_delete: :cascade
   add_foreign_key "tax_categories", "sites", column: "site_primary_tax_category_id", on_delete: :cascade
   add_foreign_key "tax_categories", "sites", on_delete: :cascade
   add_foreign_key "whitelisted_countries", "countries"

@@ -31,6 +31,8 @@ RSpec.describe Product, type: :model, site_scoped: true do
   end
 
   context 'relationships' do
+    it { is_expected.to belong_to :tax_override }
+
     it { is_expected.to have_many :variants }
     it { is_expected.to have_many :variations }
     it { is_expected.to have_many :traits }
@@ -83,6 +85,15 @@ RSpec.describe Product, type: :model, site_scoped: true do
     end
     it 'category contains product' do
       expect(subject.categories.first.products.first).to eq(subject)
+    end
+  end
+
+  context 'tax override' do
+    let(:tax_category) { create :tax_category }
+    subject { create(:standalone_product, tax_override: tax_category) }
+    it { is_expected.to be_valid }
+    it 'has a unique tax_category' do
+      expect(subject.tax_override).not_to eq(Site.current.primary_tax_category)
     end
   end
 end

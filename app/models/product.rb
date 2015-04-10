@@ -16,6 +16,9 @@ class Product < ActiveRecord::Base
 
   monies [{ field: :price }]
 
+  belongs_to :tax_override, class_name: 'TaxCategory',
+                            foreign_key: 'tax_override_id'
+
   has_paper_trail
   valhammer
 
