@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20150410032029) do
+ActiveRecord::Schema.define(version: 20150410034543) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -310,13 +310,46 @@ ActiveRecord::Schema.define(version: 20150410032029) do
   add_index "whitelisted_countries", ["country_id"], name: "index_whitelisted_countries_on_country_id", using: :btree
   add_index "whitelisted_countries", ["site_id"], name: "index_whitelisted_countries_on_site_id", using: :btree
 
+  add_foreign_key "addresses", "countries", on_delete: :restrict
+  add_foreign_key "addresses", "orders", column: "order_customer_address_id", on_delete: :cascade
+  add_foreign_key "addresses", "orders", column: "order_delivery_address_id", on_delete: :cascade
+  add_foreign_key "addresses", "sites", column: "site_subscriber_address_id", on_delete: :cascade
+  add_foreign_key "addresses", "sites", on_delete: :cascade
   add_foreign_key "blacklisted_countries", "countries"
   add_foreign_key "blacklisted_countries", "sites"
+  add_foreign_key "categories", "categories", column: "parent_category_id", on_delete: :cascade
+  add_foreign_key "categories", "sites", on_delete: :cascade
+  add_foreign_key "category_members", "categories", on_delete: :cascade
+  add_foreign_key "category_members", "products", on_delete: :cascade
+  add_foreign_key "category_members", "sites", on_delete: :cascade
+  add_foreign_key "category_members", "variants", on_delete: :cascade
+  add_foreign_key "inventories", "products", on_delete: :cascade
+  add_foreign_key "inventories", "sites", on_delete: :cascade
+  add_foreign_key "inventories", "variants", on_delete: :cascade
+  add_foreign_key "order_lines", "orders", on_delete: :cascade
+  add_foreign_key "order_lines", "products", on_delete: :restrict
+  add_foreign_key "order_lines", "sites", on_delete: :cascade
+  add_foreign_key "order_lines", "variants", on_delete: :restrict
+  add_foreign_key "orders", "sites", on_delete: :cascade
   add_foreign_key "prioritized_countries", "countries"
   add_foreign_key "prioritized_countries", "sites"
+  add_foreign_key "products", "sites", on_delete: :cascade
   add_foreign_key "products", "tax_categories", column: "tax_override_id", on_delete: :cascade
   add_foreign_key "tax_categories", "sites", column: "site_primary_tax_category_id", on_delete: :cascade
   add_foreign_key "tax_categories", "sites", on_delete: :cascade
+  add_foreign_key "tax_rates", "countries", on_delete: :restrict
+  add_foreign_key "tax_rates", "sites", on_delete: :cascade
+  add_foreign_key "tax_rates", "tax_categories", on_delete: :cascade
+  add_foreign_key "tenants", "sites", on_delete: :cascade
+  add_foreign_key "traits", "sites", on_delete: :cascade
+  add_foreign_key "variants", "products", on_delete: :cascade
+  add_foreign_key "variants", "sites", on_delete: :cascade
+  add_foreign_key "variation_instances", "sites", on_delete: :cascade
+  add_foreign_key "variation_instances", "variants", on_delete: :cascade
+  add_foreign_key "variation_instances", "variations", on_delete: :cascade
+  add_foreign_key "variations", "products", on_delete: :cascade
+  add_foreign_key "variations", "sites", on_delete: :cascade
+  add_foreign_key "variations", "traits", on_delete: :cascade
   add_foreign_key "whitelisted_countries", "countries"
   add_foreign_key "whitelisted_countries", "sites"
 end

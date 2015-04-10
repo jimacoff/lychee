@@ -259,6 +259,4 @@ RSpec.describe Site, type: :model do
       end
     end
   end
-
-  pending 'foreign key all the things'
 end
