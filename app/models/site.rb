@@ -75,10 +75,6 @@ class Site < ActiveRecord::Base
     fail 'Site#currency_iso_code= cannot be called, used Site#currency='
   end
 
-  def distribution_address
-    super || subscriber_address
-  end
-
   class << self
     def current
       Thread.current[:current_site]
