@@ -4,6 +4,10 @@ class Site < ActiveRecord::Base
 
   has_many :prioritized_countries
 
+  has_many :tax_categories
+  has_one :primary_tax_category, class_name: 'TaxCategory',
+                                 foreign_key: 'site_primary_tax_category_id'
+
   has_many :products
   has_many :variants
   has_many :categories
@@ -20,6 +24,7 @@ class Site < ActiveRecord::Base
   validate :only_whitelisted_or_blacklisted_countries
   validate :prioritized_countries_are_valid
   validates :subscriber_address, presence: true, on: :update
+  validates :primary_tax_category, presence: true, on: :update
 
   after_save :reload_current
 

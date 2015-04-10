@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20150406101626) do
+ActiveRecord::Schema.define(version: 20150410001807) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -176,26 +176,40 @@ ActiveRecord::Schema.define(version: 20150406101626) do
     t.string   "currency_iso_code", null: false
   end
 
+  create_table "tax_categories", force: :cascade do |t|
+    t.integer  "site_id"
+    t.integer  "site_primary_tax_category_id"
+    t.string   "name",                         null: false
+    t.hstore   "metadata"
+    t.datetime "created_at",                   null: false
+    t.datetime "updated_at",                   null: false
+  end
+
+  add_index "tax_categories", ["site_id"], name: "index_tax_categories_on_site_id", using: :btree
+  add_index "tax_categories", ["site_primary_tax_category_id"], name: "index_tax_categories_on_site_primary_tax_category_id", using: :btree
+
   create_table "tax_rates", force: :cascade do |t|
-    t.decimal  "rate",         precision: 6, scale: 5, null: false
-    t.string   "name",                                 null: false
-    t.string   "description",                          null: false
+    t.decimal  "rate",            precision: 6, scale: 5, null: false
+    t.string   "name",                                    null: false
+    t.string   "description",                             null: false
     t.string   "invoice_note"
-    t.integer  "site_id",                              null: false
-    t.integer  "country_id",                           null: false
+    t.integer  "site_id",                                 null: false
+    t.integer  "country_id",                              null: false
     t.string   "state"
     t.string   "postcode"
     t.string   "city"
     t.boolean  "shipping"
-    t.integer  "priority",                             null: false
-    t.ltree    "hierarchy",                            null: false
+    t.integer  "priority",                                null: false
+    t.ltree    "hierarchy",                               null: false
     t.hstore   "metadata"
-    t.datetime "created_at",                           null: false
-    t.datetime "updated_at",                           null: false
+    t.datetime "created_at",                              null: false
+    t.datetime "updated_at",                              null: false
+    t.integer  "tax_category_id",                         null: false
   end
 
   add_index "tax_rates", ["country_id"], name: "index_tax_rates_on_country_id", using: :btree
   add_index "tax_rates", ["site_id"], name: "index_tax_rates_on_site_id", using: :btree
+  add_index "tax_rates", ["tax_category_id"], name: "index_tax_rates_on_tax_category_id", using: :btree
 
   create_table "tenants", force: :cascade do |t|
     t.integer  "site_id",    null: false
@@ -298,6 +312,8 @@ ActiveRecord::Schema.define(version: 20150406101626) do
   add_foreign_key "blacklisted_countries", "sites"
   add_foreign_key "prioritized_countries", "countries"
   add_foreign_key "prioritized_countries", "sites"
+  add_foreign_key "tax_categories", "sites", column: "site_primary_tax_category_id", on_delete: :cascade
+  add_foreign_key "tax_categories", "sites", on_delete: :cascade
   add_foreign_key "whitelisted_countries", "countries"
   add_foreign_key "whitelisted_countries", "sites"
 end

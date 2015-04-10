@@ -13,6 +13,9 @@ RSpec.describe Site, type: :model do
     it { is_expected.to have_many :blacklisted_countries }
     it { is_expected.to have_many :prioritized_countries }
 
+    it { is_expected.to have_many :tax_categories }
+    it { is_expected.to have_one :primary_tax_category }
+
     it { is_expected.to have_many :products }
     it { is_expected.to have_many :variants }
     it { is_expected.to have_many :categories }
@@ -30,6 +33,13 @@ RSpec.describe Site, type: :model do
 
       context 'without subscriber address' do
         subject { create(:site, subscriber_address: nil) }
+        it 'is invalid' do
+          expect(subject.reload).not_to be_valid
+        end
+      end
+
+      context 'without primary tax category' do
+        subject { create(:site, primary_tax_category: nil) }
         it 'is invalid' do
           expect(subject.reload).not_to be_valid
         end
@@ -249,4 +259,6 @@ RSpec.describe Site, type: :model do
       end
     end
   end
+
+  pending 'foreign key all the things'
 end

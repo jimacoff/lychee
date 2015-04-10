@@ -3,6 +3,7 @@ class TaxRate < ActiveRecord::Base
   include Metadata
 
   belongs_to :country
+  belongs_to :tax_category
   before_validation :determine_hierarchy
 
   has_paper_trail

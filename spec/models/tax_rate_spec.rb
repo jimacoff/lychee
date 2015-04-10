@@ -8,6 +8,8 @@ RSpec.describe TaxRate, type: :model, site_scoped: true do
   has_context 'versioned'
 
   context 'table structure' do
+    it { is_expected.to have_db_column(:tax_category_id).of_type(:integer) }
+
     it { is_expected.to have_db_column(:rate).of_type(:decimal) }
 
     it { is_expected.to have_db_column(:name).of_type(:string) }
@@ -29,6 +31,8 @@ RSpec.describe TaxRate, type: :model, site_scoped: true do
   end
 
   context 'validations' do
+    it { is_expected.to validate_presence_of :tax_category }
+
     it { is_expected.to validate_presence_of :rate }
 
     it { is_expected.to validate_presence_of :name }
