@@ -26,10 +26,8 @@ class TaxRate < ActiveRecord::Base
   end
 
   def determine_hierarchy
-    return unless country
-
     self.hierarchy = nil
-    ltree_sanitize(country.iso_alpha2)
+    ltree_sanitize(country.try(:iso_alpha2))
 
     return unless state
     ltree_sanitize(state.tax_code)
@@ -42,6 +40,8 @@ class TaxRate < ActiveRecord::Base
   end
 
   def ltree_sanitize(identifier)
+    return unless identifier
+
     label = identifier.gsub(/[^0-9A-Za-z]/, '')
     self.hierarchy = hierarchy ? %(#{hierarchy}.#{label}) : label
   end
