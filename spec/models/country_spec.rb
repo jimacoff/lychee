@@ -12,11 +12,33 @@ RSpec.describe Country, type: :model do
     end
   end
 
+  context 'relationships' do
+    it { is_expected.to have_many :states }
+  end
+
   context 'validations' do
     it { is_expected.to validate_presence_of :name }
     it { is_expected.to validate_presence_of :iso_alpha2 }
     it { is_expected.to validate_presence_of :iso_alpha3 }
     it { is_expected.to validate_presence_of :postal_address_template }
+  end
+
+  describe '#states?' do
+    context 'without states' do
+      subject { FactoryGirl.create(:country) }
+      it 'is false' do
+        expect(subject.states?).not_to be
+      end
+    end
+
+    context 'with states' do
+      subject { FactoryGirl.create(:country) }
+      let!(:states) { FactoryGirl.create :state, country: subject }
+
+      it 'is true' do
+        expect(subject.states?).to be
+      end
+    end
   end
 
   describe '#format_postal_address' do

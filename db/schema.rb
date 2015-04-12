@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20150410034543) do
+ActiveRecord::Schema.define(version: 20150411033346) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -178,6 +178,18 @@ ActiveRecord::Schema.define(version: 20150410034543) do
     t.string   "currency_iso_code", null: false
   end
 
+  create_table "states", force: :cascade do |t|
+    t.integer  "country_id"
+    t.string   "name",          null: false
+    t.string   "iso_code",      null: false
+    t.string   "postal_format", null: false
+    t.string   "tax_code",      null: false
+    t.datetime "created_at",    null: false
+    t.datetime "updated_at",    null: false
+  end
+
+  add_index "states", ["country_id"], name: "index_states_on_country_id", using: :btree
+
   create_table "tax_categories", force: :cascade do |t|
     t.integer  "site_id"
     t.integer  "site_primary_tax_category_id"
@@ -335,6 +347,7 @@ ActiveRecord::Schema.define(version: 20150410034543) do
   add_foreign_key "prioritized_countries", "sites"
   add_foreign_key "products", "sites", on_delete: :cascade
   add_foreign_key "products", "tax_categories", column: "tax_override_id", on_delete: :cascade
+  add_foreign_key "states", "countries", on_delete: :cascade
   add_foreign_key "tax_categories", "sites", column: "site_primary_tax_category_id", on_delete: :cascade
   add_foreign_key "tax_categories", "sites", on_delete: :cascade
   add_foreign_key "tax_rates", "countries", on_delete: :restrict
