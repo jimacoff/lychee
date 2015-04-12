@@ -3,6 +3,6 @@ class AddTaxCategoryToProduct < ActiveRecord::Migration
     add_reference :products, :tax_override, null: true, index: true
 
     add_foreign_key :products, :tax_categories,
-                    column: 'tax_override_id', on_delete: :cascade
+                    column: 'tax_override_id', on_delete: :restrict
   end
 end
