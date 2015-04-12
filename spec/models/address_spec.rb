@@ -5,6 +5,9 @@ RSpec.describe Address, type: :model, site_scoped: true do
     let(:factory) { :address }
     let(:site_factory_instances) { 1 }
   end
+  has_context 'parent country' do
+    let(:factory) { :address }
+  end
   has_context 'versioned'
   has_context 'metadata'
 
@@ -16,9 +19,6 @@ RSpec.describe Address, type: :model, site_scoped: true do
 
     it { is_expected.to have_db_column(:locality).of_type(:string) }
     it { is_expected.to have_db_column(:postcode).of_type(:string) }
-
-    it { is_expected.to have_db_column(:state_id).of_type(:integer) }
-    it { is_expected.to have_db_column(:country_id).of_type(:integer) }
   end
 
   context 'relationships' do
@@ -29,7 +29,6 @@ RSpec.describe Address, type: :model, site_scoped: true do
 
   context 'validations' do
     it { is_expected.to validate_presence_of :line1 }
-    it { is_expected.to validate_presence_of :country }
 
     context 'instance validations' do
       context 'without order or site address reference' do
@@ -74,16 +73,17 @@ RSpec.describe Address, type: :model, site_scoped: true do
             expect(subject).to be_valid
           end
           it 'is invalid when address has linked state' do
-            subject.state = create :state
+            subject.state = create :state, country: country
             expect(subject).not_to be_valid
           end
         end
 
         context 'with country that specifies states' do
           let(:country) { create :country, :with_states }
+          let(:state) { create :state, country: country }
           subject do
-            create(:address, :with_state, country: country,
-                                          site_subscriber_address: Site.current)
+            create(:address, state: state, country: country,
+                             site_subscriber_address: Site.current)
           end
           it 'is invalid when address has no linked state' do
             subject.state = nil

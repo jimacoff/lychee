@@ -4,6 +4,9 @@ RSpec.describe TaxRate, type: :model, site_scoped: true do
   has_context 'parent site' do
     let(:factory) { :tax_rate }
   end
+  has_context 'parent country' do
+    let(:factory) { :tax_rate }
+  end
   has_context 'metadata'
   has_context 'versioned'
 
@@ -23,9 +26,6 @@ RSpec.describe TaxRate, type: :model, site_scoped: true do
 
     it { is_expected.to have_db_column(:priority).of_type(:integer) }
     it { is_expected.to have_db_column(:hierarchy).of_type(:ltree) }
-
-    it { is_expected.to have_db_column(:country_id).of_type(:integer) }
-    it { is_expected.to have_db_column(:state_id).of_type(:integer) }
   end
 
   context 'relationships' do
@@ -40,7 +40,6 @@ RSpec.describe TaxRate, type: :model, site_scoped: true do
     it { is_expected.to validate_presence_of :name }
     it { is_expected.to validate_presence_of :description }
 
-    it { is_expected.to validate_presence_of :country }
     it { is_expected.to validate_presence_of :priority }
     it { is_expected.to validate_presence_of :hierarchy }
 
@@ -105,8 +104,10 @@ RSpec.describe TaxRate, type: :model, site_scoped: true do
       end
 
       describe '#determine_hierarchy' do
+        let(:state) { create :state }
         subject do
-          create :tax_rate, state: create(:state),
+          create :tax_rate, state: state,
+                            country: state.country,
                             postcode: '.1 # 2 3. 4    5',
                             city: 'c i&ty.'
         end
