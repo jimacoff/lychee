@@ -6,7 +6,9 @@ class Country < ActiveRecord::Base
 
   def format_postal_address(address, international = false)
     address_fields = address.slice(:line1, :line2, :line3, :line4,
-                                   :locality, :state, :postcode).symbolize_keys
+                                   :locality, :postcode).symbolize_keys
+
+    address_fields[:state] = address.state? ? address.state.postal_format : nil
 
     # Postage regulations require country is not provided
     # if parcels are domestic in nature

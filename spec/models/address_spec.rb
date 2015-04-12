@@ -15,8 +15,10 @@ RSpec.describe Address, type: :model, site_scoped: true do
     it { is_expected.to have_db_column(:line4).of_type(:string) }
 
     it { is_expected.to have_db_column(:locality).of_type(:string) }
-    it { is_expected.to have_db_column(:state).of_type(:string) }
     it { is_expected.to have_db_column(:postcode).of_type(:string) }
+
+    it { is_expected.to have_db_column(:state_id).of_type(:integer) }
+    it { is_expected.to have_db_column(:country_id).of_type(:integer) }
   end
 
   context 'relationships' do
@@ -34,6 +36,7 @@ RSpec.describe Address, type: :model, site_scoped: true do
         subject { create(:address) }
         it { is_expected.not_to be_valid }
       end
+
       context 'with multiple address references' do
         subject do
           create(:address, order_customer_address: (create :order),
@@ -41,6 +44,7 @@ RSpec.describe Address, type: :model, site_scoped: true do
         end
         it { is_expected.not_to be_valid }
       end
+
       context 'orders' do
         context 'customer association' do
           subject { create(:address, order_customer_address: (create :order)) }
@@ -51,22 +55,55 @@ RSpec.describe Address, type: :model, site_scoped: true do
           it { is_expected.to be_valid }
         end
       end
+
       context 'site' do
         context 'subscriber association' do
           subject { create(:address, site_subscriber_address: Site.current) }
           it { is_expected.to be_valid }
         end
       end
+
+      context 'states' do
+        context 'with country that does not require state' do
+          let(:country) { create :country }
+          subject do
+            create(:address, country: country,
+                             site_subscriber_address: Site.current)
+          end
+          it 'is valid when address has no linked state' do
+            expect(subject).to be_valid
+          end
+          it 'is invalid when address has linked state' do
+            subject.state = create :state
+            expect(subject).not_to be_valid
+          end
+        end
+
+        context 'with country that specifies states' do
+          let(:country) { create :country, :with_states }
+          subject do
+            create(:address, :with_state, country: country,
+                                          site_subscriber_address: Site.current)
+          end
+          it 'is invalid when address has no linked state' do
+            subject.state = nil
+            expect(subject).not_to be_valid
+          end
+          it 'is valid when address has linked state' do
+            expect(subject).to be_valid
+          end
+        end
+      end
     end
   end
 
   describe '#to_s' do
-    let(:country) { FactoryGirl.create(:country) }
-    subject { FactoryGirl.create(:address, country: country) }
+    let(:country) { create(:country) }
+    subject { create(:address, country: country) }
 
     context 'domestic' do
       context 'site country is the same as address country' do
-        subject { FactoryGirl.create(:address, country: Site.current.country) }
+        subject { create(:address, country: Site.current.country) }
         it 'country is not requested in address format' do
           expect(Site.current.country).to receive(:format_postal_address)
             .with(subject, false)
@@ -87,6 +124,17 @@ RSpec.describe Address, type: :model, site_scoped: true do
       expect(country).to receive(:format_postal_address)
         .with(subject, true)
       subject.to_s(true)
+    end
+  end
+
+  describe '#state?' do
+    subject { create(:address, site_subscriber_address: Site.current) }
+    it 'is false when state is not specified' do
+      expect(subject.state?).not_to be
+    end
+    it 'is true when state is specified' do
+      subject.state = create(:state, country: subject.country)
+      expect(subject.state?).to be
     end
   end
 end

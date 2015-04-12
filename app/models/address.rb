@@ -3,6 +3,7 @@ class Address < ActiveRecord::Base
   include Metadata
 
   belongs_to :country
+  belongs_to :state
 
   belongs_to :order_customer_address, class_name: 'Order',
                                       foreign_key: 'order_customer_address_id'
@@ -16,6 +17,7 @@ class Address < ActiveRecord::Base
   valhammer
 
   validate :belongs_to_order_or_site, on: :update
+  validate :valid_state
 
   # Address Format:
   # line1 - 4: Addresse, building, street etc per local requirements
@@ -29,7 +31,26 @@ class Address < ActiveRecord::Base
     country.format_postal_address(self, requires_country)
   end
 
+  def state?
+    state.present?
+  end
+
   private
+
+  def valid_state
+    return if (country.try(:states?) && state.present?) ||
+              (!country.try(:states?) && !state.present?)
+
+    define_invalid_state_errors
+  end
+
+  def define_invalid_state_errors
+    if country.try(:states?) && !state.present?
+      errors.add(:state, 'Address requires specification of state')
+    else
+      errors.add(:state, 'Address does not require specification of state')
+    end
+  end
 
   def belongs_to_order_or_site
     addresses = [:order_customer_address, :order_delivery_address,

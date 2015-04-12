@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20150411033346) do
+ActiveRecord::Schema.define(version: 20150412004946) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -24,7 +24,6 @@ ActiveRecord::Schema.define(version: 20150411033346) do
     t.string   "line3"
     t.string   "line4"
     t.string   "locality"
-    t.string   "state"
     t.string   "postcode"
     t.hstore   "metadata"
     t.integer  "country_id",                 null: false
@@ -34,6 +33,7 @@ ActiveRecord::Schema.define(version: 20150411033346) do
     t.integer  "order_customer_address_id"
     t.integer  "order_delivery_address_id"
     t.integer  "site_subscriber_address_id"
+    t.integer  "state_id"
   end
 
   add_index "addresses", ["country_id"], name: "index_addresses_on_country_id", using: :btree
@@ -41,6 +41,7 @@ ActiveRecord::Schema.define(version: 20150411033346) do
   add_index "addresses", ["order_delivery_address_id"], name: "index_addresses_on_order_delivery_address_id", using: :btree
   add_index "addresses", ["site_id"], name: "index_addresses_on_site_id", using: :btree
   add_index "addresses", ["site_subscriber_address_id"], name: "index_addresses_on_site_subscriber_address_id", using: :btree
+  add_index "addresses", ["state_id"], name: "index_addresses_on_state_id", using: :btree
 
   create_table "blacklisted_countries", force: :cascade do |t|
     t.integer  "site_id",    null: false
@@ -327,6 +328,7 @@ ActiveRecord::Schema.define(version: 20150411033346) do
   add_foreign_key "addresses", "orders", column: "order_delivery_address_id", on_delete: :cascade
   add_foreign_key "addresses", "sites", column: "site_subscriber_address_id", on_delete: :cascade
   add_foreign_key "addresses", "sites", on_delete: :cascade
+  add_foreign_key "addresses", "states", on_delete: :restrict
   add_foreign_key "blacklisted_countries", "countries"
   add_foreign_key "blacklisted_countries", "sites"
   add_foreign_key "categories", "categories", column: "parent_category_id", on_delete: :cascade
@@ -346,7 +348,7 @@ ActiveRecord::Schema.define(version: 20150411033346) do
   add_foreign_key "prioritized_countries", "countries"
   add_foreign_key "prioritized_countries", "sites"
   add_foreign_key "products", "sites", on_delete: :cascade
-  add_foreign_key "products", "tax_categories", column: "tax_override_id", on_delete: :cascade
+  add_foreign_key "products", "tax_categories", column: "tax_override_id", on_delete: :restrict
   add_foreign_key "states", "countries", on_delete: :cascade
   add_foreign_key "tax_categories", "sites", column: "site_primary_tax_category_id", on_delete: :cascade
   add_foreign_key "tax_categories", "sites", on_delete: :cascade
