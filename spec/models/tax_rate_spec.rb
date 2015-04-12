@@ -16,7 +16,6 @@ RSpec.describe TaxRate, type: :model, site_scoped: true do
     it { is_expected.to have_db_column(:description).of_type(:string) }
     it { is_expected.to have_db_column(:invoice_note).of_type(:string) }
 
-    it { is_expected.to have_db_column(:state).of_type(:string) }
     it { is_expected.to have_db_column(:postcode).of_type(:string) }
     it { is_expected.to have_db_column(:city).of_type(:string) }
 
@@ -24,6 +23,9 @@ RSpec.describe TaxRate, type: :model, site_scoped: true do
 
     it { is_expected.to have_db_column(:priority).of_type(:integer) }
     it { is_expected.to have_db_column(:hierarchy).of_type(:ltree) }
+
+    it { is_expected.to have_db_column(:country_id).of_type(:integer) }
+    it { is_expected.to have_db_column(:state_id).of_type(:integer) }
   end
 
   context 'relationships' do
@@ -66,7 +68,7 @@ RSpec.describe TaxRate, type: :model, site_scoped: true do
           expect(subject.errors[:city].size).to eq(1)
         end
         it 'is invalid without postcode being specified' do
-          subject.state = Faker::Lorem.word
+          subject.state = create :state, country: subject.country
           expect(subject).not_to be_valid
           expect(subject.errors[:city].size).to eq(1)
         end
@@ -104,51 +106,60 @@ RSpec.describe TaxRate, type: :model, site_scoped: true do
 
       describe '#determine_hierarchy' do
         subject do
-          create :tax_rate, state: 's!t a.te',
+          create :tax_rate, state: create(:state),
                             postcode: '.1 # 2 3. 4    5',
                             city: 'c i&ty.'
         end
         it 'sets hierarchy to valid ltree value' do
           subject.send(:determine_hierarchy)
           expect(subject.hierarchy)
-            .to eq("#{subject.country.iso_alpha2}.state.12345.city")
+            .to eq(
+              "#{subject.country.iso_alpha2}.#{subject.state.tax_code}" \
+              '.12345.city')
         end
       end
     end
 
     context 'hierarchy format' do
-      let(:country) { subject.country }
-      subject { create :tax_rate }
+      let(:country) { create :country }
+      subject { create :tax_rate, country: country }
 
       it 'top level is country iso code' do
         expect(subject.hierarchy).to eq(subject.country.iso_alpha2)
       end
 
       context 'with state' do
-        let(:state) { Faker::Lorem.word }
-        subject { create :tax_rate, state: state }
+        let(:state) { create :state, country: country }
+        subject { create :tax_rate, state: state, country: country }
         it 'appends to hierarchy' do
-          expect(subject.hierarchy).to eq("#{country.iso_alpha2}.#{state}")
+          expect(subject.hierarchy)
+            .to eq("#{country.iso_alpha2}.#{state.tax_code}")
         end
 
         context 'with postcode' do
           let(:postcode) { Faker::Lorem.word }
-          subject { create :tax_rate, state: state, postcode: postcode }
+          subject do
+            create :tax_rate, country: country,
+                              state: state, postcode: postcode
+          end
 
           it 'appends to hierarchy' do
             expect(subject.hierarchy)
-              .to eq("#{country.iso_alpha2}.#{state}.#{postcode}")
+              .to eq("#{country.iso_alpha2}.#{state.tax_code}.#{postcode}")
           end
 
           context 'with city' do
             let(:city) { Faker::Lorem.word }
             subject do
-              create :tax_rate, state: state, postcode: postcode, city: city
+              create :tax_rate, country: country, state: state,
+                                postcode: postcode, city: city
             end
 
             it 'appends to hierarchy' do
               expect(subject.hierarchy)
-                .to eq("#{country.iso_alpha2}.#{state}.#{postcode}.#{city}")
+                .to eq(
+                  "#{country.iso_alpha2}.#{state.tax_code}" \
+                  ".#{postcode}.#{city}")
             end
           end
         end

@@ -2,8 +2,11 @@ class TaxRate < ActiveRecord::Base
   include ParentSite
   include Metadata
 
-  belongs_to :country
   belongs_to :tax_category
+
+  belongs_to :country
+  belongs_to :state
+
   before_validation :determine_hierarchy
 
   has_paper_trail
@@ -32,7 +35,7 @@ class TaxRate < ActiveRecord::Base
     ltree_sanitize(country.iso_alpha2)
 
     return unless state
-    ltree_sanitize(state)
+    ltree_sanitize(state.tax_code)
 
     return unless postcode
     ltree_sanitize(postcode)
