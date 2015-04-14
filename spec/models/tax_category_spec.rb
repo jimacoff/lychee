@@ -7,17 +7,22 @@ RSpec.describe TaxCategory, type: :model, site_scoped: true do
   end
   has_context 'metadata'
   has_context 'versioned'
-  # Add additonal shared contexts
 
   context 'table structure' do
     it { is_expected.to have_db_column(:name).of_type(:string) }
-    it do
-      is_expected.to have_db_column(:site_primary_tax_category_id)
+    it 'should have nullable column site_primary_tax_category_id bigint' do
+      expect(subject).to have_db_column(:site_primary_tax_category_id)
         .of_type(:integer)
+        .with_options(limit: 8, null: true)
     end
+    it { is_expected.to have_db_index(:site_primary_tax_category_id) }
   end
 
   context 'relationships' do
+    it 'can be referenced as sites primary tax category' do
+      expect(subject).to belong_to(:site_primary_tax_category)
+        .class_name('Site')
+    end
     it { is_expected.to have_many :tax_rates }
   end
 
@@ -25,7 +30,6 @@ RSpec.describe TaxCategory, type: :model, site_scoped: true do
     it { is_expected.to validate_presence_of :name }
 
     context 'instance validations' do
-      # subject { create :tax_category }
     end
   end
 end

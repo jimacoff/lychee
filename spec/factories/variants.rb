@@ -1,7 +1,10 @@
 FactoryGirl.define do
   factory :variant do
     product
-    association :inventory, factory: :tracked_inventory
+
+    after(:create) do |v|
+      v.inventory = create(:tracked_inventory, variant: v)
+    end
 
     factory :variant_with_varied_price do
       after(:build) do |v|

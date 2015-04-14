@@ -1,6 +1,6 @@
 class WhitelistedCountry < ActiveRecord::Base
-  belongs_to :site
-  belongs_to :country
+  include ParentSite
+  include ParentCountry
 
   has_paper_trail
   valhammer

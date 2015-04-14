@@ -26,10 +26,17 @@ RSpec.describe OrderLine, type: :model, site_scoped: true do
     it { is_expected.to have_db_column(:total_cents).of_type(:integer) }
     it { is_expected.to have_db_column(:currency).of_type(:string) }
     it { is_expected.to have_db_column(:quantity).of_type(:integer) }
+
+    it 'should have non nullable column order_id of type bigint' do
+      expect(subject).to have_db_column(:order_id)
+        .of_type(:integer)
+        .with_options(limit: 8, null: false)
+    end
+    it { is_expected.to have_db_index(:order_id) }
   end
 
   context 'relationships' do
-    it { is_expected.to belong_to :order }
+    it { is_expected.to belong_to(:order).class_name('Order') }
   end
 
   context 'validations' do

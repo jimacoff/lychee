@@ -9,7 +9,7 @@ class CreateOrders < ActiveRecord::Migration
       t.hstore :metadata, null: true
       t.text :tags, array: true, default:[]
 
-      t.belongs_to :site, null: false, index: true
+      t.references :site, null: false, index: true
 
       t.timestamps null: false
     end

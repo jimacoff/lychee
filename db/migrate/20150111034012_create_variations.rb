@@ -1,8 +1,8 @@
 class CreateVariations < ActiveRecord::Migration
   def change
     create_table :variations do |t|
-      t.belongs_to :product, null: false
-      t.belongs_to :trait, null: false
+      t.references :product, null: false, index: true
+      t.references :trait, null: false, index: true
 
       t.integer :order, null: false,
                         only_integer: true,

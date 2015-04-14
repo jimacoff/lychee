@@ -10,6 +10,27 @@ RSpec.describe Variation, type: :model, site_scoped: true do
 
   context 'table structure' do
     it { is_expected.to have_db_column(:order).of_type(:integer) }
+
+    it 'should have non nullable column product_id of type bigint' do
+      expect(subject).to have_db_column(:product_id)
+        .of_type(:integer)
+        .with_options(limit: 8, null: false)
+    end
+    it { is_expected.to have_db_index(:product_id) }
+
+    it 'should have non nullable column trait_id of type bigint' do
+      expect(subject).to have_db_column(:trait_id)
+        .of_type(:integer)
+        .with_options(limit: 8, null: false)
+    end
+    it { is_expected.to have_db_index(:trait_id) }
+  end
+
+  context 'relationships' do
+    it { is_expected.to belong_to(:product).class_name('Product') }
+    it { is_expected.to belong_to(:trait).class_name('Trait') }
+    it { is_expected.to have_many :variation_instances }
+    it { is_expected.to have_many :variants }
   end
 
   context 'validations' do
@@ -17,13 +38,6 @@ RSpec.describe Variation, type: :model, site_scoped: true do
     it { is_expected.to validate_presence_of :trait }
     it { is_expected.to validate_presence_of(:order) }
     it { is_expected.to validate_numericality_of(:order).only_integer }
-  end
-
-  context 'relationships' do
-    it { is_expected.to belong_to :product }
-    it { is_expected.to belong_to :trait }
-    it { is_expected.to have_many :variation_instances }
-    it { is_expected.to have_many :variants }
   end
 
   it 'only allow integers for order which are greater than or equal to 0' do

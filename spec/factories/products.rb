@@ -9,7 +9,9 @@ FactoryGirl.define do
     end
 
     factory :standalone_product do
-      association :inventory, factory: :tracked_inventory
+      after(:create) do |p|
+        p.inventory = create(:tracked_inventory, product: p)
+      end
     end
 
     trait :with_categories do

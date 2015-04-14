@@ -28,10 +28,17 @@ RSpec.describe Product, type: :model, site_scoped: true do
     it { is_expected.to have_db_column(:active).of_type(:boolean) }
     it { is_expected.to have_db_column(:not_before).of_type(:datetime) }
     it { is_expected.to have_db_column(:not_after).of_type(:datetime) }
+
+    it 'should have non nullable column tax_override_id of type bigint' do
+      expect(subject).to have_db_column(:tax_override_id)
+        .of_type(:integer)
+        .with_options(limit: 8, null: true)
+    end
+    it { is_expected.to have_db_index(:tax_override_id) }
   end
 
   context 'relationships' do
-    it { is_expected.to belong_to :tax_override }
+    it { is_expected.to belong_to(:tax_override).class_name('TaxCategory') }
 
     it { is_expected.to have_many :variants }
     it { is_expected.to have_many :variations }
@@ -56,18 +63,18 @@ RSpec.describe Product, type: :model, site_scoped: true do
                           'does not define variants')
           end
           it 'is valid with inventory specified' do
-            subject.inventory = create(:tracked_inventory)
+            subject.inventory = create(:tracked_inventory, product: subject)
             expect(subject).to be_valid
           end
         end
 
         context 'with variants' do
           before { create_list(:variant, 2, product: subject) }
-          it 'is valid with inventory specified' do
+          it 'is valid without inventory specified' do
             expect(subject).to be_valid
           end
-          it 'is invalid without inventory specified' do
-            subject.inventory = create(:tracked_inventory)
+          it 'is invalid with inventory specified' do
+            subject.inventory = create(:tracked_inventory, product: subject)
             expect(subject).not_to be_valid
             expect(subject.errors.full_messages)
               .to include('Inventory must not be provided if product '\

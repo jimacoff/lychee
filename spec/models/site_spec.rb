@@ -69,6 +69,8 @@ RSpec.describe Site, type: :model do
           let(:country2) { create :country }
           let(:country3) { create :country }
 
+          before { Site.current = subject }
+
           context 'only prioritized countries specified' do
             before do
               subject.prioritized_countries << create(:prioritized_country,
@@ -180,17 +182,17 @@ RSpec.describe Site, type: :model do
             context 'prioritized countries are blacklisted' do
               before do
                 subject.blacklisted_countries << create(:blacklisted_country,
-                                                        site: subject,
                                                         country: country1)
                 subject.prioritized_countries << create(:prioritized_country,
-                                                        site: subject,
                                                         country: country1)
                 subject.prioritized_countries << create(:prioritized_country,
-                                                        site: subject,
                                                         country: country2)
               end
 
-              it { is_expected.not_to be_valid }
+              # it { is_expected.not_to be_valid }
+              it 'is expected not to be valid' do
+                expect(subject).not_to be_valid
+              end
               has_context 'expected blacklisted country state'
             end
           end

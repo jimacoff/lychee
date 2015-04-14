@@ -3,6 +3,7 @@ require 'factory_girl_rails'
 
 SimpleCov.start do
   add_filter '/spec'
+  add_filter '/config'
 end
 
 RSpec.configure do |config|

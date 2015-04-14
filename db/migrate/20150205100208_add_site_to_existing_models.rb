@@ -5,7 +5,7 @@ class AddSiteToExistingModels < ActiveRecord::Migration
   def change
     TABLES.each do |table|
       change_table table do |t|
-        t.belongs_to :site, null: false, index: true
+        t.references :site, null: false, index: true
       end
     end
   end

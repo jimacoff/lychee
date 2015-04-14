@@ -4,7 +4,9 @@ RSpec.describe Inventory, type: :model, site_scoped: true do
   has_context 'parent site' do
     let(:factory) { :tracked_product_inventory }
   end
-
+  has_context 'item reference' do
+    let(:factory) { :untracked_inventory }
+  end
   has_context 'versioned'
   has_context 'metadata'
 
@@ -17,8 +19,6 @@ RSpec.describe Inventory, type: :model, site_scoped: true do
   end
 
   context 'relationships' do
-    it { is_expected.to belong_to(:product) }
-    it { is_expected.to belong_to(:variant) }
   end
 
   context 'validations' do

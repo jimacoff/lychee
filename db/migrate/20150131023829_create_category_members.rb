@@ -1,10 +1,10 @@
 class CreateCategoryMembers < ActiveRecord::Migration
   def change
     create_table :category_members do |t|
-      t.belongs_to :category, null: false
+      t.references :category, null: false
 
-      t.belongs_to :product
-      t.belongs_to :variant
+      t.references :product, null: true, index: true
+      t.references :variant, null: true, index: true
 
       t.timestamps
     end

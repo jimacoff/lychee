@@ -8,6 +8,9 @@ RSpec.describe Address, type: :model, site_scoped: true do
   has_context 'parent country' do
     let(:factory) { :address }
   end
+  has_context 'parent state' do
+    let(:factory) { :address }
+  end
   has_context 'versioned'
   has_context 'metadata'
 
@@ -19,12 +22,25 @@ RSpec.describe Address, type: :model, site_scoped: true do
 
     it { is_expected.to have_db_column(:locality).of_type(:string) }
     it { is_expected.to have_db_column(:postcode).of_type(:string) }
+
+    it 'should have nullable column order_customer_address_id of type bigint' do
+      expect(subject).to have_db_column(:order_customer_address_id)
+        .of_type(:integer)
+        .with_options(limit: 8, null: true)
+    end
+    it { is_expected.to have_db_index(:order_customer_address_id) }
+
+    it 'should have nullable column order_delivery_address_id of type bigint' do
+      expect(subject).to have_db_column(:order_delivery_address_id)
+        .of_type(:integer)
+        .with_options(limit: 8, null: true)
+    end
+    it { is_expected.to have_db_index(:order_delivery_address_id) }
   end
 
   context 'relationships' do
     it { is_expected.to belong_to(:order_customer_address) }
     it { is_expected.to belong_to(:order_delivery_address) }
-    it { is_expected.to belong_to(:country) }
   end
 
   context 'validations' do

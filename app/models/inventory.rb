@@ -1,9 +1,7 @@
 class Inventory < ActiveRecord::Base
   include ParentSite
+  include ItemReference
   include Metadata
-
-  belongs_to :product
-  belongs_to :variant
 
   with_options if: :tracked? do |inv|
     inv.validates :quantity, presence: true

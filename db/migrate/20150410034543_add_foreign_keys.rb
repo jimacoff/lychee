@@ -34,7 +34,6 @@ class AddForeignKeys < ActiveRecord::Migration
       t.add_foreign_key 'products', 'sites'
       t.add_foreign_key 'tax_rates', 'sites'
       t.add_foreign_key 'tax_rates', 'tax_categories'
-      t.add_foreign_key 'tenants', 'sites'
       t.add_foreign_key 'traits', 'sites'
       t.add_foreign_key 'variants', 'products'
       t.add_foreign_key 'variants', 'sites'

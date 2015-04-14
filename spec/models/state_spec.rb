@@ -1,6 +1,9 @@
 require 'rails_helper'
 
 RSpec.describe State, type: :model, site_scoped: true do
+  has_context 'parent country' do
+    let(:factory) { :state }
+  end
   has_context 'versioned'
 
   context 'table structure' do
@@ -11,7 +14,6 @@ RSpec.describe State, type: :model, site_scoped: true do
   end
 
   context 'relationships' do
-    it { is_expected.to belong_to :country }
   end
 
   context 'validations' do

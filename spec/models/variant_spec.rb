@@ -18,10 +18,18 @@ RSpec.describe Variant, type: :model, site_scoped: true do
     it { is_expected.to have_db_column(:sku).of_type(:string) }
     it { is_expected.to have_db_column(:grams).of_type(:integer) }
     it { is_expected.to have_db_column(:varied_price_cents).of_type(:integer) }
+
+    it 'should have non nullable column product_id of type bigint' do
+      expect(subject).to have_db_column(:product_id)
+        .of_type(:integer)
+        .with_options(limit: 8, null: false)
+    end
+    it { is_expected.to have_db_index(:product_id) }
   end
 
   context 'relationships' do
-    it { is_expected.to belong_to :product }
+    it { is_expected.to belong_to(:product).class_name('Product') }
+
     it { is_expected.to have_many :variation_instances }
     it { is_expected.to have_many :variations }
     it { is_expected.to have_many :traits }
@@ -36,7 +44,7 @@ RSpec.describe Variant, type: :model, site_scoped: true do
     it { is_expected.to validate_presence_of :variation_instances }
 
     context 'instance validations' do
-      subject { create :variant }
+      subject { Variant.create(product: create(:product)) }
       it { is_expected.to validate_presence_of :inventory }
     end
   end

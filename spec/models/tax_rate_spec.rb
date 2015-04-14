@@ -7,11 +7,19 @@ RSpec.describe TaxRate, type: :model, site_scoped: true do
   has_context 'parent country' do
     let(:factory) { :tax_rate }
   end
+  has_context 'parent state' do
+    let(:factory) { :tax_rate }
+  end
   has_context 'metadata'
   has_context 'versioned'
 
   context 'table structure' do
-    it { is_expected.to have_db_column(:tax_category_id).of_type(:integer) }
+    it 'should have non nullable column tax_category_id of type bigint' do
+      expect(subject).to have_db_column(:tax_category_id)
+        .of_type(:integer)
+        .with_options(limit: 8, null: false)
+    end
+    it { is_expected.to have_db_index(:tax_category_id) }
 
     it { is_expected.to have_db_column(:rate).of_type(:decimal) }
 
@@ -29,7 +37,7 @@ RSpec.describe TaxRate, type: :model, site_scoped: true do
   end
 
   context 'relationships' do
-    it { is_expected.to belong_to :country }
+    it { is_expected.to belong_to(:tax_category).class_name('TaxCategory') }
   end
 
   context 'validations' do

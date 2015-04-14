@@ -1,8 +1,8 @@
 class CreateVariationInstances < ActiveRecord::Migration
   def change
     create_table :variation_instances do |t|
-      t.belongs_to :variation, null: false
-      t.belongs_to :variant, null: false
+      t.references :variation, null: false, index: true
+      t.references :variant, null: false, index: true
 
       t.string :value, null: false
 

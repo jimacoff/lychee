@@ -1,7 +1,7 @@
 class CreateStates < ActiveRecord::Migration
   def change
     create_table :states do |t|
-      t.belongs_to :country, index: true
+      t.references :country, null: false, index: true
 
       t.string :name, null: false
       t.string :iso_code, null: false

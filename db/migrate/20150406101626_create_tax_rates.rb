@@ -7,9 +7,9 @@ class CreateTaxRates < ActiveRecord::Migration
       t.string :description, null: false
       t.string :invoice_note
 
-      t.belongs_to :site, null: false, index: true
+      t.references :site, null: false, index: true
 
-      t.belongs_to :country, null: false, index: true
+      t.references :country, null: false, index: true
       t.string :state
       t.string :postcode
       t.string :city

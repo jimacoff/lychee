@@ -1,6 +1,7 @@
 class Address < ActiveRecord::Base
   include ParentSite
   include ParentCountry
+  include ParentState
   include Metadata
 
   belongs_to :order_customer_address, class_name: 'Order',

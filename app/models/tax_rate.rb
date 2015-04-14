@@ -1,6 +1,7 @@
 class TaxRate < ActiveRecord::Base
   include ParentSite
   include ParentCountry
+  include ParentState
   include Metadata
 
   belongs_to :tax_category
