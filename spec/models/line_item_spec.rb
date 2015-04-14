@@ -1,19 +1,19 @@
 require 'rails_helper'
 
-RSpec.describe OrderLine, type: :model, site_scoped: true do
+RSpec.describe LineItem, type: :model, site_scoped: true do
   has_context 'parent site' do
-    let(:factory) { :product_order_line }
+    let(:factory) { :product_line_item }
   end
   has_context 'parent site' do
-    let(:factory) { :variant_order_line }
+    let(:factory) { :variant_line_item }
   end
   has_context 'item reference' do
-    let(:factory) { :order_line }
+    let(:factory) { :line_item }
   end
 
   has_context 'versioned'
 
-  has_context 'monies', :order_line,
+  has_context 'monies', :line_item,
               [{ field: :price, calculated: false },
                { field: :total, calculated: true }]
 
@@ -49,7 +49,7 @@ RSpec.describe OrderLine, type: :model, site_scoped: true do
   end
 
   describe '#total' do
-    subject { build :order_line }
+    subject { build :line_item }
     let(:expected_total) { subject.price * subject.quantity }
     it 'represents price * quantity' do
       expect(subject.total).to eq(expected_total)
@@ -85,34 +85,34 @@ RSpec.describe OrderLine, type: :model, site_scoped: true do
   end
 
   describe '#quantity=' do
-    let(:order_line) { build :order_line }
+    let(:line_item) { build :line_item }
     let(:new_quantity) { Faker::Number.number(3).to_i + 1 }
-    let(:new_total) { order_line.price * new_quantity }
+    let(:new_total) { line_item.price * new_quantity }
     def run
-      order_line.quantity = new_quantity
+      line_item.quantity = new_quantity
     end
 
     subject { -> { run } }
-    it { is_expected.to change(order_line, :quantity).to eq(new_quantity) }
-    it { is_expected.to change(order_line, :total).to eq(new_total) }
+    it { is_expected.to change(line_item, :quantity).to eq(new_quantity) }
+    it { is_expected.to change(line_item, :total).to eq(new_total) }
   end
 
   describe '#price=' do
-    let(:order_line) { build :order_line }
+    let(:line_item) { build :line_item }
     let(:new_price) { Faker::Number.number(4).to_i }
     let(:new_price_money) do
-      Money.new(new_price, order_line.site.currency)
+      Money.new(new_price, line_item.site.currency)
     end
-    let(:new_total) { new_price * order_line.quantity }
+    let(:new_total) { new_price * line_item.quantity }
     let(:new_total_money) do
-      Money.new(new_total, order_line.site.currency)
+      Money.new(new_total, line_item.site.currency)
     end
     def run
-      order_line.price = new_price
+      line_item.price = new_price
     end
 
     subject { -> { run } }
-    it { is_expected.to change(order_line, :price).to eq(new_price_money) }
-    it { is_expected.to change(order_line, :total).to eq(new_total_money) }
+    it { is_expected.to change(line_item, :price).to eq(new_price_money) }
+    it { is_expected.to change(line_item, :total).to eq(new_total_money) }
   end
 end

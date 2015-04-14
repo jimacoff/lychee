@@ -10,7 +10,7 @@ class Order < ActiveRecord::Base
   has_one :delivery_address, class_name: 'Address',
                              foreign_key: 'order_delivery_address_id'
 
-  has_many :order_lines
+  has_many :line_items
 
   monies [{ field: :total, calculated: true }]
 
@@ -30,9 +30,9 @@ class Order < ActiveRecord::Base
   end
 
   def calculate_total
-    return create_monentary_value(0) unless order_lines.present?
+    return create_monentary_value(0) unless line_items.present?
 
     # TODO: Taxation and postage
-    create_monentary_value(order_lines.map(&:total).sum.cents)
+    create_monentary_value(line_items.map(&:total).sum.cents)
   end
 end

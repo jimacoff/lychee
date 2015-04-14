@@ -1,4 +1,4 @@
-class OrderLine < ActiveRecord::Base
+class LineItem < ActiveRecord::Base
   include ParentSite
   include ItemReference
 

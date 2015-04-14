@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20150412030310) do
+ActiveRecord::Schema.define(version: 20150414100924) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -109,7 +109,7 @@ ActiveRecord::Schema.define(version: 20150412030310) do
   add_index "inventories", ["site_id"], name: "index_inventories_on_site_id", using: :btree
   add_index "inventories", ["variant_id"], name: "index_inventories_on_variant_id", using: :btree
 
-  create_table "order_lines", id: :bigserial, force: :cascade do |t|
+  create_table "line_items", id: :bigserial, force: :cascade do |t|
     t.string   "customisation"
     t.integer  "quantity",                                null: false
     t.integer  "price_cents",                             null: false
@@ -125,10 +125,10 @@ ActiveRecord::Schema.define(version: 20150412030310) do
     t.datetime "updated_at",                              null: false
   end
 
-  add_index "order_lines", ["order_id"], name: "index_order_lines_on_order_id", using: :btree
-  add_index "order_lines", ["product_id"], name: "index_order_lines_on_product_id", using: :btree
-  add_index "order_lines", ["site_id"], name: "index_order_lines_on_site_id", using: :btree
-  add_index "order_lines", ["variant_id"], name: "index_order_lines_on_variant_id", using: :btree
+  add_index "line_items", ["order_id"], name: "index_line_items_on_order_id", using: :btree
+  add_index "line_items", ["product_id"], name: "index_line_items_on_product_id", using: :btree
+  add_index "line_items", ["site_id"], name: "index_line_items_on_site_id", using: :btree
+  add_index "line_items", ["variant_id"], name: "index_line_items_on_variant_id", using: :btree
 
   create_table "orders", id: :bigserial, force: :cascade do |t|
     t.integer  "total_cents",                             null: false
@@ -354,10 +354,10 @@ ActiveRecord::Schema.define(version: 20150412030310) do
   add_foreign_key "inventories", "products", on_delete: :cascade
   add_foreign_key "inventories", "sites", on_delete: :cascade
   add_foreign_key "inventories", "variants", on_delete: :cascade
-  add_foreign_key "order_lines", "orders", on_delete: :cascade
-  add_foreign_key "order_lines", "products", on_delete: :restrict
-  add_foreign_key "order_lines", "sites", on_delete: :cascade
-  add_foreign_key "order_lines", "variants", on_delete: :restrict
+  add_foreign_key "line_items", "orders", on_delete: :cascade
+  add_foreign_key "line_items", "products", on_delete: :restrict
+  add_foreign_key "line_items", "sites", on_delete: :cascade
+  add_foreign_key "line_items", "variants", on_delete: :restrict
   add_foreign_key "orders", "sites", on_delete: :cascade
   add_foreign_key "prioritized_countries", "countries"
   add_foreign_key "prioritized_countries", "sites"

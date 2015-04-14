@@ -7,7 +7,7 @@ FactoryGirl.define do
 
     trait :with_products do
       after(:create) do |o|
-        o.order_lines = create_list(:product_order_line, 5, order: o)
+        o.line_items = create_list(:product_line_item, 5, order: o)
       end
     end
   end
