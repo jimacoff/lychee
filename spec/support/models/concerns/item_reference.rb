@@ -31,17 +31,17 @@ RSpec.shared_examples 'item reference' do
       end
 
       context 'neither product nor variant specified' do
-        subject { build factory }
+        subject { build factory, product: nil, variant: nil }
         it { is_expected.to be_invalid }
       end
 
       context 'only product specified' do
-        subject { build(factory, product: product) }
+        subject { build(factory, product: product, variant: nil) }
         it { is_expected.to be_valid }
       end
 
       context 'only variant specified' do
-        subject { build(factory, variant: variant) }
+        subject { build(factory, product: nil, variant: variant) }
         it { is_expected.to be_valid }
       end
     end

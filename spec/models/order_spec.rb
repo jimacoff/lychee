@@ -17,7 +17,7 @@ RSpec.describe Order, type: :model, site_scoped: true do
   context 'relationships' do
     it { is_expected.to have_one :customer_address }
     it { is_expected.to have_one :delivery_address }
-    it { is_expected.to have_many :line_items }
+    it { is_expected.to have_many :commodity_line_items }
   end
 
   context 'validations' do
@@ -33,11 +33,12 @@ RSpec.describe Order, type: :model, site_scoped: true do
 
   describe '#calculate_total' do
     # TODO: Taxation and postage
-    subject { create :order, line_items: line_items }
-    let(:line_items) { create_list(:product_line_item, 3) }
-    let(:expected_total) { line_items.map(&:total).sum }
+    subject { create :order, commodity_line_items: commodity_line_items }
+    let(:commodity_line_items) { create_list(:commodity_line_item, 3) }
+    let(:expected_total) { commodity_line_items.map(&:total).sum }
 
     it 'represents totals of all order lines' do
+      # binding.pry
       expect(subject.calculate_total).to eq(expected_total)
     end
 
@@ -51,8 +52,8 @@ RSpec.describe Order, type: :model, site_scoped: true do
 
     context 'when an line_item is modified' do
       def run
-        subject.line_items[0].quantity = Faker::Number.number(2)
-        subject.line_items[0].save
+        subject.commodity_line_items[0].quantity = Faker::Number.number(2)
+        subject.commodity_line_items[0].save
       end
 
       it 'order total is re-calculated' do
@@ -61,9 +62,9 @@ RSpec.describe Order, type: :model, site_scoped: true do
     end
 
     context 'when an line_item is added' do
-      let(:line_item) { create(:product_line_item, order: subject) }
+      let(:line_item) { create(:commodity_line_item, order: subject) }
       def run
-        subject.line_items << line_item
+        subject.commodity_line_items << line_item
       end
 
       it 're-calculates order total' do
@@ -71,13 +72,13 @@ RSpec.describe Order, type: :model, site_scoped: true do
       end
 
       it 'increases number of lines in the order' do
-        expect { run }.to change(subject.line_items, :size).by(1)
+        expect { run }.to change(subject.commodity_line_items, :size).by(1)
       end
     end
 
     context 'when an line_item is removed' do
       def run
-        subject.line_items.destroy(line_items.last)
+        subject.commodity_line_items.destroy(commodity_line_items.last)
       end
 
       it 're-calculates order total' do
@@ -85,7 +86,7 @@ RSpec.describe Order, type: :model, site_scoped: true do
       end
 
       it 'decreases number of lines in the order' do
-        expect { run }.to change(subject.line_items, :size).by(-1)
+        expect { run }.to change(subject.commodity_line_items, :size).by(-1)
       end
     end
   end

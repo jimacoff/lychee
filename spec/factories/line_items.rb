@@ -1,15 +1,15 @@
 FactoryGirl.define do
-  factory :line_item do
+  factory :commodity_line_item do
     order
+    product
     quantity { Faker::Number.number(1).to_i + 1 }
     price { Faker::Number.number(4).to_i + 1 }
+  end
 
-    factory :product_line_item do
-      product
-    end
-
-    factory :variant_line_item do
-      variant
-    end
+  factory :commodity_variant_line_item, class: :commodity_line_item do
+    order
+    variant
+    quantity { Faker::Number.number(1).to_i + 1 }
+    price { Faker::Number.number(4).to_i + 1 }
   end
 end

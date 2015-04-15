@@ -14,6 +14,8 @@ gem 'paper_trail', '~>4.0.0.beta2'
 gem 'valhammer', git: 'https://github.com/ausaccessfed/valhammer.git',
                  branch: 'develop'
 
+gem 'abstract_method'
+
 # Web
 gem 'uglifier', '~> 2.5.3'
 gem 'therubyracer',  platforms: :ruby
