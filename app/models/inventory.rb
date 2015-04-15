@@ -1,6 +1,6 @@
 class Inventory < ActiveRecord::Base
   include ParentSite
-  include ItemReference
+  include CommodityReference
   include Metadata
 
   with_options if: :tracked? do |inv|

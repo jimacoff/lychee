@@ -4,7 +4,7 @@ RSpec.describe Inventory, type: :model, site_scoped: true do
   has_context 'parent site' do
     let(:factory) { :tracked_product_inventory }
   end
-  has_context 'item reference' do
+  has_context 'commodity reference' do
     let(:factory) { :untracked_inventory }
   end
   has_context 'versioned'

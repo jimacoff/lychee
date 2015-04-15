@@ -1,4 +1,4 @@
-module ItemReference
+module CommodityReference
   extend ActiveSupport::Concern
 
   included do

@@ -1,6 +1,6 @@
 class CategoryMember < ActiveRecord::Base
   include ParentSite
-  include ItemReference
+  include CommodityReference
 
   belongs_to :category
 

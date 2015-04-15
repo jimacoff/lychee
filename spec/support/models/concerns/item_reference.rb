@@ -1,4 +1,4 @@
-RSpec.shared_examples 'item reference' do
+RSpec.shared_examples 'commodity reference' do
   context 'table structure' do
     it 'should have non nullable column product_id of type bigint' do
       expect(subject).to have_db_column(:product_id)

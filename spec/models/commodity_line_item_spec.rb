@@ -4,10 +4,10 @@ RSpec.describe CommodityLineItem, type: :model, site_scoped: true do
   has_context 'line item', :commodity_line_item
   has_context 'line item', :commodity_variant_line_item
 
-  has_context 'item reference' do
+  has_context 'commodity reference' do
     let(:factory) { :commodity_line_item }
   end
-  has_context 'item reference' do
+  has_context 'commodity reference' do
     let(:factory) { :commodity_variant_line_item }
   end
 

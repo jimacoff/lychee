@@ -1,5 +1,5 @@
 class CommodityLineItem < LineItem
-  include ItemReference
+  include CommodityReference
 
   private
 

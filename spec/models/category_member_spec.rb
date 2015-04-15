@@ -4,7 +4,7 @@ RSpec.describe CategoryMember, type: :model, site_scoped: true do
   has_context 'parent site' do
     let(:factory) { :product_category_member }
   end
-  has_context 'item reference' do
+  has_context 'commodity reference' do
     let(:factory) { :category_member }
   end
 
