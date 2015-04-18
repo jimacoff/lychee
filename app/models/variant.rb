@@ -22,10 +22,6 @@ class Variant < ActiveRecord::Base
   validates :inventory, presence: true, on: :update
   validates :variation_instances, presence: true, on: :update
 
-  after_initialize do
-    write_attribute(:currency, Site.current.currency.iso_code)
-  end
-
   def price
     varied_price || product.price
   end

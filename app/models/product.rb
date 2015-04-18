@@ -24,10 +24,6 @@ class Product < ActiveRecord::Base
 
   validate :inventory, :validate_inventory
 
-  after_initialize do
-    write_attribute(:currency, Site.current.currency.iso_code)
-  end
-
   def validate_inventory
     return if new_record?
     inventory_required

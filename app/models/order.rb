@@ -25,7 +25,6 @@ class Order < ActiveRecord::Base
   # as many details as possible for use with risk APIs
 
   after_initialize do
-    write_attribute(:currency, Site.current.currency.iso_code)
     change_total(0)
   end
 

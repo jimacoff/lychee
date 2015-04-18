@@ -1,11 +1,16 @@
 module Monies
   module ClassMethods
+    # rubocop:disable MethodLength
     def monies(monies)
       monies.each do |money|
         field, calculated, allow_nil = parse_options(money)
 
         monetize "#{field}_cents", with_model_currency: :currency,
                                    allow_nil: allow_nil
+
+        after_initialize do
+          write_attribute(:currency, Site.current.currency.iso_code)
+        end
 
         define_public_methods(field, calculated)
 

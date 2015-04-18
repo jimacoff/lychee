@@ -12,7 +12,6 @@ class LineItem < ActiveRecord::Base
   valhammer
 
   after_initialize do
-    write_attribute(:currency, Site.current.currency.iso_code)
     change_total(0)
   end
 
