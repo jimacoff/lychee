@@ -4,6 +4,10 @@ RSpec.shared_examples 'monies' do |factory, monies|
   it { is_expected.to be_a_kind_of(Monies) }
 
   context 'currency' do
+    context 'table structure' do
+      it { is_expected.to have_db_column(:currency).of_type(:string) }
+    end
+
     let(:new_currency) { Money::Currency.new('JPY') }
     let(:old_currency) { Money::Currency.new('AUD') }
 
@@ -41,6 +45,10 @@ RSpec.shared_examples 'monies' do |factory, monies|
   monies.each do |money_record|
     money = money_record[:field]
     calculated = money_record[:calculated]
+
+    context 'table structure' do
+      it { is_expected.to have_db_column("#{money}_cents").of_type(:integer) }
+    end
 
     context "#{money}" do
       describe "##{money}=" do
