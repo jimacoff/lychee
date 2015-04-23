@@ -7,6 +7,12 @@ RSpec.describe ShippingRateRegion, type: :model, site_scoped: true do
   has_context 'hierarchy' do
     let(:factory) { :shipping_rate_region }
   end
+  has_context 'parent country' do
+    let(:factory) { :shipping_rate_region }
+  end
+  has_context 'parent state' do
+    let(:factory) { :shipping_rate_region }
+  end
   has_context 'versioned'
   has_context 'metadata'
 

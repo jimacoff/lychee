@@ -227,7 +227,6 @@ ActiveRecord::Schema.define(version: 20150416091102) do
     t.string   "name",                    null: false
     t.string   "iso_code",                null: false
     t.string   "postal_format",           null: false
-    t.string   "tax_code",                null: false
     t.datetime "created_at",              null: false
     t.datetime "updated_at",              null: false
   end

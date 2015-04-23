@@ -3,6 +3,11 @@ class ShippingRate < ActiveRecord::Base
   include Monies
   include Metadata
 
+  scope :supports_location, lambda { |location|
+    joins(:shipping_rate_regions)
+      .where('shipping_rate_regions.hierarchy @> ?', location).uniq
+  }
+
   scope :satisfies_price, lambda { |subtotal_cents|
     fail 'must query in base monetary units' unless subtotal_cents.is_a? Integer
 
@@ -28,4 +33,15 @@ class ShippingRate < ActiveRecord::Base
 
   has_paper_trail
   valhammer
+
+  def location?(location)
+    shipping_rate_regions.supports_location(location).count > 0
+  end
+
+  def price(location)
+    region = shipping_rate_regions.supports_location(location).first
+    fail('region not supported') unless region
+
+    region.price
+  end
 end

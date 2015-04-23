@@ -208,5 +208,81 @@ RSpec.describe ShippingRate, type: :model, site_scoped: true do
         end
       end
     end
+
+    describe 'supports_location' do
+      let(:au) { create :country, iso_alpha2: 'au' }
+      let(:nz) { create :country, iso_alpha2: 'nz' }
+
+      let!(:sr) { create :shipping_rate }
+      let!(:r1) do
+        create :shipping_rate_region, country: au, shipping_rate: sr
+      end
+      let!(:r2) do
+        create :shipping_rate_region, country: nz, shipping_rate: sr
+      end
+
+      let!(:sr2) { create :shipping_rate }
+      let!(:r3) do
+        create :shipping_rate_region, country: au, shipping_rate: sr2
+      end
+
+      it 'has two possible shipping rates' do
+        expect(ShippingRate.count).to eq(2)
+      end
+
+      it 'indicates multiple shipping rates for location' do
+        expect(ShippingRate.supports_location('au')).to contain_exactly(sr, sr2)
+      end
+
+      it 'indicates single shipping rate for location' do
+        expect(ShippingRate.supports_location('nz')).to contain_exactly(sr)
+      end
+
+      it 'indicates no shipping rates for location' do
+        expect(ShippingRate.supports_location('ca')).to be_empty
+      end
+    end
+  end
+
+  describe '#location' do
+    let(:au) { create :country, iso_alpha2: 'au' }
+
+    let!(:sr) { create :shipping_rate }
+    let!(:r1) do
+      create :shipping_rate_region, country: au, shipping_rate: sr
+    end
+
+    it 'is true when region supported' do
+      expect(sr.location?('au')).to be
+    end
+
+    it 'is false when region unsupported' do
+      expect(sr.location?('nz')).not_to be
+    end
+  end
+
+  describe '#price' do
+    let(:au) { create :country, iso_alpha2: 'au' }
+    let(:qld) { create :state, iso_code: 'qld', country: au }
+
+    let!(:sr) { create :shipping_rate }
+    let!(:r1) do
+      create :shipping_rate_region, country: au, shipping_rate: sr
+    end
+    let!(:r2) do
+      create :shipping_rate_region, country: au, state: qld, shipping_rate: sr
+    end
+
+    it 'returns price for supported region' do
+      expect(sr.price('au.vic')).to eq(r1.price)
+    end
+
+    it 'returns price for sub-region with more specific pricing' do
+      expect(sr.price('au.qld')).to eq(r2.price)
+    end
+
+    it 'throws failure if region not supported' do
+      expect { sr.price('nz') }.to raise_exception('region not supported')
+    end
   end
 end
