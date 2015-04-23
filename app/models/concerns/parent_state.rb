@@ -16,9 +16,9 @@ module ParentState
 
   def define_invalid_state_errors
     if country.try(:states?) && !state.present?
-      errors.add(:state, 'Address requires specification of state')
+      errors.add(:base, 'requires specification of state')
     else
-      errors.add(:state, 'Address does not require specification of state')
+      errors.add(:base, 'does not require specification of state')
     end
   end
 

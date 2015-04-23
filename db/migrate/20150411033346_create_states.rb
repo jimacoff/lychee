@@ -6,7 +6,6 @@ class CreateStates < ActiveRecord::Migration
       t.string :name, null: false
       t.string :iso_code, null: false
       t.string :postal_format, null: false
-      t.string :tax_code, null: false
 
       t.timestamps null: false
     end

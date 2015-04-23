@@ -70,7 +70,7 @@ RSpec.shared_examples 'hierarchy' do
           subject.send(:determine_hierarchy)
           expect(subject.hierarchy)
             .to eq(
-              "#{subject.country.iso_alpha2}.#{subject.state.tax_code}" \
+              "#{subject.country.iso_alpha2}.#{subject.state.iso_code}" \
               '.12345.city')
         end
       end
@@ -89,7 +89,7 @@ RSpec.shared_examples 'hierarchy' do
         subject { create factory, state: state, country: country }
         it 'appends to hierarchy' do
           expect(subject.hierarchy)
-            .to eq("#{country.iso_alpha2}.#{state.tax_code}")
+            .to eq("#{country.iso_alpha2}.#{state.iso_code}")
         end
 
         context 'with postcode' do
@@ -101,7 +101,7 @@ RSpec.shared_examples 'hierarchy' do
 
           it 'appends to hierarchy' do
             expect(subject.hierarchy)
-              .to eq("#{country.iso_alpha2}.#{state.tax_code}.#{postcode}")
+              .to eq("#{country.iso_alpha2}.#{state.iso_code}.#{postcode}")
           end
 
           context 'with city' do
@@ -114,7 +114,7 @@ RSpec.shared_examples 'hierarchy' do
             it 'appends to hierarchy' do
               expect(subject.hierarchy)
                 .to eq(
-                  "#{country.iso_alpha2}.#{state.tax_code}" \
+                  "#{country.iso_alpha2}.#{state.iso_code}" \
                   ".#{postcode}.#{city}")
             end
           end

@@ -23,7 +23,7 @@ module Hierarchy
     ltree_sanitize(country.try(:iso_alpha2))
 
     return unless state
-    ltree_sanitize(state.tax_code)
+    ltree_sanitize(state.iso_code)
 
     return unless postcode
     ltree_sanitize(postcode)
