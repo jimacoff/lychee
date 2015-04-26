@@ -24,7 +24,7 @@ RSpec.describe Product, type: :model, site_scoped: true do
     it { is_expected.to have_db_column(:gtin).of_type(:string) }
     it { is_expected.to have_db_column(:sku).of_type(:string) }
     it { is_expected.to have_db_column(:price_cents).of_type(:integer) }
-    it { is_expected.to have_db_column(:grams).of_type(:integer) }
+    it { is_expected.to have_db_column(:weight).of_type(:integer) }
     it { is_expected.to have_db_column(:active).of_type(:boolean) }
     it { is_expected.to have_db_column(:not_before).of_type(:datetime) }
     it { is_expected.to have_db_column(:not_after).of_type(:datetime) }
