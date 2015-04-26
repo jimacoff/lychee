@@ -20,4 +20,9 @@ module CommodityReference
                              " #{items.join(', ')}")
     end
   end
+
+  def commodity
+    return product if product
+    variant
+  end
 end

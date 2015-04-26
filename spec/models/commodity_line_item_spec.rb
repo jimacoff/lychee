@@ -12,21 +12,67 @@ RSpec.describe CommodityLineItem, type: :model, site_scoped: true do
   end
 
   context 'table structure' do
-    it { is_expected.to have_db_column(:quantity).of_type(:integer) }
   end
 
   context 'relationships' do
   end
 
   context 'validations' do
-    it { is_expected.to validate_presence_of :quantity }
+    it { is_expected.to validate_numericality_of :quantity }
+    it { is_expected.to validate_numericality_of :weight }
+    it { is_expected.to validate_numericality_of :total_weight }
 
     context 'instance validations' do
     end
   end
 
+  context 'initial weight and price is populated from commodity' do
+    let(:product) { create :product }
+    let(:variant) { create :variant, product: product }
+
+    RSpec.shared_examples 'commodity initialization' do
+      let(:qty) { Faker::Number.number(2).to_i + 1 }
+
+      it 'is expected to set price to commodity price' do
+        expect(subject.price).to eq(commodity.price)
+      end
+
+      it 'is expected to set weight to commodity weight' do
+        expect(subject.weight).to eq(commodity.weight)
+      end
+    end
+
+    context 'with Product' do
+      let(:commodity) { product }
+      subject { create :commodity_line_item, product: product, quantity: qty }
+
+      include_examples 'commodity initialization'
+
+      describe '#commodity' do
+        it 'provides the product' do
+          expect(subject.commodity).to eq(product)
+        end
+      end
+    end
+
+    context 'with Variant' do
+      let(:commodity) { variant }
+      subject do
+        create :commodity_variant_line_item, variant: variant, quantity: qty
+      end
+
+      include_examples 'commodity initialization'
+
+      describe '#commodity' do
+        it 'provides the variant' do
+          expect(subject.commodity).to eq(variant)
+        end
+      end
+    end
+  end
+
   describe '#total' do
-    subject { build :commodity_line_item }
+    subject { create :commodity_line_item }
     let(:expected_total) { subject.price * subject.quantity }
     it 'represents price * quantity' do
       expect(subject.total).to eq(expected_total)
@@ -61,35 +107,36 @@ RSpec.describe CommodityLineItem, type: :model, site_scoped: true do
     end
   end
 
-  describe '#price=' do
-    let(:line_item) { build :commodity_line_item }
-    let(:new_price) { Faker::Number.number(4).to_i }
-    let(:new_price_money) do
-      Money.new(new_price, line_item.site.currency)
-    end
-    let(:new_total) { new_price * line_item.quantity }
-    let(:new_total_money) do
-      Money.new(new_total, line_item.site.currency)
-    end
+  describe '#quantity=' do
+    let(:product) { create :product, weight: Faker::Number.number(4).to_i + 1  }
+    let(:cli) { create :commodity_line_item, product: product }
+    let(:new_qty) { Faker::Number.number(3).to_i + 1 }
+    let(:new_total) { cli.price * new_qty }
+    let(:new_weight) { cli.weight * new_qty }
     def run
-      line_item.price = new_price
+      cli.quantity = new_qty
     end
 
     subject { -> { run } }
-    it { is_expected.to change(line_item, :price).to eq(new_price_money) }
-    it { is_expected.to change(line_item, :total).to eq(new_total_money) }
+    it { is_expected.to change(cli, :quantity).to eq(new_qty) }
+    it { is_expected.to change(cli, :total).to eq(new_total) }
+    it { is_expected.to change(cli, :total_weight).to eq(new_weight) }
   end
 
-  describe '#quantity=' do
-    let(:commodity_line_item) { build :commodity_line_item }
-    let(:new_qty) { Faker::Number.number(3).to_i + 1 }
-    let(:new_total) { commodity_line_item.price * new_qty }
+  describe '#weight=' do
+    let(:weight) { Faker::Number.number(4).to_i + 1 }
+    let(:quantity) { Faker::Number.number(1).to_i + 3 }
+    let(:product) { create :product }
+    let(:cli) do
+      create :commodity_line_item, quantity: quantity, product: product
+    end
+    let(:new_weight) { weight * quantity }
+
     def run
-      commodity_line_item.quantity = new_qty
+      cli.weight = weight
     end
 
     subject { -> { run } }
-    it { is_expected.to change(commodity_line_item, :quantity).to eq(new_qty) }
-    it { is_expected.to change(commodity_line_item, :total).to eq(new_total) }
+    it { is_expected.to change(cli, :total_weight).to eq(new_weight) }
   end
 end

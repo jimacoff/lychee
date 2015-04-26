@@ -36,13 +36,32 @@ RSpec.shared_examples 'commodity reference' do
       end
 
       context 'only product specified' do
-        subject { build(factory, product: product, variant: nil) }
+        subject { create(factory, product: product, variant: nil) }
         it { is_expected.to be_valid }
       end
 
       context 'only variant specified' do
-        subject { build(factory, product: nil, variant: variant) }
+        subject { create(factory, product: nil, variant: variant) }
         it { is_expected.to be_valid }
+      end
+    end
+  end
+
+  describe '#commodity' do
+    let(:product) { create(:product) }
+    let(:variant) { create(:variant, product: product) }
+
+    context 'product specified' do
+      subject { build(factory, product: product, variant: nil) }
+      it 'returns the product' do
+        expect(subject.commodity).to eq(product)
+      end
+    end
+
+    context 'variant specified' do
+      subject { build(factory, product: nil, variant: variant) }
+      it 'returns the variant' do
+        expect(subject.commodity).to eq(variant)
       end
     end
   end
