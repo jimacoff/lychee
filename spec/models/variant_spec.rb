@@ -42,6 +42,7 @@ RSpec.describe Variant, type: :model, site_scoped: true do
     subject { create :variant }
     it { is_expected.to validate_presence_of :product }
     it { is_expected.to validate_presence_of :variation_instances }
+    it { is_expected.to validate_numericality_of :weight }
 
     context 'instance validations' do
       subject { Variant.create(product: create(:product)) }

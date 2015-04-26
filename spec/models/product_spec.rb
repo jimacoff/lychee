@@ -24,7 +24,10 @@ RSpec.describe Product, type: :model, site_scoped: true do
     it { is_expected.to have_db_column(:gtin).of_type(:string) }
     it { is_expected.to have_db_column(:sku).of_type(:string) }
     it { is_expected.to have_db_column(:price_cents).of_type(:integer) }
-    it { is_expected.to have_db_column(:weight).of_type(:integer) }
+    it do
+      is_expected.to have_db_column(:weight).of_type(:integer)
+        .with_options(default: 0)
+    end
     it { is_expected.to have_db_column(:active).of_type(:boolean) }
     it { is_expected.to have_db_column(:not_before).of_type(:datetime) }
     it { is_expected.to have_db_column(:not_after).of_type(:datetime) }
@@ -51,6 +54,7 @@ RSpec.describe Product, type: :model, site_scoped: true do
   context 'validations' do
     it { is_expected.to validate_presence_of :name }
     it { is_expected.to validate_presence_of :description }
+    it { is_expected.to validate_numericality_of(:weight).allow_nil }
 
     context 'instance validations' do
       context 'inventory' do
