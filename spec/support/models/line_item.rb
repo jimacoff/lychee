@@ -19,6 +19,7 @@ RSpec.shared_examples 'line item' do |line_item_factory|
     it { is_expected.to have_db_column(:price_cents).of_type(:integer) }
     it { is_expected.to have_db_column(:total_cents).of_type(:integer) }
     it { is_expected.to have_db_column(:currency).of_type(:string) }
+    it { is_expected.to have_db_column(:weight).of_type(:integer) }
 
     it 'should have non nullable column order_id of type bigint' do
       expect(subject).to have_db_column(:order_id)
