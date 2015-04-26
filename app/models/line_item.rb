@@ -4,7 +4,7 @@ class LineItem < ActiveRecord::Base
   include Metadata
   include Taggable
 
-  belongs_to :order, touch: true
+  belongs_to :order
 
   monies [{ field: :price }, { field: :total, calculated: true }]
 
