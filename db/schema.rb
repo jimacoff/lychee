@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20150429003049) do
+ActiveRecord::Schema.define(version: 20150429082332) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -220,11 +220,12 @@ ActiveRecord::Schema.define(version: 20150429003049) do
   add_index "shipping_rates", ["site_id"], name: "index_shipping_rates_on_site_id", using: :btree
 
   create_table "sites", id: :bigserial, force: :cascade do |t|
-    t.string   "name",              null: false
-    t.datetime "created_at",        null: false
-    t.datetime "updated_at",        null: false
-    t.string   "currency_iso_code", null: false
+    t.string   "name",               null: false
+    t.datetime "created_at",         null: false
+    t.datetime "updated_at",         null: false
+    t.string   "currency_iso_code",  null: false
     t.hstore   "metadata"
+    t.boolean  "prices_include_tax", null: false
   end
 
   create_table "states", id: :bigserial, force: :cascade do |t|

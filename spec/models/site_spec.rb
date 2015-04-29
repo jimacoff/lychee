@@ -7,6 +7,7 @@ RSpec.describe Site, type: :model do
   context 'table structure' do
     it { is_expected.to have_db_column(:name).of_type(:string) }
     it { is_expected.to have_db_column(:currency_iso_code).of_type(:string) }
+    it { is_expected.to have_db_column(:prices_include_tax).of_type(:boolean) }
   end
 
   context 'relationships' do
