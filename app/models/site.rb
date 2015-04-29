@@ -1,4 +1,6 @@
 class Site < ActiveRecord::Base
+  include Metadata
+
   has_many :whitelisted_countries
   has_many :blacklisted_countries
 

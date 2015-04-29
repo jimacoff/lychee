@@ -2,6 +2,7 @@ require 'rails_helper'
 
 RSpec.describe Site, type: :model do
   has_context 'versioned'
+  has_context 'metadata'
 
   context 'table structure' do
     it { is_expected.to have_db_column(:name).of_type(:string) }
