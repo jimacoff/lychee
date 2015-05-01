@@ -18,6 +18,8 @@ class ShippingRateRegion < ActiveRecord::Base
   has_paper_trail
   valhammer
 
+  validates :hierarchy, uniqueness: { scope: [:site, :shipping_rate] }
+
   def valid_state
   end
 end
