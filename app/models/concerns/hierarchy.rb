@@ -35,7 +35,7 @@ module Hierarchy
   def ltree_sanitize(identifier)
     return unless identifier
 
-    label = identifier.gsub(/[^0-9A-Za-z]/, '')
+    label = identifier.gsub(/[^0-9A-Za-z]/, '').downcase
     self.hierarchy = hierarchy ? %(#{hierarchy}.#{label}) : label
   end
 end
