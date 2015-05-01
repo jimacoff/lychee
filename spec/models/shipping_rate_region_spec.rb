@@ -21,8 +21,6 @@ RSpec.describe ShippingRateRegion, type: :model, site_scoped: true do
               [{ field: :price, calculated: false }]
 
   context 'table structure' do
-    it { is_expected.to have_db_column(:hierarchy).of_type(:ltree) }
-
     it 'should have non nullable column shipping_rate_id of type bigint' do
       expect(subject).to have_db_column(:shipping_rate_id)
         .of_type(:integer)

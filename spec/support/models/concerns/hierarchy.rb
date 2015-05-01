@@ -2,6 +2,9 @@ RSpec.shared_examples 'hierarchy' do
   context 'table structure' do
     it { is_expected.to have_db_column(:postcode).of_type(:string) }
     it { is_expected.to have_db_column(:city).of_type(:string) }
+
+    it { is_expected.to have_db_column(:hierarchy).of_type(:ltree) }
+    it { is_expected.to have_db_index(:hierarchy) }
   end
 
   context 'relationships' do
