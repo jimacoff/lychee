@@ -20,6 +20,8 @@ class Site < ActiveRecord::Base
                                foreign_key: 'site_subscriber_address_id'
   delegate :country, to: :subscriber_address
 
+  has_one :preferences, class_name: 'Preference'
+
   has_paper_trail
   valhammer
 
@@ -27,6 +29,7 @@ class Site < ActiveRecord::Base
   validate :prioritized_countries_are_valid
   validates :subscriber_address, presence: true, on: :update
   validates :primary_tax_category, presence: true, on: :update
+  validates :preferences, presence: true, on: :update
 
   after_save :reload_current
 

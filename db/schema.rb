@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20150429082332) do
+ActiveRecord::Schema.define(version: 20150501004024) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -148,6 +148,17 @@ ActiveRecord::Schema.define(version: 20150429082332) do
 
   add_index "orders", ["site_id"], name: "index_orders_on_site_id", using: :btree
 
+  create_table "preferences", id: :bigserial, force: :cascade do |t|
+    t.integer  "site_id",            limit: 8,                 null: false
+    t.integer  "tax_basis",                    default: 0,     null: false
+    t.boolean  "prices_include_tax",           default: false, null: false
+    t.hstore   "metadata"
+    t.datetime "created_at",                                   null: false
+    t.datetime "updated_at",                                   null: false
+  end
+
+  add_index "preferences", ["site_id"], name: "index_preferences_on_site_id", using: :btree
+
   create_table "prioritized_countries", id: :bigserial, force: :cascade do |t|
     t.integer  "site_id",    limit: 8, null: false
     t.integer  "country_id", limit: 8, null: false
@@ -220,12 +231,11 @@ ActiveRecord::Schema.define(version: 20150429082332) do
   add_index "shipping_rates", ["site_id"], name: "index_shipping_rates_on_site_id", using: :btree
 
   create_table "sites", id: :bigserial, force: :cascade do |t|
-    t.string   "name",               null: false
-    t.datetime "created_at",         null: false
-    t.datetime "updated_at",         null: false
-    t.string   "currency_iso_code",  null: false
+    t.string   "name",              null: false
+    t.datetime "created_at",        null: false
+    t.datetime "updated_at",        null: false
+    t.string   "currency_iso_code", null: false
     t.hstore   "metadata"
-    t.boolean  "prices_include_tax", null: false
   end
 
   create_table "states", id: :bigserial, force: :cascade do |t|
@@ -401,6 +411,7 @@ ActiveRecord::Schema.define(version: 20150429082332) do
   add_foreign_key "line_items", "sites", on_delete: :cascade
   add_foreign_key "line_items", "variants", on_delete: :restrict
   add_foreign_key "orders", "sites", on_delete: :cascade
+  add_foreign_key "preferences", "sites", on_delete: :cascade
   add_foreign_key "prioritized_countries", "countries"
   add_foreign_key "prioritized_countries", "sites"
   add_foreign_key "products", "sites", on_delete: :cascade

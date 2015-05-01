@@ -2,7 +2,6 @@ FactoryGirl.define do
   factory :site do
     name { Faker::Lorem.sentence }
     currency { 'AUD' }
-    prices_include_tax { true }
 
     after(:create) do |s|
       s.primary_tax_category = create :tax_category,
@@ -12,6 +11,8 @@ FactoryGirl.define do
 
       s.subscriber_address = create :address, site_subscriber_address: s,
                                               site: s
+
+      s.preferences = create :preference, site: s
     end
   end
 end
