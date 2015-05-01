@@ -33,7 +33,6 @@ RSpec.describe TaxRate, type: :model, site_scoped: true do
     it { is_expected.to have_db_column(:shipping).of_type(:boolean) }
 
     it { is_expected.to have_db_column(:priority).of_type(:integer) }
-    it { is_expected.to have_db_column(:hierarchy).of_type(:ltree) }
   end
 
   context 'relationships' do
@@ -51,8 +50,9 @@ RSpec.describe TaxRate, type: :model, site_scoped: true do
     it { is_expected.to validate_presence_of :priority }
 
     context 'instance validations' do
+      subject { create :tax_rate }
+
       context 'rate' do
-        subject { create :tax_rate }
         it 'must be greater that or equal to 0' do
           expect(subject).to validate_numericality_of(:rate)
             .is_greater_than_or_equal_to(0.0)
@@ -60,6 +60,26 @@ RSpec.describe TaxRate, type: :model, site_scoped: true do
         it 'must be less than or equal to 0' do
           expect(subject).to validate_numericality_of(:rate)
             .is_less_than_or_equal_to(1.0)
+        end
+      end
+
+      context 'hierarchy per priority' do
+        let(:new_rate) do
+          build :tax_rate, country: subject.country, priority: subject.priority
+        end
+        let(:new_rate_alt_site) do
+          build :tax_rate, site: create(:site),
+                           country: subject.country,
+                           priority: subject.priority
+        end
+        it 'fails to create new tax record when duplicate' do
+          new_rate.valid?
+          expect(new_rate.errors.size).to eq(1)
+          expect(new_rate.errors[:hierarchy].size).to eq(1)
+        end
+
+        it 'creates new tax record when duplicate but different parent site' do
+          expect(new_rate_alt_site).to be_valid
         end
       end
     end
