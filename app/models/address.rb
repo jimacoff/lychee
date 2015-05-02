@@ -3,7 +3,7 @@ class Address < ActiveRecord::Base
   include ParentCountry
   include ParentState
   include Metadata
-  include HierarchyConversion
+  include GeographicHierarchyConversion
 
   belongs_to :order_customer_address, class_name: 'Order',
                                       foreign_key: 'order_customer_address_id'
@@ -35,7 +35,7 @@ class Address < ActiveRecord::Base
   end
 
   def to_geographic_hierarchy
-    hierarchy_conversion
+    geographic_hierarchy_conversion
   end
 
   private

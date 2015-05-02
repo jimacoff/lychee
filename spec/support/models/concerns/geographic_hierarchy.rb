@@ -1,23 +1,23 @@
-RSpec.shared_examples 'hierarchy' do
+RSpec.shared_examples 'geographic hierarchy' do
   context 'table structure' do
     it { is_expected.to have_db_column(:postcode).of_type(:string) }
     it { is_expected.to have_db_column(:locality).of_type(:string) }
 
-    it { is_expected.to have_db_column(:hierarchy).of_type(:ltree) }
-    it { is_expected.to have_db_index(:hierarchy) }
+    it { is_expected.to have_db_column(:geographic_hierarchy).of_type(:ltree) }
+    it { is_expected.to have_db_index(:geographic_hierarchy) }
   end
 
   context 'relationships' do
   end
 
   context 'validations' do
-    it { is_expected.to validate_presence_of :hierarchy }
+    it { is_expected.to validate_presence_of :geographic_hierarchy }
 
     context 'instance validations' do
       context 'updating hierarchy' do
         subject { build factory }
         it 'updates hierarchy before validation' do
-          expect { subject.validate }.to change(subject, :hierarchy)
+          expect { subject.validate }.to change(subject, :geographic_hierarchy)
         end
       end
 
@@ -55,14 +55,14 @@ RSpec.shared_examples 'hierarchy' do
 
       describe '#ltree_sanitize' do
         it 'removes all characters outside [^0-9A-Za-z]' do
-          subject.hierarchy = nil
+          subject.geographic_hierarchy = nil
           expect(
             subject.send(:ltree_sanitize, '.thi!s.is.^an id#ent if.ier.', nil))
             .to eq('thisisanidentifier')
         end
       end
 
-      describe '#determine_hierarchy' do
+      describe '#determine_geographic_hierarchy' do
         let(:state) { create :state }
         subject do
           create :tax_rate, state: state,
@@ -71,8 +71,8 @@ RSpec.shared_examples 'hierarchy' do
                             locality: 'c i&ty.'
         end
         it 'sets hierarchy to valid ltree value' do
-          subject.send(:determine_hierarchy)
-          expect(subject.hierarchy)
+          subject.send(:determine_geographic_hierarchy)
+          expect(subject.geographic_hierarchy)
             .to eq(
               "#{subject.country.iso_alpha2}.#{subject.state.iso_code}" \
               '.12345.city')

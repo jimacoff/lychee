@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20150502055706) do
+ActiveRecord::Schema.define(version: 20150502062503) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -195,22 +195,22 @@ ActiveRecord::Schema.define(version: 20150502055706) do
   add_index "products", ["tax_override_id"], name: "index_products_on_tax_override_id", using: :btree
 
   create_table "shipping_rate_regions", id: :bigserial, force: :cascade do |t|
-    t.integer  "site_id",          limit: 8,                 null: false
-    t.integer  "country_id",       limit: 8,                 null: false
-    t.integer  "state_id",         limit: 8
+    t.integer  "site_id",              limit: 8,                 null: false
+    t.integer  "country_id",           limit: 8,                 null: false
+    t.integer  "state_id",             limit: 8
     t.string   "postcode"
     t.string   "locality"
-    t.integer  "shipping_rate_id", limit: 8,                 null: false
-    t.integer  "price_cents",                                null: false
-    t.string   "currency",                   default: "USD", null: false
-    t.ltree    "hierarchy",                                  null: false
+    t.integer  "shipping_rate_id",     limit: 8,                 null: false
+    t.integer  "price_cents",                                    null: false
+    t.string   "currency",                       default: "USD", null: false
+    t.ltree    "geographic_hierarchy",                           null: false
     t.hstore   "metadata"
-    t.datetime "created_at",                                 null: false
-    t.datetime "updated_at",                                 null: false
+    t.datetime "created_at",                                     null: false
+    t.datetime "updated_at",                                     null: false
   end
 
   add_index "shipping_rate_regions", ["country_id"], name: "index_shipping_rate_regions_on_country_id", using: :btree
-  add_index "shipping_rate_regions", ["hierarchy"], name: "index_shipping_rate_regions_on_hierarchy", using: :gist
+  add_index "shipping_rate_regions", ["geographic_hierarchy"], name: "index_shipping_rate_regions_on_geographic_hierarchy", using: :gist
   add_index "shipping_rate_regions", ["shipping_rate_id"], name: "index_shipping_rate_regions_on_shipping_rate_id", using: :btree
   add_index "shipping_rate_regions", ["site_id"], name: "index_shipping_rate_regions_on_site_id", using: :btree
   add_index "shipping_rate_regions", ["state_id"], name: "index_shipping_rate_regions_on_state_id", using: :btree
@@ -263,26 +263,26 @@ ActiveRecord::Schema.define(version: 20150502055706) do
   add_index "tax_categories", ["site_primary_tax_category_id"], name: "index_tax_categories_on_site_primary_tax_category_id", using: :btree
 
   create_table "tax_rates", id: :bigserial, force: :cascade do |t|
-    t.decimal  "rate",                      precision: 6, scale: 5, null: false
-    t.string   "name",                                              null: false
-    t.string   "description",                                       null: false
+    t.decimal  "rate",                           precision: 6, scale: 5, null: false
+    t.string   "name",                                                   null: false
+    t.string   "description",                                            null: false
     t.string   "invoice_note"
-    t.integer  "site_id",         limit: 8,                         null: false
-    t.integer  "country_id",      limit: 8,                         null: false
+    t.integer  "site_id",              limit: 8,                         null: false
+    t.integer  "country_id",           limit: 8,                         null: false
     t.string   "postcode"
     t.string   "locality"
     t.boolean  "shipping"
-    t.integer  "priority",                                          null: false
-    t.ltree    "hierarchy",                                         null: false
+    t.integer  "priority",                                               null: false
+    t.ltree    "geographic_hierarchy",                                   null: false
     t.hstore   "metadata"
-    t.datetime "created_at",                                        null: false
-    t.datetime "updated_at",                                        null: false
-    t.integer  "tax_category_id", limit: 8,                         null: false
-    t.integer  "state_id",        limit: 8
+    t.datetime "created_at",                                             null: false
+    t.datetime "updated_at",                                             null: false
+    t.integer  "tax_category_id",      limit: 8,                         null: false
+    t.integer  "state_id",             limit: 8
   end
 
   add_index "tax_rates", ["country_id"], name: "index_tax_rates_on_country_id", using: :btree
-  add_index "tax_rates", ["hierarchy"], name: "index_tax_rates_on_hierarchy", using: :gist
+  add_index "tax_rates", ["geographic_hierarchy"], name: "index_tax_rates_on_geographic_hierarchy", using: :gist
   add_index "tax_rates", ["site_id"], name: "index_tax_rates_on_site_id", using: :btree
   add_index "tax_rates", ["state_id"], name: "index_tax_rates_on_state_id", using: :btree
   add_index "tax_rates", ["tax_category_id"], name: "index_tax_rates_on_tax_category_id", using: :btree

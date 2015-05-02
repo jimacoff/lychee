@@ -1,16 +1,16 @@
-module Hierarchy
+module GeographicHierarchy
   extend ActiveSupport::Concern
 
-  include HierarchyConversion
+  include GeographicHierarchyConversion
 
   included do
-    before_validation :determine_hierarchy
-    validate :hierarchy_fields
+    before_validation :determine_geographic_hierarchy
+    validate :geographic_hierarchy_fields
   end
 
   private
 
-  def hierarchy_fields
+  def geographic_hierarchy_fields
     if postcode && !state
       errors.add(:postcode, 'State must be provided when specifying postcode')
     end
@@ -21,7 +21,7 @@ module Hierarchy
            'State and postcode must be provided when specifying locality')
   end
 
-  def determine_hierarchy
-    self.hierarchy = hierarchy_conversion
+  def determine_geographic_hierarchy
+    self.geographic_hierarchy = geographic_hierarchy_conversion
   end
 end

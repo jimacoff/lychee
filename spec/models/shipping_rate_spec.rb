@@ -263,6 +263,7 @@ RSpec.describe ShippingRate, type: :model, site_scoped: true do
 
   describe '#price' do
     let(:au) { create :country, iso_alpha2: 'au' }
+
     let(:qld) { create :state, iso_code: 'qld', country: au }
 
     let!(:sr) { create :shipping_rate }

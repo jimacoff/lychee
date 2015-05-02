@@ -11,7 +11,7 @@ RSpec.describe Address, type: :model, site_scoped: true do
   has_context 'parent state' do
     let(:factory) { :address }
   end
-  has_context 'hierarchy conversion' do
+  has_context 'geographic hierarchy conversion' do
     let(:factory) { :address }
   end
   has_context 'versioned'

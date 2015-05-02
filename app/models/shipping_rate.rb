@@ -3,9 +3,11 @@ class ShippingRate < ActiveRecord::Base
   include Monies
   include Metadata
 
-  scope :supports_location, lambda { |location|
+  scope :supports_location, lambda { |geographic_hierarchy|
     joins(:shipping_rate_regions)
-      .where('shipping_rate_regions.hierarchy @> ?', location).uniq
+      .where('shipping_rate_regions.geographic_hierarchy @> ?',
+             geographic_hierarchy)
+      .uniq
   }
 
   scope :satisfies_price, lambda { |subtotal_cents|

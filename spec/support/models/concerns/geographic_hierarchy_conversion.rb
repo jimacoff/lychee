@@ -1,5 +1,5 @@
-RSpec.shared_examples 'hierarchy conversion' do
-  context 'hierarchy format' do
+RSpec.shared_examples 'geographic hierarchy conversion' do
+  context 'geographic hierarchy format' do
     let(:country) { create :country }
     subject do
       create factory, country: country, state: nil,
@@ -7,7 +7,7 @@ RSpec.shared_examples 'hierarchy conversion' do
     end
 
     it 'top level is country iso code' do
-      expect(subject.send(:hierarchy_conversion))
+      expect(subject.send(:geographic_hierarchy_conversion))
         .to eq(subject.country.iso_alpha2)
     end
 
@@ -19,7 +19,7 @@ RSpec.shared_examples 'hierarchy conversion' do
       end
 
       it 'appends to hierarchy' do
-        expect(subject.send(:hierarchy_conversion))
+        expect(subject.send(:geographic_hierarchy_conversion))
           .to eq("#{country.iso_alpha2}.#{state.iso_code}")
       end
 
@@ -31,7 +31,7 @@ RSpec.shared_examples 'hierarchy conversion' do
         end
 
         it 'appends to hierarchy' do
-          expect(subject.send(:hierarchy_conversion))
+          expect(subject.send(:geographic_hierarchy_conversion))
             .to eq("#{country.iso_alpha2}.#{state.iso_code}.#{postcode}")
         end
 
@@ -43,7 +43,7 @@ RSpec.shared_examples 'hierarchy conversion' do
           end
 
           it 'appends to hierarchy' do
-            expect(subject.send(:hierarchy_conversion))
+            expect(subject.send(:geographic_hierarchy_conversion))
               .to eq(
                 "#{country.iso_alpha2}.#{state.iso_code}" \
                 ".#{postcode}.#{locality}")

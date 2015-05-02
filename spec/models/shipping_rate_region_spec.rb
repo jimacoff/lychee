@@ -10,7 +10,7 @@ RSpec.describe ShippingRateRegion, type: :model, site_scoped: true do
   has_context 'parent state' do
     let(:factory) { :shipping_rate_region }
   end
-  has_context 'hierarchy' do
+  has_context 'geographic hierarchy' do
     let(:factory) { :shipping_rate_region }
   end
   has_context 'versioned'
@@ -51,7 +51,7 @@ RSpec.describe ShippingRateRegion, type: :model, site_scoped: true do
         it 'fails to create new shipping region record when duplicate' do
           new_rate.valid?
           expect(new_rate.errors.size).to eq(1)
-          expect(new_rate.errors[:hierarchy].size).to eq(1)
+          expect(new_rate.errors[:geographic_hierarchy].size).to eq(1)
         end
 
         it 'new shipping region record when dup but different shipping_rate' do

@@ -1,9 +1,9 @@
-module HierarchyConversion
+module GeographicHierarchyConversion
   extend ActiveSupport::Concern
 
   private
 
-  def hierarchy_conversion
+  def geographic_hierarchy_conversion
     hierarchy = nil
     hierarchy = ltree_sanitize(country.try(:iso_alpha2), hierarchy)
 

@@ -10,10 +10,10 @@ RSpec.describe TaxRate, type: :model, site_scoped: true do
   has_context 'parent state' do
     let(:factory) { :tax_rate }
   end
-  has_context 'hierarchy' do
+  has_context 'geographic hierarchy' do
     let(:factory) { :tax_rate }
   end
-  has_context 'hierarchy conversion' do
+  has_context 'geographic hierarchy conversion' do
     let(:factory) { :tax_rate }
   end
   has_context 'metadata'
@@ -78,7 +78,7 @@ RSpec.describe TaxRate, type: :model, site_scoped: true do
         it 'fails to create new tax record when duplicate' do
           new_rate.valid?
           expect(new_rate.errors.size).to eq(1)
-          expect(new_rate.errors[:hierarchy].size).to eq(1)
+          expect(new_rate.errors[:geographic_hierarchy].size).to eq(1)
         end
 
         it 'creates new tax record when duplicate but different parent site' do

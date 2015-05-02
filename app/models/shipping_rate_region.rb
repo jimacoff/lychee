@@ -3,12 +3,12 @@ class ShippingRateRegion < ActiveRecord::Base
   include ParentCountry
   include ParentState
   include Monies
-  include Hierarchy
+  include GeographicHierarchy
   include Metadata
 
   scope :supports_location, lambda { |location|
-    where('hierarchy @> ?', location)
-      .order(hierarchy: :desc).limit(1)
+    where('geographic_hierarchy @> ?', location)
+      .order(geographic_hierarchy: :desc).limit(1)
   }
 
   belongs_to :shipping_rate
@@ -18,7 +18,8 @@ class ShippingRateRegion < ActiveRecord::Base
   has_paper_trail
   valhammer
 
-  validates :hierarchy, uniqueness: { scope: [:site, :shipping_rate] }
+  validates :geographic_hierarchy,
+            uniqueness: { scope: [:site, :shipping_rate] }
 
   def valid_state
   end
