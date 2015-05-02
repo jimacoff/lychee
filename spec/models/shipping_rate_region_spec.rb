@@ -60,4 +60,38 @@ RSpec.describe ShippingRateRegion, type: :model, site_scoped: true do
       end
     end
   end
+
+  context 'scopes' do
+    describe 'supports_location' do
+      let(:au) { create :country, iso_alpha2: 'au' }
+
+      let(:qld) { create :state, iso_code: 'qld', country: au }
+
+      let!(:sr) { create :shipping_rate }
+      let!(:r1) do
+        create :shipping_rate_region, country: au, shipping_rate: sr
+      end
+      let!(:r2) do
+        create :shipping_rate_region, country: au, state: qld, shipping_rate: sr
+      end
+      let!(:r3) do
+        create :shipping_rate_region, country: au, state: qld,
+                                      postcode: '4000', shipping_rate: sr
+      end
+
+      it 'provides specific result' do
+        expect(described_class.supports_location('au.qld.4000'))
+          .to contain_exactly(r3)
+      end
+
+      it 'provides higher level result' do
+        expect(described_class.supports_location('au.nsw.2000'))
+          .to contain_exactly(r1)
+      end
+
+      it 'provides nil if non matching result' do
+        expect(described_class.supports_location('nz')).to be_empty
+      end
+    end
+  end
 end
