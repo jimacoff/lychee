@@ -87,4 +87,118 @@ RSpec.describe TaxRate, type: :model, site_scoped: true do
       end
     end
   end
+
+  context 'scopes' do
+    describe 'required_for_location' do
+      let(:au) { create :country, iso_alpha2: 'au' }
+      let(:nz) { create :country, iso_alpha2: 'nz' }
+
+      let(:qld) { create :state, iso_code: 'qld', country: au }
+      let(:nsw) { create :state, iso_code: 'nsw', country: au }
+
+      let(:tax_category1) { create :tax_category }
+      let(:tax_category2) { create :tax_category }
+
+      let!(:tr1) do
+        create :tax_rate, priority: 1, country: au, tax_category: tax_category1
+      end
+      let!(:tr2) do
+        create :tax_rate, priority: 1, country: au, state: qld,
+                          tax_category: tax_category1
+      end
+      let!(:tr3) do
+        create :tax_rate, priority: 1, country: au, state: qld,
+                          postcode: '4000', tax_category: tax_category1
+      end
+      let!(:tr4) do
+        create :tax_rate, priority: 2, country: au, tax_category: tax_category1
+      end
+      let!(:tr5) do
+        create :tax_rate, priority: 11, country: au, state: qld,
+                          tax_category: tax_category1
+      end
+      let!(:tr6) do
+        create :tax_rate, priority: 999, country: au, state: qld,
+                          postcode: '4000', tax_category: tax_category1
+      end
+      let!(:tr7) do
+        create :tax_rate, priority: 1_000, country: au, state: qld,
+                          postcode: '4000', locality: 'Brisbane',
+                          tax_category: tax_category1
+      end
+      let!(:tr8) do # overload priority 2 for Brisbane locations only
+        create :tax_rate, priority: 2, country: au, state: qld,
+                          postcode: '4000', locality: 'Brisbane',
+                          tax_category: tax_category1
+      end
+      let!(:tr9) do
+        create :tax_rate, priority: 999, country: au, state: qld,
+                          postcode: '4000', locality: 'Brisbane',
+                          tax_category: tax_category2
+      end
+
+      context 'correct taxes for locations in category 1' do
+        it 'retrieves au.qld.4000' do
+          expect(TaxRate.required_for_location('au.qld.4000',
+                                               tax_category1))
+            .to contain_exactly(tr3, tr4, tr5, tr6)
+        end
+        it 'retrieves au.qld.4000.brisbane' do
+          expect(TaxRate.required_for_location('au.qld.4000.brisbane',
+                                               tax_category1))
+            .to contain_exactly(tr3, tr5, tr6, tr7, tr8)
+        end
+        it 'retrieves au.qld.4005' do
+          expect(TaxRate.required_for_location('au.qld.4005', tax_category1))
+            .to contain_exactly(tr2, tr4, tr5)
+        end
+        it 'retrieves au.qld.4005.newfarm' do
+          expect(TaxRate.required_for_location('au.qld.4005.newfarm',
+                                               tax_category1))
+            .to contain_exactly(tr2, tr4, tr5)
+        end
+        it 'retrieves au.nsw.2000.sydney' do
+          expect(TaxRate.required_for_location('au.nsw.2000.sydney',
+                                               tax_category1))
+            .to contain_exactly(tr1, tr4)
+        end
+        it 'retrieves au.vic' do
+          expect(TaxRate.required_for_location('au.nsw.2000.sydney',
+                                               tax_category1))
+            .to contain_exactly(tr1, tr4)
+        end
+      end
+      context 'correct taxes for locations in category 2' do
+        it 'retrieves au.qld.4000' do
+          expect(TaxRate.required_for_location('au.qld.4000',
+                                               tax_category2))
+            .to be_empty
+        end
+        it 'retrieves au.qld.4000.brisbane' do
+          expect(TaxRate.required_for_location('au.qld.4000.brisbane',
+                                               tax_category2))
+            .to contain_exactly(tr9)
+        end
+        it 'retrieves au.qld.4005' do
+          expect(TaxRate.required_for_location('au.qld.4005', tax_category2))
+            .to be_empty
+        end
+        it 'retrieves au.qld.4005.newfarm' do
+          expect(TaxRate.required_for_location('au.qld.4005.newfarm',
+                                               tax_category2))
+            .to be_empty
+        end
+        it 'retrieves au.nsw.2000.sydney' do
+          expect(TaxRate.required_for_location('au.nsw.2000.sydney',
+                                               tax_category2))
+            .to be_empty
+        end
+        it 'retrieves au.vic' do
+          expect(TaxRate.required_for_location('au.nsw.2000.sydney',
+                                               tax_category2))
+            .to be_empty
+        end
+      end
+    end
+  end
 end
