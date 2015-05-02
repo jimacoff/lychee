@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20150501060954) do
+ActiveRecord::Schema.define(version: 20150502055706) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -199,7 +199,7 @@ ActiveRecord::Schema.define(version: 20150501060954) do
     t.integer  "country_id",       limit: 8,                 null: false
     t.integer  "state_id",         limit: 8
     t.string   "postcode"
-    t.string   "city"
+    t.string   "locality"
     t.integer  "shipping_rate_id", limit: 8,                 null: false
     t.integer  "price_cents",                                null: false
     t.string   "currency",                   default: "USD", null: false
@@ -270,7 +270,7 @@ ActiveRecord::Schema.define(version: 20150501060954) do
     t.integer  "site_id",         limit: 8,                         null: false
     t.integer  "country_id",      limit: 8,                         null: false
     t.string   "postcode"
-    t.string   "city"
+    t.string   "locality"
     t.boolean  "shipping"
     t.integer  "priority",                                          null: false
     t.ltree    "hierarchy",                                         null: false

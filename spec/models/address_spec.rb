@@ -11,6 +11,9 @@ RSpec.describe Address, type: :model, site_scoped: true do
   has_context 'parent state' do
     let(:factory) { :address }
   end
+  has_context 'hierarchy conversion' do
+    let(:factory) { :address }
+  end
   has_context 'versioned'
   has_context 'metadata'
 
@@ -151,6 +154,19 @@ RSpec.describe Address, type: :model, site_scoped: true do
     it 'is true when state is specified' do
       subject.state = create(:state, country: subject.country)
       expect(subject.state?).to be
+    end
+  end
+
+  describe '#to_geographic_hierarchy' do
+    subject do
+      create :address, :with_state,
+             postcode: Faker::Lorem.word, locality: Faker::Lorem.word
+    end
+    it 'sets geographic hierarchy to valid ltree value' do
+      expect(subject.to_geographic_hierarchy)
+        .to eq(
+          "#{subject.country.iso_alpha2}.#{subject.state.iso_code}" \
+          ".#{subject.postcode}.#{subject.locality}")
     end
   end
 end

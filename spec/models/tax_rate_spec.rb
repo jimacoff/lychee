@@ -13,6 +13,9 @@ RSpec.describe TaxRate, type: :model, site_scoped: true do
   has_context 'hierarchy' do
     let(:factory) { :tax_rate }
   end
+  has_context 'hierarchy conversion' do
+    let(:factory) { :tax_rate }
+  end
   has_context 'metadata'
   has_context 'versioned'
 
