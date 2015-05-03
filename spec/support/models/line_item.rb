@@ -43,6 +43,8 @@ RSpec.shared_examples 'line item' do |line_item_factory|
 
   context 'relationships' do
     it { is_expected.to belong_to(:order).class_name('Order') }
+    it { is_expected.to have_many :line_item_taxes }
+    it { is_expected.to have_many(:tax_rates).through(:line_item_taxes) }
   end
 
   context 'validations' do

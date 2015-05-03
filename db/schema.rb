@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20150503002334) do
+ActiveRecord::Schema.define(version: 20150503003417) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -108,6 +108,18 @@ ActiveRecord::Schema.define(version: 20150503002334) do
   add_index "inventories", ["product_id"], name: "index_inventories_on_product_id", using: :btree
   add_index "inventories", ["site_id"], name: "index_inventories_on_site_id", using: :btree
   add_index "inventories", ["variant_id"], name: "index_inventories_on_variant_id", using: :btree
+
+  create_table "line_item_taxes", id: :bigserial, force: :cascade do |t|
+    t.integer  "site_id",      limit: 8, null: false
+    t.integer  "line_item_id", limit: 8, null: false
+    t.integer  "tax_rate_id",  limit: 8, null: false
+    t.datetime "created_at",             null: false
+    t.datetime "updated_at",             null: false
+  end
+
+  add_index "line_item_taxes", ["line_item_id"], name: "index_line_item_taxes_on_line_item_id", using: :btree
+  add_index "line_item_taxes", ["site_id"], name: "index_line_item_taxes_on_site_id", using: :btree
+  add_index "line_item_taxes", ["tax_rate_id"], name: "index_line_item_taxes_on_tax_rate_id", using: :btree
 
   create_table "line_items", id: :bigserial, force: :cascade do |t|
     t.string   "customisation"
@@ -409,6 +421,9 @@ ActiveRecord::Schema.define(version: 20150503002334) do
   add_foreign_key "inventories", "products", on_delete: :cascade
   add_foreign_key "inventories", "sites", on_delete: :cascade
   add_foreign_key "inventories", "variants", on_delete: :cascade
+  add_foreign_key "line_item_taxes", "line_items", on_delete: :cascade
+  add_foreign_key "line_item_taxes", "sites", on_delete: :cascade
+  add_foreign_key "line_item_taxes", "tax_rates", on_delete: :restrict
   add_foreign_key "line_items", "orders", on_delete: :cascade
   add_foreign_key "line_items", "products", on_delete: :restrict
   add_foreign_key "line_items", "sites", on_delete: :cascade

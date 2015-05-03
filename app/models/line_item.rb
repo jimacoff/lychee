@@ -5,6 +5,8 @@ class LineItem < ActiveRecord::Base
   include Taggable
 
   belongs_to :order
+  has_many :line_item_taxes
+  has_many :tax_rates, through: :line_item_taxes
 
   monies [{ field: :price }, { field: :total, calculated: true },
           { field: :tax, calculated: true }]
