@@ -2,10 +2,13 @@ class ShippingRate < ActiveRecord::Base
   include ParentSite
   include Monies
   include Metadata
+  include Enablement
 
   scope :supports_location, lambda { |geographic_hierarchy|
     joins(:shipping_rate_regions)
-      .where('shipping_rate_regions.geographic_hierarchy @> ?',
+      .enabled
+      .where('shipping_rate_regions.geographic_hierarchy @> ? AND
+             shipping_rate_regions.enabled = true',
              geographic_hierarchy)
       .uniq
   }
@@ -13,19 +16,19 @@ class ShippingRate < ActiveRecord::Base
   scope :satisfies_price, lambda { |subtotal_cents|
     fail 'must query in base monetary units' unless subtotal_cents.is_a? Integer
 
-    where('min_price_cents IS NULL or min_price_cents <= :subtotal_cents',
+    where('(min_price_cents IS NULL OR min_price_cents <= :subtotal_cents) AND
+           (max_price_cents IS NULL OR max_price_cents >= :subtotal_cents)',
           subtotal_cents: subtotal_cents)
-      .where('max_price_cents IS NULL or max_price_cents >= :subtotal_cents',
-             subtotal_cents: subtotal_cents)
+      .enabled
   }
 
   scope :satisfies_weight, lambda { |weight|
     fail 'must query in base weight units' unless weight.is_a? Integer
 
-    where('min_weight IS NULL or min_weight <= :weight',
+    where('(min_weight IS NULL OR min_weight <= :weight) AND
+           (max_weight IS NULL OR max_weight >= :weight)',
           weight: weight)
-      .where('max_weight IS NULL or max_weight >= :weight',
-             weight: weight)
+      .enabled
   }
 
   monies [{ field: :min_price, allow_nil: true },

@@ -4,6 +4,7 @@ class TaxRate < ActiveRecord::Base
   include ParentState
   include GeographicHierarchy
   include Metadata
+  include Enablement
 
   ##
   # This is somewhat funky so it is worthy of some explanation.
@@ -45,6 +46,7 @@ class TaxRate < ActiveRecord::Base
           FROM tax_rates AS t
           WHERE
             t.site_id = ? AND
+            t.enabled = true AND
             t.tax_category_id = ? AND
             t.geographic_hierarchy @> ?) AS x
         WHERE x.r <= 1

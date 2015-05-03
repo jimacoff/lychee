@@ -15,10 +15,12 @@ RSpec.describe ShippingRateRegion, type: :model, site_scoped: true do
   end
   has_context 'versioned'
   has_context 'metadata'
-
   has_context 'monies',
               :shipping_rate_region,
               [{ field: :price, calculated: false }]
+  has_context 'enablement' do
+    let(:factory) { :shipping_rate_region }
+  end
 
   context 'table structure' do
     it 'should have non nullable column shipping_rate_id of type bigint' do
@@ -66,10 +68,15 @@ RSpec.describe ShippingRateRegion, type: :model, site_scoped: true do
       let(:au) { create :country, iso_alpha2: 'au' }
 
       let(:qld) { create :state, iso_code: 'qld', country: au }
+      let(:nsw) { create :state, iso_code: 'nsw', country: au }
 
       let!(:sr) { create :shipping_rate }
       let!(:r1) do
         create :shipping_rate_region, country: au, shipping_rate: sr
+      end
+      let!(:r1d) do
+        create :shipping_rate_region, country: au, state: nsw,
+                                      shipping_rate: sr, enabled: false
       end
       let!(:r2) do
         create :shipping_rate_region, country: au, state: qld, shipping_rate: sr
@@ -84,7 +91,7 @@ RSpec.describe ShippingRateRegion, type: :model, site_scoped: true do
           .to contain_exactly(r3)
       end
 
-      it 'provides higher level result' do
+      it 'provides higher level result as specific result disabled' do
         expect(described_class.supports_location('au.nsw.2000'))
           .to contain_exactly(r1)
       end

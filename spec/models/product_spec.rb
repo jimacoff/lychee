@@ -15,6 +15,9 @@ RSpec.describe Product, type: :model, site_scoped: true do
   has_context 'monies',
               :standalone_product,
               [{ field: :price, calculated: false }]
+  has_context 'enablement' do
+    let(:factory) { :standalone_product }
+  end
 
   context 'table structure' do
     it { is_expected.to have_db_column(:name).of_type(:string) }

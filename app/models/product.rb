@@ -6,6 +6,7 @@ class Product < ActiveRecord::Base
   include Slug
   include Taggable
   include Monies
+  include Enablement
 
   has_many :variants
   has_many :variations

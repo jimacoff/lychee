@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20150503003417) do
+ActiveRecord::Schema.define(version: 20150503033551) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -55,15 +55,16 @@ ActiveRecord::Schema.define(version: 20150503003417) do
 
   create_table "categories", id: :bigserial, force: :cascade do |t|
     t.integer  "parent_category_id", limit: 8
-    t.string   "name",                                      null: false
-    t.text     "description",                               null: false
-    t.string   "generated_slug",                            null: false
+    t.string   "name",                                        null: false
+    t.text     "description",                                 null: false
+    t.string   "generated_slug",                              null: false
     t.string   "specified_slug"
     t.hstore   "metadata"
-    t.text     "tags",                         default: [],              array: true
-    t.datetime "created_at",                                null: false
-    t.datetime "updated_at",                                null: false
-    t.integer  "site_id",            limit: 8,              null: false
+    t.text     "tags",                         default: [],                array: true
+    t.datetime "created_at",                                  null: false
+    t.datetime "updated_at",                                  null: false
+    t.integer  "site_id",            limit: 8,                null: false
+    t.boolean  "enabled",                      default: true, null: false
   end
 
   add_index "categories", ["parent_category_id"], name: "index_categories_on_parent_category_id", using: :btree
@@ -202,6 +203,7 @@ ActiveRecord::Schema.define(version: 20150503003417) do
     t.datetime "updated_at"
     t.integer  "site_id",         limit: 8,                 null: false
     t.integer  "tax_override_id", limit: 8
+    t.boolean  "enabled",                   default: true,  null: false
   end
 
   add_index "products", ["site_id"], name: "index_products_on_site_id", using: :btree
@@ -220,6 +222,7 @@ ActiveRecord::Schema.define(version: 20150503003417) do
     t.hstore   "metadata"
     t.datetime "created_at",                                     null: false
     t.datetime "updated_at",                                     null: false
+    t.boolean  "enabled",                        default: true,  null: false
   end
 
   add_index "shipping_rate_regions", ["country_id"], name: "index_shipping_rate_regions_on_country_id", using: :btree
@@ -240,6 +243,7 @@ ActiveRecord::Schema.define(version: 20150503003417) do
     t.hstore   "metadata"
     t.datetime "created_at",                                null: false
     t.datetime "updated_at",                                null: false
+    t.boolean  "enabled",                   default: true,  null: false
   end
 
   add_index "shipping_rates", ["site_id"], name: "index_shipping_rates_on_site_id", using: :btree
@@ -276,22 +280,23 @@ ActiveRecord::Schema.define(version: 20150503003417) do
   add_index "tax_categories", ["site_primary_tax_category_id"], name: "index_tax_categories_on_site_primary_tax_category_id", using: :btree
 
   create_table "tax_rates", id: :bigserial, force: :cascade do |t|
-    t.decimal  "rate",                           precision: 6, scale: 5, null: false
-    t.string   "name",                                                   null: false
-    t.string   "description",                                            null: false
+    t.decimal  "rate",                           precision: 6, scale: 5,                null: false
+    t.string   "name",                                                                  null: false
+    t.string   "description",                                                           null: false
     t.string   "invoice_note"
-    t.integer  "site_id",              limit: 8,                         null: false
-    t.integer  "country_id",           limit: 8,                         null: false
+    t.integer  "site_id",              limit: 8,                                        null: false
+    t.integer  "country_id",           limit: 8,                                        null: false
     t.string   "postcode"
     t.string   "locality"
     t.boolean  "shipping"
-    t.integer  "priority",                                               null: false
-    t.ltree    "geographic_hierarchy",                                   null: false
+    t.integer  "priority",                                                              null: false
+    t.ltree    "geographic_hierarchy",                                                  null: false
     t.hstore   "metadata"
-    t.datetime "created_at",                                             null: false
-    t.datetime "updated_at",                                             null: false
-    t.integer  "tax_category_id",      limit: 8,                         null: false
+    t.datetime "created_at",                                                            null: false
+    t.datetime "updated_at",                                                            null: false
+    t.integer  "tax_category_id",      limit: 8,                                        null: false
     t.integer  "state_id",             limit: 8
+    t.boolean  "enabled",                                                default: true, null: false
   end
 
   add_index "tax_rates", ["country_id"], name: "index_tax_rates_on_country_id", using: :btree
@@ -311,15 +316,16 @@ ActiveRecord::Schema.define(version: 20150503003417) do
   add_index "tenants", ["site_id"], name: "index_tenants_on_site_id", using: :btree
 
   create_table "traits", id: :bigserial, force: :cascade do |t|
-    t.string   "name",                                  null: false
-    t.string   "display_name",                          null: false
+    t.string   "name",                                    null: false
+    t.string   "display_name",                            null: false
     t.text     "description"
     t.hstore   "metadata"
-    t.text     "default_values",           default: [],              array: true
-    t.text     "tags",                     default: [],              array: true
+    t.text     "default_values",           default: [],                array: true
+    t.text     "tags",                     default: [],                array: true
     t.datetime "created_at"
     t.datetime "updated_at"
-    t.integer  "site_id",        limit: 8,              null: false
+    t.integer  "site_id",        limit: 8,                null: false
+    t.boolean  "enabled",                  default: true, null: false
   end
 
   add_index "traits", ["site_id"], name: "index_traits_on_site_id", using: :btree
@@ -338,6 +344,7 @@ ActiveRecord::Schema.define(version: 20150503003417) do
     t.datetime "created_at"
     t.datetime "updated_at"
     t.integer  "site_id",            limit: 8,                 null: false
+    t.boolean  "enabled",                      default: true,  null: false
   end
 
   add_index "variants", ["product_id"], name: "index_variants_on_product_id", using: :btree

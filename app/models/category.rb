@@ -3,6 +3,7 @@ class Category < ActiveRecord::Base
   include Metadata
   include Slug
   include Taggable
+  include Enablement
 
   belongs_to :parent_category, class_name: 'Category'
   has_many :subcategories, class_name: 'Category',

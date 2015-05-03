@@ -5,9 +5,11 @@ class ShippingRateRegion < ActiveRecord::Base
   include Monies
   include GeographicHierarchy
   include Metadata
+  include Enablement
 
   scope :supports_location, lambda { |location|
     where('geographic_hierarchy @> ?', location)
+      .enabled
       .order(geographic_hierarchy: :desc).limit(1)
   }
 

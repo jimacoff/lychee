@@ -5,6 +5,7 @@ class Variant < ActiveRecord::Base
   include Metadata
   include Taggable
   include Monies
+  include Enablement
 
   belongs_to :product
   has_many :variation_instances

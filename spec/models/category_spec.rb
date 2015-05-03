@@ -11,6 +11,9 @@ RSpec.describe Category, type: :model, site_scoped: true do
   has_context 'slug' do
     subject { create :category }
   end
+  has_context 'enablement' do
+    let(:factory) { :category }
+  end
 
   context 'table structure' do
     it { is_expected.to have_db_column(:name).of_type(:string) }

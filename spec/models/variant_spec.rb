@@ -11,6 +11,9 @@ RSpec.describe Variant, type: :model, site_scoped: true do
   has_context 'taggable'
   has_context 'monies', :variant_with_varied_price,
               [{ field: :varied_price, calculated: true }]
+  has_context 'enablement' do
+    let(:factory) { :variant }
+  end
 
   context 'table structure' do
     it { is_expected.to have_db_column(:description).of_type(:text)  }

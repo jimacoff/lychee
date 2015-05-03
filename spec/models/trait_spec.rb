@@ -8,6 +8,9 @@ RSpec.describe Trait, type: :model, site_scoped: true do
   has_context 'versioned'
   has_context 'taggable'
   has_context 'metadata'
+  has_context 'enablement' do
+    let(:factory) { :trait }
+  end
 
   context 'table structure' do
     it { is_expected.to have_db_column(:name).of_type(:string) }

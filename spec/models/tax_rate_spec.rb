@@ -16,6 +16,9 @@ RSpec.describe TaxRate, type: :model, site_scoped: true do
   has_context 'geographic hierarchy conversion' do
     let(:factory) { :tax_rate }
   end
+  has_context 'enablement' do
+    let(:factory) { :tax_rate }
+  end
   has_context 'metadata'
   has_context 'versioned'
 
@@ -136,6 +139,10 @@ RSpec.describe TaxRate, type: :model, site_scoped: true do
                           postcode: '4000', locality: 'Brisbane',
                           tax_category: tax_category2
       end
+      let!(:tr10) do # disabled tax rate should not appear anywhere
+        create :tax_rate, priority: 3, country: au, enabled: false,
+                          tax_category: tax_category1
+      end
 
       context 'correct taxes for locations in category 1' do
         it 'retrieves au.qld.4000' do
@@ -166,6 +173,11 @@ RSpec.describe TaxRate, type: :model, site_scoped: true do
           expect(TaxRate.required_for_location('au.nsw.2000.sydney',
                                                tax_category1))
             .to contain_exactly(tr1, tr4)
+        end
+        it 'retrieves us.california' do
+          expect(TaxRate.required_for_location('us.california',
+                                               tax_category1))
+            .to be_empty
         end
       end
       context 'correct taxes for locations in category 2' do

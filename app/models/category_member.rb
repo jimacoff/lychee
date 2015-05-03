@@ -5,6 +5,5 @@ class CategoryMember < ActiveRecord::Base
   belongs_to :category
 
   has_paper_trail
-
   valhammer
 end
