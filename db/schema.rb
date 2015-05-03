@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20150502062503) do
+ActiveRecord::Schema.define(version: 20150503002334) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -126,6 +126,7 @@ ActiveRecord::Schema.define(version: 20150502062503) do
     t.string   "type",                                    null: false
     t.integer  "weight",                  default: 0
     t.integer  "total_weight",            default: 0
+    t.integer  "tax_cents",               default: 0,     null: false
   end
 
   add_index "line_items", ["order_id"], name: "index_line_items_on_order_id", using: :btree

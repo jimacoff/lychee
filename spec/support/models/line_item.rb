@@ -9,7 +9,8 @@ RSpec.shared_examples 'line item' do |line_item_factory|
 
   has_context 'monies', line_item_factory,
               [{ field: :price, calculated: false },
-               { field: :total, calculated: true }]
+               { field: :total, calculated: true },
+               { field: :tax, calculated: true }]
 
   has_context 'metadata'
   has_context 'taggable'

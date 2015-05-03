@@ -6,7 +6,8 @@ class LineItem < ActiveRecord::Base
 
   belongs_to :order
 
-  monies [{ field: :price }, { field: :total, calculated: true }]
+  monies [{ field: :price }, { field: :total, calculated: true },
+          { field: :tax, calculated: true }]
 
   has_paper_trail
   valhammer
