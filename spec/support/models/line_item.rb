@@ -71,6 +71,5 @@ RSpec.shared_examples 'line item' do |line_item_factory|
 
     subject { -> { run } }
     it { is_expected.to change(line_item, :price).to eq(new_price_money) }
-    it { is_expected.to change(line_item, :total).to eq(new_total_money) }
   end
 end

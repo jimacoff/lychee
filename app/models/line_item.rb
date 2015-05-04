@@ -16,7 +16,6 @@ class LineItem < ActiveRecord::Base
 
   def price=(value)
     change_price(value)
-    calculate_total
   end
 
   abstract_method :calculate_total

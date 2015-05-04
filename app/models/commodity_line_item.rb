@@ -20,27 +20,9 @@ class CommodityLineItem < LineItem
     self.weight = variant.weight
   end
 
-  def quantity=(quantity)
-    super(quantity)
-    calculate_total
-    calculate_weight
-  end
-
-  def weight=(weight)
-    super(weight)
-    calculate_weight
-  end
-
   private
 
   def calculate_weight
-    write_attribute(:total_weight, weight * quantity)
-  end
-
-  def calculate_total
-    change_total(0) && return unless price.present?
-
-    # TODO: Taxation
-    change_total(price.cents * quantity)
+    self.total_weight = weight * quantity
   end
 end

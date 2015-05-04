@@ -41,7 +41,9 @@ RSpec.describe Order, type: :model, site_scoped: true do
     end
 
     context 'without commodity_line_items present' do
-      let!(:subtotal) { order.calculate_subtotal }
+      let(:subtotal) { order.calculate_subtotal }
+
+      before { commodity_line_items.map(&:calculate_total) }
 
       def run
         order.commodity_line_items.destroy_all
@@ -57,6 +59,9 @@ RSpec.describe Order, type: :model, site_scoped: true do
     context 'with commodity_line_items present' do
       let(:items_total) { commodity_line_items.map(&:total).sum.cents }
       subject { -> { order.calculate_subtotal } }
+
+      before { commodity_line_items.map(&:calculate_total) }
+
       it do
         is_expected.to change(order, :subtotal_cents).from(0).to eq(items_total)
       end
