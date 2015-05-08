@@ -62,7 +62,9 @@ class TaxRate < ActiveRecord::Base
   validates :rate, numericality: { greater_than_or_equal_to: 0.0,
                                    less_than_or_equal_to: 1.0 }
 
-  validates :geographic_hierarchy, uniqueness: { scope: [:site, :priority] }
+  validates :geographic_hierarchy, uniqueness: { scope: [:site,
+                                                         :tax_category,
+                                                         :priority] }
 
   def valid_state
   end

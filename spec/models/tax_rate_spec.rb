@@ -56,7 +56,10 @@ RSpec.describe TaxRate, type: :model, site_scoped: true do
     it { is_expected.to validate_presence_of :priority }
 
     context 'instance validations' do
-      subject { create :tax_rate }
+      let(:tax_category) { create :tax_category }
+      subject do
+        create :tax_rate, tax_category: tax_category
+      end
 
       context 'rate' do
         it 'must be greater that or equal to 0' do
@@ -69,13 +72,16 @@ RSpec.describe TaxRate, type: :model, site_scoped: true do
         end
       end
 
-      context 'hierarchy per priority' do
+      context 'hierarchy per category, per priority' do
         let(:new_rate) do
-          build :tax_rate, country: subject.country, priority: subject.priority
+          build :tax_rate, country: subject.country,
+                           tax_category: tax_category,
+                           priority: subject.priority
         end
         let(:new_rate_alt_site) do
           build :tax_rate, site: create(:site),
                            country: subject.country,
+                           tax_category: tax_category,
                            priority: subject.priority
         end
         it 'fails to create new tax record when duplicate' do
