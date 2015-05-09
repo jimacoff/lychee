@@ -1,7 +1,7 @@
 FactoryGirl.define do
   factory :commodity_line_item do
     order
-    product
+    association :product, factory: :standalone_product
     quantity { Faker::Number.number(1).to_i + 1 }
   end
 

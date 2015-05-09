@@ -70,18 +70,4 @@ RSpec.describe CommodityLineItem, type: :model, site_scoped: true do
       end
     end
   end
-
-  describe '#total' do
-    subject { create :commodity_line_item }
-    let(:expected_total) { subject.price * subject.quantity }
-
-    it 'has order currency' do
-      expect(subject.total.currency).to eq(subject.order.currency)
-    end
-    it 'is a Money instance' do
-      expect(subject.total).to be_a(Money)
-    end
-
-    pending 'more examples post workflow implementation'
-  end
 end

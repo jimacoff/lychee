@@ -8,6 +8,8 @@ class Variant < ActiveRecord::Base
   include Enablement
 
   belongs_to :product
+  delegate :tax_override, to: :product
+
   has_many :variation_instances
   has_many :variations, through: :variation_instances
   has_many :traits, through: :variations

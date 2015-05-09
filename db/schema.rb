@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20150503033551) do
+ActiveRecord::Schema.define(version: 20150506105311) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -124,22 +124,24 @@ ActiveRecord::Schema.define(version: 20150503033551) do
 
   create_table "line_items", id: :bigserial, force: :cascade do |t|
     t.string   "customisation"
-    t.integer  "quantity",                default: 0
-    t.integer  "price_cents",             default: 0,     null: false
-    t.integer  "total_cents",             default: 0,     null: false
-    t.string   "currency",                default: "USD", null: false
-    t.integer  "site_id",       limit: 8,                 null: false
-    t.integer  "order_id",      limit: 8,                 null: false
-    t.integer  "product_id",    limit: 8
-    t.integer  "variant_id",    limit: 8
+    t.integer  "quantity",                                         default: 0
+    t.integer  "price_cents",                                      default: 0,     null: false
+    t.integer  "total_cents",                                      default: 0,     null: false
+    t.string   "currency",                                         default: "USD", null: false
+    t.integer  "site_id",        limit: 8,                                         null: false
+    t.integer  "order_id",       limit: 8,                                         null: false
+    t.integer  "product_id",     limit: 8
+    t.integer  "variant_id",     limit: 8
     t.hstore   "metadata"
-    t.text     "tags",                    default: [],                 array: true
-    t.datetime "created_at",                              null: false
-    t.datetime "updated_at",                              null: false
-    t.string   "type",                                    null: false
-    t.integer  "weight",                  default: 0
-    t.integer  "total_weight",            default: 0
-    t.integer  "tax_cents",               default: 0,     null: false
+    t.text     "tags",                                             default: [],                 array: true
+    t.datetime "created_at",                                                       null: false
+    t.datetime "updated_at",                                                       null: false
+    t.string   "type",                                                             null: false
+    t.integer  "weight",                                           default: 0
+    t.integer  "total_weight",                                     default: 0
+    t.integer  "tax_cents",                                        default: 0,     null: false
+    t.integer  "subtotal_cents",                                   default: 0,     null: false
+    t.decimal  "total_tax_rate",           precision: 6, scale: 5, default: 0.0,   null: false
   end
 
   add_index "line_items", ["order_id"], name: "index_line_items_on_order_id", using: :btree
