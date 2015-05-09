@@ -24,7 +24,7 @@ class LineItem < ActiveRecord::Base
   end
 
   def calculate_total
-    unless valid? && price.try(:present?) && order.try(:valid?)
+    unless valid? && order.try(:valid?)
       fail 'attempt to calculate total with invalid state'
     end
 
@@ -57,11 +57,6 @@ class LineItem < ActiveRecord::Base
 
   def default_tax_rates
     tax_rates_hash(site.primary_tax_category)
-  end
-
-  def overloaded_tax_rates
-    return {} unless commodity.tax_override.present?
-    tax_rates_hash(commodity.tax_override)
   end
 
   def geo_hierarchy

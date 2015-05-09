@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20150509014657) do
+ActiveRecord::Schema.define(version: 20150509022032) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -124,28 +124,30 @@ ActiveRecord::Schema.define(version: 20150509014657) do
 
   create_table "line_items", id: :bigserial, force: :cascade do |t|
     t.string   "customisation"
-    t.integer  "quantity",                                         default: 0
-    t.integer  "price_cents",                                      default: 0,     null: false
-    t.integer  "total_cents",                                      default: 0,     null: false
-    t.string   "currency",                                         default: "USD", null: false
-    t.integer  "site_id",        limit: 8,                                         null: false
-    t.integer  "order_id",       limit: 8,                                         null: false
-    t.integer  "product_id",     limit: 8
-    t.integer  "variant_id",     limit: 8
+    t.integer  "quantity",                                                  default: 0
+    t.integer  "price_cents",                                               default: 0,     null: false
+    t.integer  "total_cents",                                               default: 0,     null: false
+    t.string   "currency",                                                  default: "USD", null: false
+    t.integer  "site_id",                 limit: 8,                                         null: false
+    t.integer  "order_id",                limit: 8,                                         null: false
+    t.integer  "product_id",              limit: 8
+    t.integer  "variant_id",              limit: 8
     t.hstore   "metadata"
-    t.text     "tags",                                             default: [],                 array: true
-    t.datetime "created_at",                                                       null: false
-    t.datetime "updated_at",                                                       null: false
-    t.string   "type",                                                             null: false
-    t.integer  "weight",                                           default: 0
-    t.integer  "total_weight",                                     default: 0
-    t.integer  "tax_cents",                                        default: 0,     null: false
-    t.integer  "subtotal_cents",                                   default: 0,     null: false
-    t.decimal  "total_tax_rate",           precision: 6, scale: 5, default: 0.0,   null: false
+    t.text     "tags",                                                      default: [],                 array: true
+    t.datetime "created_at",                                                                null: false
+    t.datetime "updated_at",                                                                null: false
+    t.string   "type",                                                                      null: false
+    t.integer  "weight",                                                    default: 0
+    t.integer  "total_weight",                                              default: 0
+    t.integer  "tax_cents",                                                 default: 0,     null: false
+    t.integer  "subtotal_cents",                                            default: 0,     null: false
+    t.decimal  "total_tax_rate",                    precision: 6, scale: 5, default: 0.0,   null: false
+    t.integer  "shipping_rate_region_id", limit: 8
   end
 
   add_index "line_items", ["order_id"], name: "index_line_items_on_order_id", using: :btree
   add_index "line_items", ["product_id"], name: "index_line_items_on_product_id", using: :btree
+  add_index "line_items", ["shipping_rate_region_id"], name: "index_line_items_on_shipping_rate_region_id", using: :btree
   add_index "line_items", ["site_id"], name: "index_line_items_on_site_id", using: :btree
   add_index "line_items", ["variant_id"], name: "index_line_items_on_variant_id", using: :btree
 
@@ -437,6 +439,7 @@ ActiveRecord::Schema.define(version: 20150509014657) do
   add_foreign_key "line_item_taxes", "tax_rates", on_delete: :restrict
   add_foreign_key "line_items", "orders", on_delete: :cascade
   add_foreign_key "line_items", "products", on_delete: :restrict
+  add_foreign_key "line_items", "shipping_rate_regions", on_delete: :restrict
   add_foreign_key "line_items", "sites", on_delete: :cascade
   add_foreign_key "line_items", "variants", on_delete: :restrict
   add_foreign_key "orders", "sites", on_delete: :cascade

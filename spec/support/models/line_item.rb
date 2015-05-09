@@ -1,13 +1,11 @@
 require 'rails_helper'
 
-RSpec.shared_examples 'line item' do |line_item_factory|
-  has_context 'parent site'do
-    let(:factory) { line_item_factory }
-  end
+RSpec.shared_examples 'line item' do
+  include_context 'parent site'
 
   has_context 'versioned'
 
-  has_context 'monies', line_item_factory,
+  has_context 'monies', :base_line_item,
               [{ field: :price, calculated: false },
                { field: :subtotal, calculated: true },
                { field: :total, calculated: true },
@@ -55,6 +53,8 @@ RSpec.shared_examples 'line item' do |line_item_factory|
     it { is_expected.to validate_presence_of :currency }
 
     context 'instance validations' do
+      subject { create factory }
+
       context 'total_tax_rate' do
         it 'must be greater that or equal to 0' do
           expect(subject).to validate_numericality_of(:total_tax_rate)
@@ -93,8 +93,12 @@ RSpec.shared_examples 'line item' do |line_item_factory|
     end
     let(:delivery_address) { create :address, country: tr1.country }
     let(:order) { create :order, delivery_address: delivery_address }
-    let(:product) { create :standalone_product }
-    subject { create :commodity_line_item, order: order, product: product }
+    let(:owner_instance) { create owner_factory }
+    subject { create factory, order: order }
+
+    before do
+      subject.send("#{owner}=", owner_instance)
+    end
 
     context 'preconditions' do
       it 'fails when self is invalid' do
@@ -117,7 +121,6 @@ RSpec.shared_examples 'line item' do |line_item_factory|
     end
 
     context 'subtotal' do
-      let(:expected_subtotal) { subject.price * subject.quantity }
       it 'stores the expected value' do
         expect { subject.calculate_total }.to change(subject, :subtotal)
           .to eq(expected_subtotal)
@@ -153,15 +156,15 @@ RSpec.shared_examples 'line item' do |line_item_factory|
       context 'tax rates are based on Site preference' do
         let!(:tr1) do
           create :tax_rate, tax_category: Site.current.primary_tax_category,
-                            rate: 0.1
+                            rate: 0.1, priority: 1
         end
         let!(:tr2) do
           create :tax_rate, tax_category: Site.current.primary_tax_category,
-                            rate: 0.2
+                            rate: 0.2, priority: 2
         end
         let!(:tr3) do
           create :tax_rate, tax_category: Site.current.primary_tax_category,
-                            rate: 0.3
+                            rate: 0.3, priority: 3
         end
         let(:delivery_address) do
           create :address, country: tr1.country
@@ -217,18 +220,6 @@ RSpec.shared_examples 'line item' do |line_item_factory|
         end
       end
 
-      context 'when a single rate applies' do
-        before { subject.calculate_total }
-
-        it 'stores a tax rate reference' do
-          expect(subject.tax_rates).to include(tr1)
-        end
-
-        it 'has a total tax rate of the single included rate' do
-          expect(subject.total_tax_rate).to eq(tr1.rate)
-        end
-      end
-
       context 'when multiple tax rates apply' do
         let!(:tr2) do
           create :tax_rate, tax_category: Site.current.primary_tax_category,
@@ -267,8 +258,8 @@ RSpec.shared_examples 'line item' do |line_item_factory|
           end
 
           let(:overridden_tax_category) { create :tax_category }
-          let(:product) do
-            create :standalone_product, tax_override: overridden_tax_category
+          let(:owner_instance) do
+            create owner_factory, tax_override: overridden_tax_category
           end
 
           let!(:tr2_over) do
@@ -300,8 +291,8 @@ RSpec.shared_examples 'line item' do |line_item_factory|
           end
 
           let(:overridden_tax_category) { create :tax_category }
-          let(:product) do
-            create :standalone_product, tax_override: overridden_tax_category
+          let(:owner_instance) do
+            create owner_factory, tax_override: overridden_tax_category
           end
 
           let!(:tr2_over) do

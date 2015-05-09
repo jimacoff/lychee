@@ -20,9 +20,14 @@ class CommodityLineItem < LineItem
     self.weight = variant.weight
   end
 
-  private
-
   def calculate_weight
     self.total_weight = weight * quantity
+  end
+
+  private
+
+  def overloaded_tax_rates
+    return {} unless commodity.tax_override.present?
+    tax_rates_hash(commodity.tax_override)
   end
 end

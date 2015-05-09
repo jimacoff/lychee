@@ -1,8 +1,18 @@
 require 'rails_helper'
 
 RSpec.describe CommodityLineItem, type: :model, site_scoped: true do
-  has_context 'line item', :commodity_line_item
-  has_context 'line item', :commodity_variant_line_item
+  has_context 'line item' do
+    let(:factory) { :commodity_line_item }
+    let(:owner) { :product }
+    let(:owner_factory) { :standalone_product }
+    let(:expected_subtotal) { subject.price * subject.quantity }
+  end
+  has_context 'line item' do
+    let(:factory) { :commodity_variant_line_item }
+    let(:owner) { :variant }
+    let(:owner_factory) { :variant }
+    let(:expected_subtotal) { subject.price * subject.quantity }
+  end
 
   has_context 'commodity reference' do
     let(:factory) { :commodity_line_item }
