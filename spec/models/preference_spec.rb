@@ -29,7 +29,7 @@ RSpec.describe Preference, type: :model, site_scoped: true do
 
     it 'stores an enum for taxation calculations basis' do
       expect(subject).to define_enum_for(:tax_basis)
-        .with([:shipping, :billing, :seller])
+        .with([:delivery, :customer, :subscriber])
     end
 
     context 'instance validations' do
