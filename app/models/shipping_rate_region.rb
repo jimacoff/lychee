@@ -15,6 +15,9 @@ class ShippingRateRegion < ActiveRecord::Base
 
   belongs_to :shipping_rate
 
+  belongs_to :tax_override, class_name: 'TaxCategory',
+                            foreign_key: 'tax_override_id'
+
   monies [{ field: :price }]
 
   has_paper_trail

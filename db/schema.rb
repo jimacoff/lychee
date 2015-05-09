@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20150506105311) do
+ActiveRecord::Schema.define(version: 20150509014657) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -225,6 +225,7 @@ ActiveRecord::Schema.define(version: 20150506105311) do
     t.datetime "created_at",                                     null: false
     t.datetime "updated_at",                                     null: false
     t.boolean  "enabled",                        default: true,  null: false
+    t.integer  "tax_override_id",      limit: 8
   end
 
   add_index "shipping_rate_regions", ["country_id"], name: "index_shipping_rate_regions_on_country_id", using: :btree
@@ -232,6 +233,7 @@ ActiveRecord::Schema.define(version: 20150506105311) do
   add_index "shipping_rate_regions", ["shipping_rate_id"], name: "index_shipping_rate_regions_on_shipping_rate_id", using: :btree
   add_index "shipping_rate_regions", ["site_id"], name: "index_shipping_rate_regions_on_site_id", using: :btree
   add_index "shipping_rate_regions", ["state_id"], name: "index_shipping_rate_regions_on_state_id", using: :btree
+  add_index "shipping_rate_regions", ["tax_override_id"], name: "index_shipping_rate_regions_on_tax_override_id", using: :btree
 
   create_table "shipping_rates", id: :bigserial, force: :cascade do |t|
     t.integer  "site_id",         limit: 8,                 null: false
@@ -447,6 +449,7 @@ ActiveRecord::Schema.define(version: 20150506105311) do
   add_foreign_key "shipping_rate_regions", "shipping_rates"
   add_foreign_key "shipping_rate_regions", "sites"
   add_foreign_key "shipping_rate_regions", "states"
+  add_foreign_key "shipping_rate_regions", "tax_categories", column: "tax_override_id", on_delete: :restrict
   add_foreign_key "shipping_rates", "sites"
   add_foreign_key "states", "countries", on_delete: :cascade
   add_foreign_key "tax_categories", "sites", column: "site_primary_tax_category_id", on_delete: :cascade

@@ -33,6 +33,7 @@ RSpec.describe ShippingRateRegion, type: :model, site_scoped: true do
 
   context 'relationships' do
     it { is_expected.to belong_to(:shipping_rate) }
+    it { is_expected.to belong_to(:tax_override).class_name('TaxCategory') }
   end
 
   context 'validations' do
