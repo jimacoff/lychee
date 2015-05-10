@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20150509065705) do
+ActiveRecord::Schema.define(version: 20150510033500) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -167,12 +167,13 @@ ActiveRecord::Schema.define(version: 20150509065705) do
   add_index "orders", ["site_id"], name: "index_orders_on_site_id", using: :btree
 
   create_table "preferences", id: :bigserial, force: :cascade do |t|
-    t.integer  "site_id",            limit: 8,                 null: false
-    t.integer  "tax_basis",                    default: 0,     null: false
-    t.boolean  "prices_include_tax",           default: false, null: false
+    t.integer  "site_id",                    limit: 8,                 null: false
+    t.integer  "tax_basis",                            default: 0,     null: false
+    t.boolean  "prices_include_tax",                   default: false, null: false
     t.hstore   "metadata"
-    t.datetime "created_at",                                   null: false
-    t.datetime "updated_at",                                   null: false
+    t.datetime "created_at",                                           null: false
+    t.datetime "updated_at",                                           null: false
+    t.boolean  "order_subtotal_include_tax",           default: true,  null: false
   end
 
   add_index "preferences", ["site_id"], name: "index_preferences_on_site_id", using: :btree

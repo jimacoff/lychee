@@ -11,6 +11,10 @@ RSpec.describe Preference, type: :model, site_scoped: true do
   context 'table structure' do
     it { is_expected.to have_db_column(:prices_include_tax).of_type(:boolean) }
     it { is_expected.to have_db_column(:tax_basis).of_type(:integer) }
+    it do
+      is_expected.to have_db_column(:order_subtotal_include_tax)
+        .of_type(:boolean)
+    end
 
     it 'should have non nullable column site_id of type bigint' do
       expect(subject).to have_db_column(:site_id)
@@ -33,6 +37,20 @@ RSpec.describe Preference, type: :model, site_scoped: true do
     end
 
     context 'instance validations' do
+      subject { create :preference }
+      it { is_expected.to be_valid }
+
+      it 'is invalid for order subtotal not incl tax when prices incl tax' do
+        subject.prices_include_tax = true
+        subject.order_subtotal_include_tax = false
+        expect(subject).to be_invalid
+      end
+
+      it 'is valid for order subtotal not incl tax when prices not incl tax' do
+        subject.prices_include_tax = false
+        subject.order_subtotal_include_tax = false
+        expect(subject).to be_valid
+      end
     end
   end
 end
