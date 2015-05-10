@@ -20,7 +20,7 @@ class CommodityLineItem < LineItem
     self.weight = variant.weight
   end
 
-  def calculate_weight
+  def calculate_total_weight
     self.total_weight = weight * quantity
   end
 

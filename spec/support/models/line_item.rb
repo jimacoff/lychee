@@ -231,7 +231,7 @@ RSpec.shared_examples 'line item' do
         end
         let!(:tr4) do # must not apply, not geographically valid
           create :tax_rate, tax_category: Site.current.primary_tax_category,
-                            rate: 0.9, country: create(:country)
+                            rate: 0.9, country: create(:country), priority: 99
         end
         let(:expected_tax_rate) { tr1.rate + tr2.rate + tr3.rate }
 
