@@ -11,6 +11,7 @@ class Order < ActiveRecord::Base
                              foreign_key: 'order_delivery_address_id'
 
   has_many :commodity_line_items
+  has_many :shipping_line_items
 
   monies [{ field: :subtotal, calculated: true, allow_nil: true },
           { field: :total, calculated: true }]
@@ -25,16 +26,20 @@ class Order < ActiveRecord::Base
 
   def calculate_weight
     change_weight(0) && return unless commodity_line_items.present?
-    change_weight(commodity_line_items.map(&:weight).sum)
+    change_weight(commodity_line_items.map(&:total_weight).sum)
   end
 
   def calculate_subtotal
     change_subtotal(0) && return unless commodity_line_items.present?
-    change_subtotal(commodity_line_items.map(&:total).sum.cents)
+
+    if site.preferences.order_subtotal_include_tax
+      calculate_subtotal_tax_inclusive
+    else
+      calculate_subtotal_tax_exclusive
+    end
   end
 
   def calculate_total
-    # TODO: Shipping
     subtotal
   end
 
@@ -42,5 +47,13 @@ class Order < ActiveRecord::Base
 
   def change_weight(weight)
     write_attribute(:weight, weight)
+  end
+
+  def calculate_subtotal_tax_inclusive
+    change_subtotal(commodity_line_items.map(&:total).sum.cents)
+  end
+
+  def calculate_subtotal_tax_exclusive
+    change_subtotal(commodity_line_items.map(&:subtotal).sum.cents)
   end
 end

@@ -19,7 +19,9 @@ RSpec.describe Order, type: :model, site_scoped: true do
   context 'relationships' do
     it { is_expected.to have_one :customer_address }
     it { is_expected.to have_one :delivery_address }
+
     it { is_expected.to have_many :commodity_line_items }
+    it { is_expected.to have_many :shipping_line_items }
   end
 
   context 'validations' do
@@ -39,6 +41,10 @@ RSpec.describe Order, type: :model, site_scoped: true do
     let(:commodity_line_items) do
       create_list(:commodity_line_item, 3, quantity: Faker::Number.number(3))
     end
+    let!(:tax_rate) do
+      create :tax_rate, country: order.delivery_address.country,
+                        tax_category: Site.current.primary_tax_category
+    end
 
     context 'without commodity_line_items present' do
       let(:subtotal) { order.calculate_subtotal }
@@ -57,25 +63,64 @@ RSpec.describe Order, type: :model, site_scoped: true do
     end
 
     context 'with commodity_line_items present' do
-      let(:items_total) { commodity_line_items.map(&:total).sum.cents }
-      subject { -> { order.calculate_subtotal } }
+      context 'when subtotal should include tax' do
+        let(:items_total) { commodity_line_items.map(&:total).sum.cents }
+        subject { -> { order.calculate_subtotal } }
 
-      before { commodity_line_items.map(&:calculate_total) }
+        before do
+          Site.current.preferences.order_subtotal_include_tax = true
+          Site.current.preferences.save
+          commodity_line_items.each(&:calculate_total)
+        end
 
-      it do
-        is_expected.to change(order, :subtotal_cents).from(0).to eq(items_total)
+        after do
+          Site.current.preferences.order_subtotal_include_tax = true
+          Site.current.preferences.save
+        end
+
+        it do
+          is_expected.to change(order, :subtotal_cents)
+            .from(0).to eq(items_total)
+        end
+
+        it 'has site currency' do
+          expect(order.subtotal.currency).to eq(Site.current.currency)
+        end
+
+        it 'is a Money instance' do
+          expect(order.subtotal).to be_a(Money)
+        end
       end
 
-      it 'has site currency' do
-        expect(order.subtotal.currency).to eq(Site.current.currency)
-      end
+      context 'when subtotal should not include tax' do
+        let(:items_total) { commodity_line_items.map(&:subtotal).sum.cents }
+        subject { -> { order.calculate_subtotal } }
 
-      it 'is a Money instance' do
-        expect(order.subtotal).to be_a(Money)
+        before do
+          Site.current.preferences.order_subtotal_include_tax = false
+          Site.current.preferences.save
+          commodity_line_items.each(&:calculate_total)
+        end
+
+        after do
+          Site.current.preferences.order_subtotal_include_tax = true
+          Site.current.preferences.save
+        end
+
+        it do
+          is_expected.to change(order, :subtotal_cents)
+            .from(0).to eq(items_total)
+        end
+
+        it 'has site currency' do
+          expect(order.subtotal.currency).to eq(Site.current.currency)
+        end
+
+        it 'is a Money instance' do
+          expect(order.subtotal).to be_a(Money)
+        end
       end
     end
-
-    pending 'requires additional specs once order workflow considered'
   end
 
   describe '#calculate_total' do
@@ -96,6 +141,11 @@ RSpec.describe Order, type: :model, site_scoped: true do
       create_list(:commodity_line_item, 3,
                   weight: Faker::Number.number(4).to_i)
     end
+
+    before do
+      commodity_line_items.each(&:calculate_total_weight)
+    end
+
     context 'without commodity_line_items present' do
       let!(:initial_weight) { order.calculate_weight }
 
@@ -105,11 +155,16 @@ RSpec.describe Order, type: :model, site_scoped: true do
       end
 
       subject { -> { run } }
-      it { is_expected.to change(order, :weight).from(initial_weight).to eq(0) }
+      it do
+        is_expected.to change(order, :weight)
+          .from(initial_weight).to eq(0)
+      end
     end
 
     context 'totals weight of all commodity_line_items' do
-      let(:items_weight) { commodity_line_items.map(&:weight).sum }
+      let(:items_weight) do
+        commodity_line_items.map { |cli| cli.weight * cli.quantity }.sum
+      end
       subject { -> { order.calculate_weight } }
       it { is_expected.to change(order, :weight).from(0).to eq(items_weight) }
     end
