@@ -124,15 +124,56 @@ RSpec.describe Order, type: :model, site_scoped: true do
   end
 
   describe '#calculate_total' do
-    it 'has site currency' do
-      expect(subject.calculate_total.currency).to eq(Site.current.currency)
+    context 'must be in vaild state' do
+      subject { create :order }
+      it 'is invalid with commodities but no shipping' do
+        create :commodity_line_item, order: subject
+        expect { subject.calculate_total }.to raise_error
+      end
+      it 'is invalid with shipping but no commodities' do
+        create :shipping_line_item, order: subject
+        expect { subject.calculate_total }.to raise_error
+      end
+      it 'is valid with shipping and commodities' do
+        create :commodity_line_item, order: subject
+        create :shipping_line_item, order: subject
+        expect { subject.calculate_total }.not_to raise_error
+      end
     end
 
-    it 'is a Money instance' do
-      expect(subject.calculate_total).to be_a(Money)
-    end
+    context 'when order is complete', focus: true do
+      let!(:commodity_line_items) do
+        create_list(:commodity_line_item, 3, order: subject)
+      end
+      let!(:shipping_line_item) { create :shipping_line_item, order: subject }
+      let(:items_total) { commodity_line_items.map(&:total).sum.cents }
 
-    pending 'requires additional specs once order workflow considered'
+      subject { create :order }
+
+      before do
+        commodity_line_items.each(&:calculate_total)
+        commodity_line_items.each(&:save)
+        shipping_line_item.calculate_total
+        shipping_line_item.save
+
+        subject.calculate_total
+      end
+
+      it 'has site currency' do
+        expect(subject.total.currency).to eq(Site.current.currency)
+      end
+
+      it 'is a Money instance' do
+        expect(subject.total).to be_a(Money)
+      end
+
+      it 'sets total to combined commodities and shipping incl tax' do
+        expect(subject.total.cents)
+          .to eq(items_total + shipping_line_item.price.cents)
+      end
+
+      pending 'requires additional specs once order workflow considered'
+    end
   end
 
   describe '#calculate_weight' do

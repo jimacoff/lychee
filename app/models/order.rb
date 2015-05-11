@@ -40,7 +40,11 @@ class Order < ActiveRecord::Base
   end
 
   def calculate_total
-    subtotal
+    unless commodity_line_items.present? && shipping_line_items.present?
+      fail 'attempt to calculate total with invalid state'
+    end
+
+    change_total(total_commodities.cents + total_shipping.cents)
   end
 
   private
@@ -55,5 +59,13 @@ class Order < ActiveRecord::Base
 
   def calculate_subtotal_tax_exclusive
     change_subtotal(commodity_line_items.map(&:subtotal).sum.cents)
+  end
+
+  def total_commodities
+    commodity_line_items.map(&:total).sum
+  end
+
+  def total_shipping
+    shipping_line_items.map(&:total).sum
   end
 end
