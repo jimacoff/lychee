@@ -6,6 +6,9 @@ RSpec.describe Order, type: :model, site_scoped: true do
   end
   has_context 'monies', :order,
               [{ field: :subtotal, calculated: true, allow_nil: true },
+               { field: :total_commodities, calculated: true },
+               { field: :total_shipping, calculated: true },
+               { field: :total_tax, calculated: true },
                { field: :total, calculated: true }]
   has_context 'versioned'
   has_context 'metadata'
@@ -141,7 +144,7 @@ RSpec.describe Order, type: :model, site_scoped: true do
       end
     end
 
-    context 'when order is complete', focus: true do
+    context 'when order is complete' do
       let!(:commodity_line_items) do
         create_list(:commodity_line_item, 3, order: subject)
       end
@@ -159,20 +162,26 @@ RSpec.describe Order, type: :model, site_scoped: true do
         subject.calculate_total
       end
 
-      it 'has site currency' do
-        expect(subject.total.currency).to eq(Site.current.currency)
-      end
-
-      it 'is a Money instance' do
-        expect(subject.total).to be_a(Money)
-      end
-
       it 'sets total to combined commodities and shipping incl tax' do
         expect(subject.total.cents)
           .to eq(items_total + shipping_line_item.price.cents)
       end
 
-      pending 'requires additional specs once order workflow considered'
+      it 'sets total_commodities to sum of all commodities incl tax' do
+        expect(subject.total_commodities)
+          .to eq(commodity_line_items.map(&:total).sum)
+      end
+
+      it 'sets total_shipping to sum of all shipping incl tax' do
+        expect(subject.total_shipping)
+          .to eq(shipping_line_item.total)
+      end
+
+      it 'sets tax to total tax of all commodities and shipping' do
+        expect(subject.total_tax)
+          .to eq(shipping_line_item.tax +
+                 commodity_line_items.map(&:tax).sum)
+      end
     end
   end
 

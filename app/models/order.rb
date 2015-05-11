@@ -14,6 +14,9 @@ class Order < ActiveRecord::Base
   has_many :shipping_line_items
 
   monies [{ field: :subtotal, calculated: true, allow_nil: true },
+          { field: :total_commodities, calculated: true },
+          { field: :total_shipping, calculated: true },
+          { field: :total_tax, calculated: true },
           { field: :total, calculated: true }]
 
   has_paper_trail
@@ -44,6 +47,10 @@ class Order < ActiveRecord::Base
       fail 'attempt to calculate total with invalid state'
     end
 
+    calculate_total_commodities
+    calculate_total_shipping
+    calculate_total_tax
+
     change_total(total_commodities.cents + total_shipping.cents)
   end
 
@@ -61,11 +68,16 @@ class Order < ActiveRecord::Base
     change_subtotal(commodity_line_items.map(&:subtotal).sum.cents)
   end
 
-  def total_commodities
-    commodity_line_items.map(&:total).sum
+  def calculate_total_commodities
+    change_total_commodities(commodity_line_items.map(&:total).sum.cents)
   end
 
-  def total_shipping
-    shipping_line_items.map(&:total).sum
+  def calculate_total_shipping
+    change_total_shipping(shipping_line_items.map(&:total).sum.cents)
+  end
+
+  def calculate_total_tax
+    change_total_tax(shipping_line_items.map(&:tax).sum.cents +
+                     commodity_line_items.map(&:tax).sum.cents)
   end
 end

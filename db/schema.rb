@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20150510033500) do
+ActiveRecord::Schema.define(version: 20150511094828) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -152,16 +152,19 @@ ActiveRecord::Schema.define(version: 20150510033500) do
   add_index "line_items", ["variant_id"], name: "index_line_items_on_variant_id", using: :btree
 
   create_table "orders", id: :bigserial, force: :cascade do |t|
-    t.integer  "total_cents",                default: 0,     null: false
-    t.string   "currency",                   default: "USD", null: false
-    t.string   "status",         limit: 255,                 null: false
+    t.integer  "total_cents",                         default: 0,     null: false
+    t.string   "currency",                            default: "USD", null: false
+    t.string   "status",                  limit: 255,                 null: false
     t.hstore   "metadata"
-    t.text     "tags",                       default: [],                 array: true
-    t.integer  "site_id",        limit: 8,                   null: false
-    t.datetime "created_at",                                 null: false
-    t.datetime "updated_at",                                 null: false
-    t.integer  "subtotal_cents",             default: 0,     null: false
-    t.integer  "weight",                     default: 0,     null: false
+    t.text     "tags",                                default: [],                 array: true
+    t.integer  "site_id",                 limit: 8,                   null: false
+    t.datetime "created_at",                                          null: false
+    t.datetime "updated_at",                                          null: false
+    t.integer  "subtotal_cents",                      default: 0,     null: false
+    t.integer  "weight",                              default: 0,     null: false
+    t.integer  "total_commodities_cents",             default: 0,     null: false
+    t.integer  "total_shipping_cents",                default: 0,     null: false
+    t.integer  "total_tax_cents",                     default: 0,     null: false
   end
 
   add_index "orders", ["site_id"], name: "index_orders_on_site_id", using: :btree
