@@ -67,7 +67,7 @@ RSpec.describe Order, type: :model, site_scoped: true do
 
     context 'with commodity_line_items present' do
       context 'when subtotal should include tax' do
-        let(:items_total) { commodity_line_items.map(&:total).sum.cents }
+        let(:items_total) { commodity_line_items.sum(&:total).cents }
         subject { -> { order.calculate_subtotal } }
 
         before do
@@ -96,7 +96,7 @@ RSpec.describe Order, type: :model, site_scoped: true do
       end
 
       context 'when subtotal should not include tax' do
-        let(:items_total) { commodity_line_items.map(&:subtotal).sum.cents }
+        let(:items_total) { commodity_line_items.sum(&:subtotal).cents }
         subject { -> { order.calculate_subtotal } }
 
         before do
@@ -149,7 +149,7 @@ RSpec.describe Order, type: :model, site_scoped: true do
         create_list(:commodity_line_item, 3, order: subject)
       end
       let!(:shipping_line_item) { create :shipping_line_item, order: subject }
-      let(:items_total) { commodity_line_items.map(&:total).sum.cents }
+      let(:items_total) { commodity_line_items.sum(&:total).cents }
 
       subject { create :order }
 
@@ -169,7 +169,7 @@ RSpec.describe Order, type: :model, site_scoped: true do
 
       it 'sets total_commodities to sum of all commodities incl tax' do
         expect(subject.total_commodities)
-          .to eq(commodity_line_items.map(&:total).sum)
+          .to eq(commodity_line_items.sum(&:total))
       end
 
       it 'sets total_shipping to sum of all shipping incl tax' do
@@ -180,7 +180,7 @@ RSpec.describe Order, type: :model, site_scoped: true do
       it 'sets tax to total tax of all commodities and shipping' do
         expect(subject.total_tax)
           .to eq(shipping_line_item.tax +
-                 commodity_line_items.map(&:tax).sum)
+                 commodity_line_items.sum(&:tax))
       end
     end
   end

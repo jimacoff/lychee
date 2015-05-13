@@ -141,11 +141,20 @@ RSpec.shared_examples 'line item' do
         end
       end
 
-      context 'when a single rate applies' do
+      context 'when a single tax_rate applies' do
         before { subject.calculate_total }
 
-        it 'stores a tax rate reference' do
+        it 'stores a tax_rate reference' do
           expect(subject.tax_rates).to include(tr1)
+        end
+
+        it 'stores the current rate advised by this tax_rate' do
+          expect(subject.line_item_taxes.first.used_tax_rate).to eq(tr1.rate)
+        end
+
+        it 'stores the amount of tax contributed by this rate' do
+          expect(subject.line_item_taxes.first.tax_amount)
+            .to eq(tr1.rate * subject.subtotal)
         end
 
         it 'has a total tax rate of the single included rate' do
@@ -241,6 +250,15 @@ RSpec.shared_examples 'line item' do
           expect(subject.tax_rates).to include(tr1, tr2, tr3)
         end
 
+        it 'stores all line_item_taxes' do
+          expect(subject.line_item_taxes.size).to eq(3)
+        end
+
+        it 'stores each applicable current tax_rate individually' do
+          expect(subject.line_item_taxes.sum(:used_tax_rate))
+            .to eq(expected_tax_rate)
+        end
+
         it 'has a total tax rate of combined, applicable rates' do
           expect(subject.total_tax_rate).to eq(expected_tax_rate)
         end
@@ -327,6 +345,11 @@ RSpec.shared_examples 'line item' do
         it 'stores the expected value' do
           expect(subject.tax).to eq(expected_tax)
         end
+
+        it 'stores each applicable portional of total tax individually' do
+          expect(subject.line_item_taxes.map(&:tax_amount).sum)
+            .to eq(expected_tax)
+        end
       end
       context 'prices inclusive of tax' do
         let(:expected_tax) { subject.subtotal / (1 + subject.total_tax_rate) }
@@ -343,6 +366,11 @@ RSpec.shared_examples 'line item' do
 
         it 'stores the expected value' do
           expect(subject.tax).to eq(expected_tax)
+        end
+
+        it 'stores each applicable portional of total tax individually' do
+          expect(subject.line_item_taxes.map(&:tax_amount).sum)
+            .to eq(expected_tax)
         end
       end
     end

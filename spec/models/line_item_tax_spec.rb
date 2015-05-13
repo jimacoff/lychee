@@ -5,8 +5,12 @@ RSpec.describe LineItemTax, type: :model, site_scoped: true do
     let(:factory) { :line_item_tax }
   end
   has_context 'versioned'
+  has_context 'monies', :line_item_tax,
+              [{ field: :tax_amount, calculated: false }]
 
   context 'table structure' do
+    it { is_expected.to have_db_column(:used_tax_rate).of_type(:decimal) }
+
     it 'should have non nullable column line_item_id of type bigint' do
       expect(subject).to have_db_column(:line_item_id)
         .of_type(:integer)
@@ -32,6 +36,17 @@ RSpec.describe LineItemTax, type: :model, site_scoped: true do
     it { is_expected.to validate_presence_of :tax_rate }
 
     context 'instance validations' do
+      subject { create :line_item_tax }
+      context 'used_tax_rate' do
+        it 'must be greater that or equal to 0' do
+          expect(subject).to validate_numericality_of(:used_tax_rate)
+            .is_greater_than_or_equal_to(0.0)
+        end
+        it 'must be less than or equal to 0' do
+          expect(subject).to validate_numericality_of(:used_tax_rate)
+            .is_less_than_or_equal_to(1.0)
+        end
+      end
     end
   end
 end

@@ -29,7 +29,7 @@ class LineItem < ActiveRecord::Base
     end
 
     calculate_subtotal
-    calculate_tax_rate
+    calculate_tax_rates
     calculate_tax
     finalise_total
   end
@@ -40,7 +40,9 @@ class LineItem < ActiveRecord::Base
     change_subtotal(price.cents * quantity)
   end
 
-  def calculate_tax_rate
+  def calculate_tax_rates
+    line_item_taxes.delete_all
+
     ##
     # The ultimate set of tax rates across all priorities give
     # overloaded values at the same priority level precedence
@@ -51,8 +53,25 @@ class LineItem < ActiveRecord::Base
     # TaxCategory to handle this case as tax_override.
     #
     # No overrides, anticpated to often be the case
-    self.tax_rates = default_tax_rates.merge(overloaded_tax_rates).values
-    self.total_tax_rate = tax_rates.sum(:rate)
+    tax_rates = default_tax_rates.merge(overloaded_tax_rates).values
+    tax_rates.each do |tax_rate|
+      used_tax_rate = tax_rate.rate
+      tax_amount = calculate_individual_tax_amount(used_tax_rate)
+
+      line_item_taxes.create(tax_rate: tax_rate,
+                             used_tax_rate: used_tax_rate,
+                             tax_amount: tax_amount)
+
+      self.total_tax_rate += tax_rate.rate
+    end
+  end
+
+  def calculate_individual_tax_amount(used_tax_rate)
+    if prices_include_tax?
+      tax_prices_inclusive(subtotal, used_tax_rate)
+    else
+      tax_prices_exclusive(subtotal, used_tax_rate)
+    end
   end
 
   def default_tax_rates
@@ -87,19 +106,19 @@ class LineItem < ActiveRecord::Base
     site.preferences.prices_include_tax
   end
 
-  def tax_prices_inclusive
-    (subtotal / (1 + total_tax_rate)).cents
+  def tax_prices_inclusive(amount, rate)
+    (amount / (1 + rate)).cents
   end
 
-  def tax_prices_exclusive
-    (subtotal * total_tax_rate).cents
+  def tax_prices_exclusive(amount, rate)
+    (amount * rate).cents
   end
 
   def calculate_tax
     if prices_include_tax?
-      change_tax(tax_prices_inclusive)
+      change_tax(tax_prices_inclusive(subtotal, total_tax_rate))
     else
-      change_tax(tax_prices_exclusive)
+      change_tax(tax_prices_exclusive(subtotal, total_tax_rate))
     end
   end
 
