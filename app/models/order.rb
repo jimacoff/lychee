@@ -13,6 +13,9 @@ class Order < ActiveRecord::Base
   has_many :commodity_line_items
   has_many :shipping_line_items
 
+  has_many :order_taxes
+  has_many :tax_rates, through: :order_taxes
+
   monies [{ field: :subtotal, calculated: true, allow_nil: true },
           { field: :total_commodities, calculated: true },
           { field: :total_shipping, calculated: true },

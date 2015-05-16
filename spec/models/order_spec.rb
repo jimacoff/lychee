@@ -25,6 +25,8 @@ RSpec.describe Order, type: :model, site_scoped: true do
 
     it { is_expected.to have_many :commodity_line_items }
     it { is_expected.to have_many :shipping_line_items }
+
+    it { is_expected.to have_many :order_taxes }
   end
 
   context 'validations' do

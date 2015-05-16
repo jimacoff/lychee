@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20150511101151) do
+ActiveRecord::Schema.define(version: 20150516054908) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -153,6 +153,21 @@ ActiveRecord::Schema.define(version: 20150511101151) do
   add_index "line_items", ["shipping_rate_region_id"], name: "index_line_items_on_shipping_rate_region_id", using: :btree
   add_index "line_items", ["site_id"], name: "index_line_items_on_site_id", using: :btree
   add_index "line_items", ["variant_id"], name: "index_line_items_on_variant_id", using: :btree
+
+  create_table "order_taxes", id: :bigserial, force: :cascade do |t|
+    t.integer  "site_id",          limit: 8,                 null: false
+    t.integer  "order_id",         limit: 8,                 null: false
+    t.integer  "tax_rate_id",      limit: 8,                 null: false
+    t.integer  "tax_amount_cents",           default: 0,     null: false
+    t.string   "currency",                   default: "USD", null: false
+    t.decimal  "used_tax_rate",              default: 0.0,   null: false
+    t.datetime "created_at",                                 null: false
+    t.datetime "updated_at",                                 null: false
+  end
+
+  add_index "order_taxes", ["order_id"], name: "index_order_taxes_on_order_id", using: :btree
+  add_index "order_taxes", ["site_id"], name: "index_order_taxes_on_site_id", using: :btree
+  add_index "order_taxes", ["tax_rate_id"], name: "index_order_taxes_on_tax_rate_id", using: :btree
 
   create_table "orders", id: :bigserial, force: :cascade do |t|
     t.integer  "total_cents",                         default: 0,     null: false
@@ -449,6 +464,9 @@ ActiveRecord::Schema.define(version: 20150511101151) do
   add_foreign_key "line_items", "shipping_rate_regions", on_delete: :restrict
   add_foreign_key "line_items", "sites", on_delete: :cascade
   add_foreign_key "line_items", "variants", on_delete: :restrict
+  add_foreign_key "order_taxes", "orders", on_delete: :cascade
+  add_foreign_key "order_taxes", "sites", on_delete: :cascade
+  add_foreign_key "order_taxes", "tax_rates", on_delete: :restrict
   add_foreign_key "orders", "sites", on_delete: :cascade
   add_foreign_key "preferences", "sites", on_delete: :cascade
   add_foreign_key "prioritized_countries", "countries"
