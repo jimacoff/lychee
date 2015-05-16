@@ -41,7 +41,7 @@ class LineItem < ActiveRecord::Base
   end
 
   def calculate_tax_rates
-    line_item_taxes.delete_all
+    line_item_taxes.destroy_all
 
     ##
     # The ultimate set of tax rates across all priorities give
