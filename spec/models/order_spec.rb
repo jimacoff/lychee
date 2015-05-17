@@ -128,6 +128,82 @@ RSpec.describe Order, type: :model, site_scoped: true do
     end
   end
 
+  describe '#calculate_tax_rates' do
+    let(:order) do
+      create :order
+    end
+    let(:shipping_line_item) do
+      create :shipping_line_item
+    end
+    let(:commodity_line_items) do
+      create_list(:commodity_line_item, 3, quantity: Faker::Number.number(3))
+    end
+
+    context 'without applicable tax_rates' do
+      let!(:tax_rate) do
+        create :tax_rate, tax_category: Site.current.primary_tax_category,
+                          rate: 0.2, priority: 1
+      end
+
+      before do
+        order.commodity_line_items << commodity_line_items
+        order.shipping_line_items << shipping_line_item
+
+        commodity_line_items.each(&:calculate_total)
+        shipping_line_item.calculate_total
+
+        order.calculate_total
+      end
+
+      context 'tax_rate_totals' do
+        it 'is expected to have 0 rates' do
+          expect(order.order_taxes.size).to eq(0)
+        end
+        it 'is expected to have a zero total' do
+          tax_rates_total = order.order_taxes.map(&:tax_amount).sum
+          expect(tax_rates_total).to eq(0)
+        end
+      end
+    end
+
+    context 'with applicable tax_rates' do
+      let!(:tax_rate) do
+        create :tax_rate, country: order.delivery_address.country,
+                          tax_category: Site.current.primary_tax_category,
+                          rate: 0.2, priority: 1
+      end
+      let!(:tax_rate2) do
+        create :tax_rate, country: order.delivery_address.country,
+                          tax_category: Site.current.primary_tax_category,
+                          rate: 0.3, priority: 2
+      end
+      let!(:tax_rate3) do # should be unused
+        create :tax_rate, tax_category: Site.current.primary_tax_category,
+                          rate: 0.4, priority: 2
+      end
+
+      before do
+        order.commodity_line_items << commodity_line_items
+        order.shipping_line_items << shipping_line_item
+
+        commodity_line_items.each(&:calculate_total)
+        shipping_line_item.calculate_total
+
+        order.calculate_total
+      end
+
+      context 'tax_rate_totals' do
+        it 'is expected to have 2 rates' do
+          expect(order.order_taxes.size).to eq(2)
+        end
+        it 'is expected to have a total equal to order tax' do
+          tax_rates_total = order.order_taxes.map(&:tax_amount).sum
+          expect(tax_rates_total).to eq(order.total_tax)
+        end
+      end
+    end
+  end
+
   describe '#calculate_total' do
     context 'must be in vaild state' do
       subject { create :order }

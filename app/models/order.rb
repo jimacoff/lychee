@@ -53,8 +53,8 @@ class Order < ActiveRecord::Base
     calculate_total_commodities
     calculate_total_shipping
     calculate_total_tax
-
-    change_total(total_commodities.cents + total_shipping.cents)
+    finalise_total
+    calculate_tax_rates
   end
 
   private
@@ -82,5 +82,42 @@ class Order < ActiveRecord::Base
   def calculate_total_tax
     change_total_tax(shipping_line_items.map(&:tax).sum.cents +
                      commodity_line_items.map(&:tax).sum.cents)
+  end
+
+  def calculate_tax_rates
+    order_taxes.destroy_all
+
+    tax_rate_totals.each do |tax_rate_id, total|
+      tax_rate = TaxRate.find(tax_rate_id)
+      order_taxes.create(tax_rate: tax_rate,
+                         used_tax_rate: tax_rate.rate,
+                         tax_amount: total.cents)
+    end
+  end
+
+  def tax_rate_totals
+    all_tax_rates.inject({}) do |h, lit|
+      h.merge(lit.tax_rate.id => lit.tax_amount) do |_key, current, additional|
+        current + additional
+      end
+    end
+  end
+
+  def all_tax_rates
+    commodity_line_item_taxes + shipping_line_item_taxes
+  end
+
+  def commodity_line_item_taxes
+    commodity_line_items.map { |cli| cli.line_item_taxes.map { |lit| lit } }
+      .flatten
+  end
+
+  def shipping_line_item_taxes
+    shipping_line_items.map { |ship| ship.line_item_taxes.map { |lit| lit } }
+      .flatten
+  end
+
+  def finalise_total
+    change_total(total_commodities.cents + total_shipping.cents)
   end
 end
