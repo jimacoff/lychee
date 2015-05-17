@@ -29,8 +29,7 @@ class LineItem < ActiveRecord::Base
     end
 
     calculate_subtotal
-    calculate_tax_rates
-    calculate_tax
+    calculate_taxes
     finalise_total
   end
 
@@ -40,8 +39,10 @@ class LineItem < ActiveRecord::Base
     change_subtotal(price.cents * quantity)
   end
 
-  def calculate_tax_rates
+  def calculate_taxes
     line_item_taxes.destroy_all
+    total_tax_amount = 0
+    total_tax_rate = 0.0
 
     ##
     # The ultimate set of tax rates across all priorities give
@@ -53,29 +54,38 @@ class LineItem < ActiveRecord::Base
     # TaxCategory to handle this case as tax_override.
     #
     # No overrides, anticpated to often be the case
-    tax_rates = default_tax_rates.merge(overloaded_tax_rates).values
-    tax_rates.each do |tax_rate|
-      used_tax_rate = tax_rate.rate
-      tax_amount = calculate_individual_tax_amount(used_tax_rate)
+    required_tax_rates.each do |tax_rate|
+      lit = create_line_item_tax(tax_rate)
 
-      line_item_taxes.create(tax_rate: tax_rate,
-                             used_tax_rate: used_tax_rate,
-                             tax_amount: tax_amount)
-
-      self.total_tax_rate += tax_rate.rate
+      total_tax_rate += lit.used_tax_rate
+      total_tax_amount += lit.tax_amount.cents
     end
+
+    self.total_tax_rate = total_tax_rate
+    change_tax(total_tax_amount)
   end
 
-  def calculate_individual_tax_amount(used_tax_rate)
-    if prices_include_tax?
-      tax_prices_inclusive(subtotal, used_tax_rate)
-    else
-      tax_prices_exclusive(subtotal, used_tax_rate)
-    end
+  def required_tax_rates
+    default_tax_rates.merge(overloaded_tax_rates).values
+  end
+
+  def create_line_item_tax(tax_rate)
+    tax_amount = calculate_individual_tax_amount(tax_rate.rate)
+
+    line_item_taxes.create(tax_rate: tax_rate, used_tax_rate: tax_rate.rate,
+                           tax_amount: tax_amount)
   end
 
   def default_tax_rates
     tax_rates_hash(site.primary_tax_category)
+  end
+
+  def tax_rates_hash(tax_category)
+    tax_rates = TaxRate.required_for_location(geo_hierarchy, tax_category)
+
+    tax_rates.inject({}) do |hash, tax_rate|
+      hash.merge(tax_rate.priority => tax_rate)
+    end
   end
 
   def geo_hierarchy
@@ -94,11 +104,11 @@ class LineItem < ActiveRecord::Base
     end
   end
 
-  def tax_rates_hash(tax_category)
-    tax_rates = TaxRate.required_for_location(geo_hierarchy, tax_category)
-
-    tax_rates.inject({}) do |hash, tax_rate|
-      hash.merge(tax_rate.priority => tax_rate)
+  def calculate_individual_tax_amount(used_tax_rate)
+    if prices_include_tax?
+      tax_prices_inclusive(subtotal, used_tax_rate)
+    else
+      tax_prices_exclusive(subtotal, used_tax_rate)
     end
   end
 
@@ -112,14 +122,6 @@ class LineItem < ActiveRecord::Base
 
   def tax_prices_exclusive(amount, rate)
     (amount * rate).cents
-  end
-
-  def calculate_tax
-    if prices_include_tax?
-      change_tax(tax_prices_inclusive(subtotal, total_tax_rate))
-    else
-      change_tax(tax_prices_exclusive(subtotal, total_tax_rate))
-    end
   end
 
   def finalise_total
