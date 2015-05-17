@@ -10,6 +10,7 @@ gem 'money-rails', git: 'https://github.com/RubyMoney/money-rails.git'
 gem 'stringex', '~> 2.5'
 
 gem 'paper_trail', '~>4.0.0.beta2'
+gem 'workflow'
 
 gem 'valhammer', git: 'https://github.com/ausaccessfed/valhammer.git',
                  branch: 'develop'
