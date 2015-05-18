@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20150516054908) do
+ActiveRecord::Schema.define(version: 20150517052825) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -183,6 +183,7 @@ ActiveRecord::Schema.define(version: 20150516054908) do
     t.integer  "total_commodities_cents",             default: 0,     null: false
     t.integer  "total_shipping_cents",                default: 0,     null: false
     t.integer  "total_tax_cents",                     default: 0,     null: false
+    t.string   "workflow_state"
   end
 
   add_index "orders", ["site_id"], name: "index_orders_on_site_id", using: :btree

@@ -5,6 +5,32 @@ class Order < ActiveRecord::Base
   include Metadata
   include Taggable
 
+  include Workflow
+
+  workflow do
+    state :new do
+      event :submit, transitions_to: :acquire_addresses
+    end
+    state :acquire_addresses
+    # TODO: Workflow finalisation/extension
+    #
+    # Possible options:
+    #
+    # calculate commoditity totals + subtotal
+    # acquire user details + billing + shipping
+    # Combine (ajaxy?):
+    #   Ask for shipping option
+    #   Calculate all totals
+    #   Request payment from user
+    # Settle payment, provide confirmation, email purchaser
+    # Provide for subscriber review:
+    #   reject order + refund + email purchaser
+    #   approve order -> awaiting shipment
+    #   indicate shipped + email purchaser
+    #
+    # Refunds?
+  end
+
   has_one :customer_address, class_name: 'Address',
                              foreign_key: 'order_customer_address_id'
   has_one :delivery_address, class_name: 'Address',
