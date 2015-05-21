@@ -11,17 +11,13 @@ gem 'stringex', '~> 2.5'
 
 gem 'paper_trail', '~>4.0.0.beta2'
 gem 'workflow'
+gem 'rails-api'
 
 gem 'valhammer', git: 'https://github.com/ausaccessfed/valhammer.git',
                  branch: 'develop'
 
-# Web
-gem 'uglifier', '~> 2.5.3'
-gem 'therubyracer',  platforms: :ruby
-gem 'turbolinks'
 
 # JSON
-gem 'jbuilder', '~> 2.2.6'
 gem 'json-schema', '~> 2.5.0'
 
 # Security
