@@ -20,5 +20,37 @@ FactoryGirl.define do
                                           product: p, site: p.site)
       end
     end
+
+    trait :with_variants do
+      after(:create) do |p|
+        # Subscriber wide product traits
+        sizes = %w(small medium large)
+        colors = %w(blue red green)
+
+        size_trait = Trait.create(name: 'Size',
+                                  display_name: Faker::Lorem.sentence,
+                                  default_values: sizes)
+
+        color_trait = Trait.create(name: 'Color',
+                                   display_name: Faker::Lorem.sentence,
+                                   default_values: colors)
+
+        # Product specific variations
+        var_size = Variation.create(order: 1, product: p, trait: size_trait)
+        var_color = Variation.create(order: 2, product: p, trait: color_trait)
+
+        variation_instances = [size_trait.default_values,
+                               color_trait.default_values].inject(&:product)
+
+        variation_instances.each do |vi|
+          variant = create(:variant, product: p)
+
+          VariationInstance.create(variation: var_size, variant: variant,
+                                   value: vi[0])
+          VariationInstance.create(variation: var_color, variant: variant,
+                                   value: vi[1])
+        end
+      end
+    end
   end
 end
