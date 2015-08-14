@@ -16,7 +16,6 @@ gem 'rails-api'
 gem 'valhammer', git: 'https://github.com/ausaccessfed/valhammer.git',
                  branch: 'develop'
 
-
 # JSON
 gem 'json-schema', '~> 2.5.0'
 
