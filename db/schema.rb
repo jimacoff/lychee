@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20150517052825) do
+ActiveRecord::Schema.define(version: 20150814080131) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -390,6 +390,7 @@ ActiveRecord::Schema.define(version: 20150517052825) do
   end
 
   add_index "variation_instances", ["site_id"], name: "index_variation_instances_on_site_id", using: :btree
+  add_index "variation_instances", ["variant_id", "variation_id", "value"], name: "variant_unique_value", unique: true, using: :btree
   add_index "variation_instances", ["variant_id"], name: "index_variation_instances_on_variant_id", using: :btree
   add_index "variation_instances", ["variation_id"], name: "index_variation_instances_on_variation_id", using: :btree
 
