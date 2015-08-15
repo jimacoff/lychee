@@ -17,9 +17,9 @@ RSpec.describe Variant, type: :model, site_scoped: true do
   end
 
   context 'table structure' do
-    it { is_expected.to have_db_column(:name).of_type(:string)  }
-    it { is_expected.to have_db_column(:description).of_type(:text)  }
-    it { is_expected.to have_db_column(:gtin).of_type(:string)  }
+    it { is_expected.to have_db_column(:name).of_type(:string) }
+    it { is_expected.to have_db_column(:description).of_type(:text) }
+    it { is_expected.to have_db_column(:gtin).of_type(:string) }
     it { is_expected.to have_db_column(:sku).of_type(:string) }
     it { is_expected.to have_db_column(:weight).of_type(:integer) }
     it { is_expected.to have_db_column(:varied_price_cents).of_type(:integer) }
