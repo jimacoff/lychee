@@ -4,9 +4,7 @@ gem 'rails', '~> 4.2'
 gem 'pg', '~> 0.18'
 gem 'postgres_ext', '~> 2.3'
 
-# TODO: required for https://github.com/RubyMoney/money-rails/issues/263
-# Change to release greater than 1.2.0 when available
-gem 'money-rails', git: 'https://github.com/RubyMoney/money-rails.git'
+gem 'money-rails', '~> 1.4'
 gem 'stringex', '~> 2.5'
 
 gem 'paper_trail', '~>4.0.0.beta2'

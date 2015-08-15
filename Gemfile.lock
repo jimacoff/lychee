@@ -1,14 +1,4 @@
 GIT
-  remote: https://github.com/RubyMoney/money-rails.git
-  revision: 0c62bb12c34c9413818481bc536405dfc353fa9e
-  specs:
-    money-rails (1.4.1)
-      activesupport (>= 3.0)
-      monetize (~> 1.1.0)
-      money (~> 6.5.0)
-      railties (>= 3.0)
-
-GIT
   remote: https://github.com/ausaccessfed/valhammer.git
   revision: e71620efb9516d56887d492639a2b7722cd64a20
   branch: develop
@@ -140,6 +130,11 @@ GEM
       money (~> 6.5.0)
     money (6.5.1)
       i18n (>= 0.6.4, <= 0.7.0)
+    money-rails (1.4.1)
+      activesupport (>= 3.0)
+      monetize (~> 1.1.0)
+      money (~> 6.5.0)
+      railties (>= 3.0)
     multi_json (1.11.0)
     nenv (0.2.0)
     nokogiri (1.6.6.2)
@@ -292,7 +287,7 @@ DEPENDENCIES
   guard-rspec
   guard-rubocop
   json-schema (~> 2.5.0)
-  money-rails!
+  money-rails (~> 1.4)
   paper_trail (~> 4.0.0.beta2)
   pg (~> 0.18)
   postgres_ext (~> 2.3)
@@ -310,3 +305,6 @@ DEPENDENCIES
   unicorn (~> 4.8.3)
   valhammer!
   workflow
+
+BUNDLED WITH
+   1.10.6
