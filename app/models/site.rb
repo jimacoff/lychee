@@ -47,7 +47,7 @@ class Site < ActiveRecord::Base
     return unless whitelisted_countries.present? ||
                   blacklisted_countries.present?
 
-    if  prioritized_not_in_whitelist?
+    if prioritized_not_in_whitelist?
       errors.add(:base, 'All prioritized countries must appear in whitelist')
     end
 
@@ -77,7 +77,7 @@ class Site < ActiveRecord::Base
   end
 
   def currency_iso_code=(_code)
-    fail 'Site#currency_iso_code= cannot be called, used Site#currency='
+    fail 'Site#currency_iso_code= cannot be called, use Site#currency='
   end
 
   class << self

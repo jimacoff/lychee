@@ -22,7 +22,9 @@ RSpec.shared_examples 'parent state' do
   describe '#state=' do
     it 'fails when country of state is not the country of the host' do
       subject.country = create :country
-      expect { subject.state = create :state }.to raise_error
+      expect { subject.state = create :state }
+        .to raise_error('State is not associated with Country specified for ' \
+                        'this object')
     end
 
     it 'succeeds when country of state is the country of the host' do

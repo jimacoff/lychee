@@ -4,27 +4,24 @@ gem 'rails', '~> 4.2'
 gem 'pg', '~> 0.18'
 gem 'postgres_ext', '~> 2.3'
 
-# TODO: required for https://github.com/RubyMoney/money-rails/issues/263
-# Change to release greater than 1.2.0 when available
-gem 'money-rails', git: 'https://github.com/RubyMoney/money-rails.git'
+gem 'money-rails', '~> 1.4'
 gem 'stringex', '~> 2.5'
 
-gem 'paper_trail', '~>4.0.0.beta2'
+gem 'paper_trail', '~> 4.0'
 gem 'workflow'
 gem 'rails-api'
 
-gem 'valhammer', git: 'https://github.com/ausaccessfed/valhammer.git',
-                 branch: 'develop'
+gem 'valhammer', '~> 0.1'
 
 # JSON
-gem 'json-schema', '~> 2.5.0'
+gem 'json-schema', '~> 2.5'
 
 # Security
 # Use ActiveModel has_secure_password
-gem 'bcrypt', '~> 3.1.7'
+gem 'bcrypt', '~> 3.1'
 
 # Deployment
-gem 'unicorn', '~> 4.8.3'
+gem 'unicorn', require: false
 
 group :development, :test do
   gem 'rspec-rails', '~> 3.2'

@@ -61,7 +61,7 @@ RSpec.describe Variation, type: :model, site_scoped: true do
       it 'is invalid when order is not unique' do
         variation.order = variation2.order
         expect(variation).not_to be_valid
-        expect(variation2).to be_valid  # not dirty hence still valid
+        expect(variation2).to be_valid # not dirty hence still valid
       end
     end
 

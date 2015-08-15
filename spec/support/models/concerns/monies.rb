@@ -54,7 +54,9 @@ RSpec.shared_examples 'monies' do |factory, monies|
       describe "##{money}=" do
         if calculated
           it 'is not callable' do
-            expect { subject.send("#{money}=", 1) }.to raise_error
+            expect { subject.send("#{money}=", 1) }
+              .to raise_error("#{money} is calculated and cannot be directly " \
+                              'set')
           end
         else
           context 'specifying cents' do
@@ -65,7 +67,7 @@ RSpec.shared_examples 'monies' do |factory, monies|
             end
           end
           context 'specifying dollars and cents' do
-            let(:new_value) { 1.0 + Faker::Number.number(3).to_i }
+            let(:new_value) { Faker::Number.numerify('1##.##').to_d }
             it "modifies the underlying #{money}_cents field" do
               expect { subject.send("#{money}=", new_value) }
                 .to change(subject, "#{money}_cents").to eq(new_value * 100)
@@ -76,7 +78,9 @@ RSpec.shared_examples 'monies' do |factory, monies|
 
       describe "##{money}_cents=" do
         it 'is not callable' do
-          expect { subject.send("#{money}_cents=", 1) }.to raise_error
+          expect { subject.send("#{money}_cents=", 1) }
+            .to raise_error("#{money}_cents cannot be directly set, use " \
+                            "##{money}=")
         end
       end
 
