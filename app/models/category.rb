@@ -1,9 +1,7 @@
 class Category < ActiveRecord::Base
   include ParentSite
-  include Metadata
-  include Slug
-  include Taggable
   include Enablement
+  include Content
 
   belongs_to :parent_category, class_name: 'Category'
   has_many :subcategories, class_name: 'Category',
@@ -17,4 +15,7 @@ class Category < ActiveRecord::Base
   valhammer
 
   scope :primary, -> { where(parent_category: nil) }
+
+  def render
+  end
 end
