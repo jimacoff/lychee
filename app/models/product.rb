@@ -1,10 +1,8 @@
 class Product < ActiveRecord::Base
   include ParentSite
 
+  include Content
   include Specification
-  include Metadata
-  include Slug
-  include Taggable
   include Monies
   include Enablement
 
