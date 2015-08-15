@@ -9,15 +9,13 @@ module CommodityReference
   end
 
   def validate_belongs_to_product_or_variant
-    items = [:product, :variant]
-    item_instances = items.map { |item| send(item) }.compact
-    return if item_instances.one?
+    items = [product, variant].compact
+    return if items.one?
 
-    if item_instances.none?
-      errors.add(:base, "Must belong to one of #{items.join(', ')}")
+    if items.none?
+      errors.add(:base, 'Must belong to a product or variant')
     else
-      errors.add(:base, 'Cannot belong to more then one of' \
-                             " #{items.join(', ')}")
+      errors.add(:base, 'Cannot belong to a product and a variant')
     end
   end
 
