@@ -7,7 +7,7 @@ gem 'postgres_ext', '~> 2.3'
 gem 'money-rails', '~> 1.4'
 gem 'stringex', '~> 2.5'
 
-gem 'paper_trail', '~>4.0.0.beta2'
+gem 'paper_trail', '~> 4.0'
 gem 'workflow'
 gem 'rails-api'
 
