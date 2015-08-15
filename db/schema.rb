@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20150814233841) do
+ActiveRecord::Schema.define(version: 20150815000155) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -388,6 +388,7 @@ ActiveRecord::Schema.define(version: 20150814233841) do
     t.datetime "updated_at"
     t.integer  "site_id",      limit: 8, null: false
     t.string   "name",                   null: false
+    t.string   "description",            null: false
   end
 
   add_index "variation_instances", ["site_id"], name: "index_variation_instances_on_site_id", using: :btree

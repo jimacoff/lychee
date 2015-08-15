@@ -1,6 +1,7 @@
 FactoryGirl.define do
   factory :variation_instance do
     name { Faker::Lorem.word }
+    description { Faker::Lorem.sentence }
 
     after(:build) do |vi|
       product = FactoryGirl.create(:product)

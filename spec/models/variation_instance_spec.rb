@@ -12,6 +12,7 @@ RSpec.describe VariationInstance, type: :model, site_scoped: true do
     it { is_expected.to have_db_column(:value).of_type(:string) }
 
     it { is_expected.to have_db_column(:name).of_type(:string) }
+    it { is_expected.to have_db_column(:description).of_type(:string) }
 
     it 'should have non nullable column variation_id of type bigint' do
       expect(subject).to have_db_column(:variation_id)
@@ -39,6 +40,7 @@ RSpec.describe VariationInstance, type: :model, site_scoped: true do
     it { is_expected.to validate_presence_of :value }
 
     it { is_expected.to validate_presence_of :name }
+    it { is_expected.to validate_presence_of :description }
   end
 
   context 'value must be unique within a single variation' do
