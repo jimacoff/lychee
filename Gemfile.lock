@@ -1,11 +1,3 @@
-GIT
-  remote: https://github.com/ausaccessfed/valhammer.git
-  revision: e71620efb9516d56887d492639a2b7722cd64a20
-  branch: develop
-  specs:
-    valhammer (0.1.3)
-      activerecord (~> 4.1)
-
 GEM
   remote: https://rubygems.org/
   specs:
@@ -271,6 +263,8 @@ GEM
       kgio (~> 2.6)
       rack
       raindrops (~> 0.7)
+    valhammer (0.1.3)
+      activerecord (~> 4.1)
     workflow (1.2.0)
 
 PLATFORMS
@@ -303,7 +297,7 @@ DEPENDENCIES
   stringex (~> 2.5)
   temping
   unicorn (~> 4.8.3)
-  valhammer!
+  valhammer (~> 0.1)
   workflow
 
 BUNDLED WITH

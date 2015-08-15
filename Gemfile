@@ -11,8 +11,7 @@ gem 'paper_trail', '~>4.0.0.beta2'
 gem 'workflow'
 gem 'rails-api'
 
-gem 'valhammer', git: 'https://github.com/ausaccessfed/valhammer.git',
-                 branch: 'develop'
+gem 'valhammer', '~> 0.1'
 
 # JSON
 gem 'json-schema', '~> 2.5.0'
