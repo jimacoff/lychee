@@ -14,14 +14,14 @@ gem 'rails-api'
 gem 'valhammer', '~> 0.1'
 
 # JSON
-gem 'json-schema', '~> 2.5.0'
+gem 'json-schema', '~> 2.5'
 
 # Security
 # Use ActiveModel has_secure_password
-gem 'bcrypt', '~> 3.1.7'
+gem 'bcrypt', '~> 3.1'
 
 # Deployment
-gem 'unicorn', '~> 4.8.3'
+gem 'unicorn', require: false
 
 group :development, :test do
   gem 'rspec-rails', '~> 3.2'
