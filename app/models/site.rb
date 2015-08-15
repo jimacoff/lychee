@@ -47,7 +47,7 @@ class Site < ActiveRecord::Base
     return unless whitelisted_countries.present? ||
                   blacklisted_countries.present?
 
-    if  prioritized_not_in_whitelist?
+    if prioritized_not_in_whitelist?
       errors.add(:base, 'All prioritized countries must appear in whitelist')
     end
 
