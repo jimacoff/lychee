@@ -98,9 +98,9 @@ RSpec.describe VariationInstance, type: :model, site_scoped: true do
           .with([:radio, :drop_down])
       end
     end
+  end
 
-    context 'allows users to choose this instance via image' do
-      it 'links to an image'
-    end
+  context 'allows users to choose this instance via image' do
+    it 'links to an image'
   end
 end
