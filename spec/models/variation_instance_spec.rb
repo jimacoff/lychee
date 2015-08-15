@@ -88,5 +88,9 @@ RSpec.describe VariationInstance, type: :model, site_scoped: true do
         expect(variation_instance3).to be_valid
       end
     end
+
+    context 'allows users to choose this instance via image' do
+      it 'links to an image'
+    end
   end
 end
