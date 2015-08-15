@@ -20,7 +20,6 @@ module CommodityReference
   end
 
   def commodity
-    return product if product
-    variant
+    product || variant
   end
 end
