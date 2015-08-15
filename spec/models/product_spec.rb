@@ -7,15 +7,13 @@ RSpec.describe Product, type: :model, site_scoped: true do
 
   has_context 'versioned'
   has_context 'specification'
-  has_context 'metadata'
-  has_context 'slug' do
-    subject { create :product }
-  end
-  has_context 'taggable'
   has_context 'monies',
               :standalone_product,
               [{ field: :price, calculated: false }]
   has_context 'enablement' do
+    let(:factory) { :standalone_product }
+  end
+  has_context 'content' do
     let(:factory) { :standalone_product }
   end
 
@@ -109,5 +107,9 @@ RSpec.describe Product, type: :model, site_scoped: true do
     it 'has a unique tax_category' do
       expect(subject.tax_override).not_to eq(Site.current.primary_tax_category)
     end
+  end
+
+  describe '#render' do
+    it 'Not implemented.'
   end
 end

@@ -1,10 +1,10 @@
 class Product < ActiveRecord::Base
   include ParentSite
 
-  include Content
-  include Specification
   include Monies
   include Enablement
+  include Specification
+  include Content
 
   has_many :variants
   has_many :variations
@@ -38,5 +38,8 @@ class Product < ActiveRecord::Base
   def inventory_not_required
     return unless inventory.present? && variants.present?
     errors.add(:inventory, 'must not be provided if product defines variants')
+  end
+
+  def render
   end
 end
