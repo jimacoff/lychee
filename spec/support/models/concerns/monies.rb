@@ -54,7 +54,9 @@ RSpec.shared_examples 'monies' do |factory, monies|
       describe "##{money}=" do
         if calculated
           it 'is not callable' do
-            expect { subject.send("#{money}=", 1) }.to raise_error
+            expect { subject.send("#{money}=", 1) }
+              .to raise_error("#{money} is calculated and cannot be directly " \
+                              'set')
           end
         else
           context 'specifying cents' do
@@ -76,7 +78,9 @@ RSpec.shared_examples 'monies' do |factory, monies|
 
       describe "##{money}_cents=" do
         it 'is not callable' do
-          expect { subject.send("#{money}_cents=", 1) }.to raise_error
+          expect { subject.send("#{money}_cents=", 1) }
+            .to raise_error("#{money}_cents cannot be directly set, use " \
+                            "##{money}=")
         end
       end
 

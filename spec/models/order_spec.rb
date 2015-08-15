@@ -209,11 +209,13 @@ RSpec.describe Order, type: :model, site_scoped: true do
       subject { create :order }
       it 'is invalid with commodities but no shipping' do
         create :commodity_line_item, order: subject
-        expect { subject.calculate_total }.to raise_error
+        expect { subject.calculate_total }
+          .to raise_error('attempt to calculate total with invalid state')
       end
       it 'is invalid with shipping but no commodities' do
         create :shipping_line_item, order: subject
-        expect { subject.calculate_total }.to raise_error
+        expect { subject.calculate_total }
+          .to raise_error('attempt to calculate total with invalid state')
       end
       it 'is valid with shipping and commodities' do
         create :commodity_line_item, order: subject

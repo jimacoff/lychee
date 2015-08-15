@@ -214,10 +214,12 @@ RSpec.describe Site, type: :model do
     describe '#currency=' do
       context 'prevents invalid currencies' do
         it 'nil' do
-          expect { subject.currency = nil }.to raise_error
+          expect { subject.currency = nil }
+            .to raise_error(Money::Currency::UnknownCurrency)
         end
         it 'unknown ISO code' do
-          expect { subject.currency = 'not_a_code' }.to raise_error
+          expect { subject.currency = 'not_a_code' }
+            .to raise_error(Money::Currency::UnknownCurrency)
         end
       end
       context 'valid currency' do
@@ -237,7 +239,7 @@ RSpec.describe Site, type: :model do
     end
     describe '#currency_iso_code=' do
       subject { -> { site.currency_iso_code = 'X' } }
-      it { is_expected.to raise_error }
+      it { is_expected.to raise_error(/cannot be called.*use Site#currency=/) }
     end
   end
 
