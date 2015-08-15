@@ -14,6 +14,8 @@ RSpec.describe VariationInstance, type: :model, site_scoped: true do
     it { is_expected.to have_db_column(:name).of_type(:string) }
     it { is_expected.to have_db_column(:description).of_type(:string) }
 
+    it { is_expected.to have_db_column(:render_as).of_type(:integer) }
+
     it 'should have non nullable column variation_id of type bigint' do
       expect(subject).to have_db_column(:variation_id)
         .of_type(:integer)
@@ -41,6 +43,7 @@ RSpec.describe VariationInstance, type: :model, site_scoped: true do
 
     it { is_expected.to validate_presence_of :name }
     it { is_expected.to validate_presence_of :description }
+    it { is_expected.to validate_presence_of :render_as }
   end
 
   context 'value must be unique within a single variation' do
@@ -86,6 +89,13 @@ RSpec.describe VariationInstance, type: :model, site_scoped: true do
         expect(variation_instance1).to be_valid
         expect(variation_instance2).to be_valid
         expect(variation_instance3).to be_valid
+      end
+    end
+
+    context 'frontend rendering' do
+      it 'stores an enum to dictate html type' do
+        expect(subject).to define_enum_for(:render_as)
+          .with([:radio, :drop_down])
       end
     end
 
