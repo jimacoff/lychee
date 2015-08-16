@@ -134,13 +134,11 @@ class Order < ActiveRecord::Base
   end
 
   def commodity_line_item_taxes
-    commodity_line_items.map { |cli| cli.line_item_taxes.map { |lit| lit } }
-      .flatten
+    commodity_line_items.flat_map(&:line_item_taxes)
   end
 
   def shipping_line_item_taxes
-    shipping_line_items.map { |ship| ship.line_item_taxes.map { |lit| lit } }
-      .flatten
+    shipping_line_items.flat_map(&:line_item_taxes)
   end
 
   def finalise_total
