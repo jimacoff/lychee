@@ -239,6 +239,9 @@ ActiveRecord::Schema.define(version: 20150819100139) do
     t.boolean  "enabled",                   default: true,  null: false
   end
 
+  add_index "products", ["site_id", "generated_slug"], name: "index_products_on_site_id_and_generated_slug", unique: true, using: :btree
+  add_index "products", ["site_id", "name"], name: "index_products_on_site_id_and_name", unique: true, using: :btree
+  add_index "products", ["site_id", "specified_slug"], name: "index_products_on_site_id_and_specified_slug", unique: true, using: :btree
   add_index "products", ["site_id"], name: "index_products_on_site_id", using: :btree
   add_index "products", ["tax_override_id"], name: "index_products_on_tax_override_id", using: :btree
 
