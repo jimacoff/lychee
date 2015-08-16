@@ -14,7 +14,7 @@ FactoryGirl.define do
 
     trait :with_categories do
       after(:create) do |v|
-        v.categories.push create_list(:category, 2)
+        v.category_members.push create_list(:category_member, 2, variant: v)
       end
     end
   end

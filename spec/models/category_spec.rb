@@ -6,12 +6,10 @@ RSpec.describe Category, type: :model, site_scoped: true do
   end
 
   has_context 'versioned'
-  has_context 'metadata'
-  has_context 'taggable'
-  has_context 'slug' do
-    subject { create :category }
-  end
   has_context 'enablement' do
+    let(:factory) { :category }
+  end
+  has_context 'content' do
     let(:factory) { :category }
   end
 
@@ -44,5 +42,9 @@ RSpec.describe Category, type: :model, site_scoped: true do
     it 'subcategories correctly identify parent' do
       expect(subject.subcategories.first.parent_category).to eq(subject)
     end
+  end
+
+  describe '#render' do
+    it 'Not implemented.'
   end
 end
