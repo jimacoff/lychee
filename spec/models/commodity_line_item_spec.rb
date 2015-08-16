@@ -2,13 +2,13 @@ require 'rails_helper'
 
 RSpec.describe CommodityLineItem, type: :model, site_scoped: true do
   has_context 'line item' do
-    let(:factory) { :commodity_line_item }
+    let(:factory) { [:commodity_line_item, :with_product] }
     let(:owner) { :product }
     let(:owner_factory) { :standalone_product }
     let(:expected_subtotal) { subject.price * subject.quantity }
   end
   has_context 'line item' do
-    let(:factory) { :commodity_variant_line_item }
+    let(:factory) { [:commodity_line_item, :with_variant] }
     let(:owner) { :variant }
     let(:owner_factory) { :variant }
     let(:expected_subtotal) { subject.price * subject.quantity }
@@ -18,7 +18,7 @@ RSpec.describe CommodityLineItem, type: :model, site_scoped: true do
     let(:factory) { :commodity_line_item }
   end
   has_context 'commodity reference' do
-    let(:factory) { :commodity_variant_line_item }
+    let(:factory) { :commodity_line_item }
   end
 
   context 'table structure' do
@@ -68,7 +68,7 @@ RSpec.describe CommodityLineItem, type: :model, site_scoped: true do
     context 'with Variant' do
       let(:commodity) { variant }
       subject do
-        create :commodity_variant_line_item, variant: variant, quantity: qty
+        create :commodity_line_item, variant: variant, quantity: qty
       end
 
       include_examples 'commodity initialization'
@@ -83,7 +83,7 @@ RSpec.describe CommodityLineItem, type: :model, site_scoped: true do
 
   describe '#calculate_total_weight' do
     context 'product referencing line item' do
-      subject { create :commodity_line_item }
+      subject { create :commodity_line_item, :with_product }
       before { subject.calculate_total_weight }
 
       context 'product has weight' do

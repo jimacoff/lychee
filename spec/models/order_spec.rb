@@ -44,7 +44,8 @@ RSpec.describe Order, type: :model, site_scoped: true do
   describe '#calculate_subtotal' do
     let(:order) { create :order, commodity_line_items: commodity_line_items }
     let(:commodity_line_items) do
-      create_list(:commodity_line_item, 3, quantity: Faker::Number.number(3))
+      create_list(:commodity_line_item, 3, :with_product,
+                  quantity: Faker::Number.number(3))
     end
     let!(:tax_rate) do
       create :tax_rate, country: order.delivery_address.country,
@@ -136,7 +137,8 @@ RSpec.describe Order, type: :model, site_scoped: true do
       create :shipping_line_item
     end
     let(:commodity_line_items) do
-      create_list(:commodity_line_item, 3, quantity: Faker::Number.number(3))
+      create_list(:commodity_line_item, 3, :with_product,
+                  quantity: Faker::Number.number(3))
     end
 
     context 'without applicable tax_rates' do
@@ -208,7 +210,7 @@ RSpec.describe Order, type: :model, site_scoped: true do
     context 'must be in vaild state' do
       subject { create :order }
       it 'is invalid with commodities but no shipping' do
-        create :commodity_line_item, order: subject
+        create :commodity_line_item, :with_product, order: subject
         expect { subject.calculate_total }
           .to raise_error('attempt to calculate total with invalid state')
       end
@@ -218,7 +220,7 @@ RSpec.describe Order, type: :model, site_scoped: true do
           .to raise_error('attempt to calculate total with invalid state')
       end
       it 'is valid with shipping and commodities' do
-        create :commodity_line_item, order: subject
+        create :commodity_line_item, :with_product, order: subject
         create :shipping_line_item, order: subject
         expect { subject.calculate_total }.not_to raise_error
       end
@@ -226,7 +228,7 @@ RSpec.describe Order, type: :model, site_scoped: true do
 
     context 'when order is complete' do
       let!(:commodity_line_items) do
-        create_list(:commodity_line_item, 3, order: subject)
+        create_list(:commodity_line_item, 3, :with_product, order: subject)
       end
       let!(:shipping_line_item) { create :shipping_line_item, order: subject }
       let(:items_total) { commodity_line_items.sum(&:total).cents }
@@ -268,7 +270,7 @@ RSpec.describe Order, type: :model, site_scoped: true do
   describe '#calculate_weight' do
     let(:order) { create :order, commodity_line_items: commodity_line_items }
     let(:commodity_line_items) do
-      create_list(:commodity_line_item, 3,
+      create_list(:commodity_line_item, 3, :with_product,
                   weight: Faker::Number.number(4).to_i)
     end
 

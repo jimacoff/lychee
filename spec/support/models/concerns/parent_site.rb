@@ -50,8 +50,8 @@ RSpec.shared_examples 'parent site' do
     let(:unscoped_instances) { site_factory_instances + 2 }
 
     def run
-      create(factory)
-      create(factory, site: site)
+      create(*factory)
+      create(*factory, site: site)
     end
 
     subject { -> { run } }
