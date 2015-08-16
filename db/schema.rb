@@ -68,6 +68,9 @@ ActiveRecord::Schema.define(version: 20150819100139) do
   end
 
   add_index "categories", ["parent_category_id"], name: "index_categories_on_parent_category_id", using: :btree
+  add_index "categories", ["site_id", "generated_slug"], name: "index_categories_on_site_id_and_generated_slug", unique: true, using: :btree
+  add_index "categories", ["site_id", "name"], name: "index_categories_on_site_id_and_name", unique: true, using: :btree
+  add_index "categories", ["site_id", "specified_slug"], name: "index_categories_on_site_id_and_specified_slug", unique: true, using: :btree
   add_index "categories", ["site_id"], name: "index_categories_on_site_id", using: :btree
 
   create_table "category_members", id: :bigserial, force: :cascade do |t|
