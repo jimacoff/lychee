@@ -42,4 +42,7 @@ class Variant < ActiveRecord::Base
 
   def render
   end
+
+  def path
+  end
 end

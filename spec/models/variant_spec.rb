@@ -140,4 +140,8 @@ RSpec.describe Variant, type: :model, site_scoped: true do
   describe '#render' do
     it 'Not implemented. Variants only accessible on product page currently'
   end
+
+  describe '#path' do
+    it 'Not implemented. Variants only accessible on product page currently'
+  end
 end
