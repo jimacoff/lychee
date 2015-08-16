@@ -15,6 +15,7 @@ RSpec.describe Preference, type: :model, site_scoped: true do
       is_expected.to have_db_column(:order_subtotal_include_tax)
         .of_type(:boolean)
     end
+    it { is_expected.to have_db_column(:reserved_paths).of_type(:hstore) }
 
     it 'should have non nullable column site_id of type bigint' do
       expect(subject).to have_db_column(:site_id)
@@ -50,6 +51,18 @@ RSpec.describe Preference, type: :model, site_scoped: true do
         subject.prices_include_tax = false
         subject.order_subtotal_include_tax = false
         expect(subject).to be_valid
+      end
+
+      Preference::REQUIRED_RESERVED_PATHS.each do |path|
+        it "is invalid without #{path} reserved path" do
+          subject.reserved_paths.delete(path)
+          expect(subject).to be_invalid
+        end
+      end
+
+      it 'is invalid with duplicate reserved paths' do
+        subject.reserved_paths['blog'] = subject.reserved_paths['blog_tags']
+        expect(subject).to be_invalid
       end
     end
   end

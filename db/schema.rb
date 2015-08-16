@@ -201,6 +201,7 @@ ActiveRecord::Schema.define(version: 20150819100139) do
     t.datetime "created_at",                                           null: false
     t.datetime "updated_at",                                           null: false
     t.boolean  "order_subtotal_include_tax",           default: true,  null: false
+    t.hstore   "reserved_paths",                                       null: false
   end
 
   add_index "preferences", ["site_id"], name: "index_preferences_on_site_id", using: :btree
