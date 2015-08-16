@@ -14,105 +14,75 @@ require 'factory_girl'
 include FactoryGirl::Syntax::Methods
 
 ActiveRecord::Base.transaction do
-
   site = FactoryGirl.create :site
   Site.current = site
 
   # Categories
-  men = Category.create(name: 'Mens Clothing',
-                        description: Faker::Lorem.sentence)
-  men_casual = Category.create(name: 'Mens Casual',
-                               description: Faker::Lorem.sentence,
-                               parent_category: men)
-  women = Category.create(name: 'Womens Clothing',
-                          description: Faker::Lorem.sentence)
-  women_casual = Category.create(name: 'Womens Casual',
-                                 description: Faker::Lorem.sentence,
-                                 parent_category: women)
+  men = Category.create!(name: 'Mens Clothing',
+                         description: Faker::Lorem.sentence)
+  men_casual = Category.create!(name: 'Mens Casual',
+                                description: Faker::Lorem.sentence,
+                                parent_category: men)
+  women = Category.create!(name: 'Womens Clothing',
+                           description: Faker::Lorem.sentence)
+  women_casual = Category.create!(name: 'Womens Casual',
+                                  description: Faker::Lorem.sentence,
+                                  parent_category: women)
 
   # Traits
   sizes = %w(small medium large x-large xx-large)
-  mens_formal_colors = (1..5).map { Faker::Commerce.color }
-  womens_jumper_colors = (1..5).map { Faker::Commerce.color }
+  mens_casual_colors = (1..5).map { Faker::Commerce.color }
+  womens_casual_colors = (1..5).map { Faker::Commerce.color }
 
-  size_trait = Trait.create(name: 'Size',
-                            display_name: 'The size of an item of clothing',
-                            default_values: sizes)
-  mens_formal_color_trait =
-    Trait.create(name: 'Color',
-                 display_name: 'The primary color of mens casual items')
+  size_trait = Trait.create!(name: 'Size', default_values: sizes,
+                             display_name: 'The size of an item of clothing')
+
+  mens_casual_color_trait =
+    Trait.create!(name: 'Color',
+                  display_name: 'The primary color of mens casual items')
 
   womens_casual_color_trait =
-    Trait.create(name: 'Color',
-                 display_name: 'The primary color of womens casual items')
+    Trait.create!(name: 'Color',
+                  display_name: 'The primary color of womens casual items')
 
-  # Mens Casual Shirts
-  (1..5).each do
-    name = "Casual #{Faker::Lorem.word} shirt"
-    desc = "A casual shirt made from 100% #{Faker::Lorem.word}"
+  [
+    [[men, men_casual], mens_casual_color_trait, mens_casual_colors],
+    [[women, women_casual], womens_casual_color_trait, womens_casual_colors]
+  ].each do |(categories, color_trait, color_trait_values)|
+    # 5 Casual Shirts for each gender
+    (1..5).each do
+      name = "Casual #{Faker::Lorem.word} shirt"
+      desc = "A casual shirt made from 100% #{Faker::Lorem.word}"
 
-    product = Product.create!(name: name, description: desc,
-                             categories: [men, men_casual],
-                             price: Faker::Number.number(6).to_i)
+      product = Product.create!(name: name, description: desc,
+                                price: Faker::Number.number(6).to_i)
+      categories.each do |c|
+        product.category_members.create!(category: c, description: desc)
+      end
 
-    variation = Variation.create(order: 1, product: product,
-                                 trait: size_trait)
-    variation2 = Variation.create(order: 2, product: product,
-                                  trait: mens_formal_color_trait)
+      size_variation = product.variations.create!(order: 1, trait: size_trait)
+      color_variation = product.variations.create!(order: 2, trait: color_trait)
 
-    variation_instances = [size_trait.default_values, mens_formal_colors]
-                          .inject(&:product).map(&:flatten)
+      variation_choices = size_trait.default_values.product(color_trait_values)
 
-    variation_instances.each do |vi|
-      inventory = Inventory.create(tracked: true,
-                                   quantity: Faker::Number.number(3),
-                                   back_orders: false)
-      variant = Variant.create(product: product, inventory: inventory,
-                               price: Faker::Number.number(6).to_i)
+      variation_choices.each do |(size_value, color_value)|
+        variant = Variant.create!(product: product,
+                                  price: Faker::Number.number(6).to_i)
 
-      VariationInstance.create(variation: variation, variant: variant,
-                               value: vi[0])
-      VariationInstance.create(variation: variation2, variant: variant,
-                               value: vi[1])
+        variant.create_inventory!(tracked: true, back_orders: false,
+                                  quantity: Faker::Number.number(3))
+
+        variant.variation_instances
+          .create!(variation: size_variation, value: size_value,
+                   name: size_value, description: "#{size_value} size")
+        variant.variation_instances
+          .create!(variation: color_variation, value: color_value,
+                   name: color_value, description: "#{color_value} color")
+      end
+
+      product.add_tag('clothing')
+      product.add_tag('casual')
+      product.save!
     end
-
-    product.add_tag('clothing')
-    product.add_tag('casual')
-    product.save!
-  end
-
-  # Womens Casual Shirts
-  (1..5).each do
-    name = "Casual #{Faker::Lorem.word} shirt"
-    desc = "A casual shirt made from 100% #{Faker::Lorem.word}"
-
-    product = Product.create(name: name, description: desc,
-                             categories: [women, women_casual],
-                             price: Faker::Number.number(6).to_i)
-
-    variation = Variation.create(order: 1, product: product,
-                                 trait: size_trait)
-    variation2 = Variation.create(order: 2, product: product,
-                                  trait: womens_casual_color_trait)
-
-    variation_instances = [size_trait.default_values, womens_jumper_colors]
-                          .inject(&:product).map(&:flatten)
-
-    variation_instances.each do |vi|
-      inventory = Inventory.create(tracked: true,
-                                   quantity: Faker::Number.number(3),
-                                   back_orders: false)
-
-      variant = Variant.create(product: product, inventory: inventory)
-
-      VariationInstance.create(variation: variation, variant: variant,
-                               value: vi[0])
-      VariationInstance.create(variation: variation2, variant: variant,
-                               value: vi[1])
-    end
-
-    product.add_tag('clothing')
-    product.add_tag('casual')
-    product.save!
   end
 end
