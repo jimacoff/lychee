@@ -18,11 +18,7 @@ RSpec.describe Product, type: :model, site_scoped: true do
   end
 
   context 'table structure' do
-    it 'should have non nullable, unqiue column name of type string' do
-      expect(subject).to have_db_column(:name)
-        .of_type(:string)
-        .with_options(null: false)
-    end
+    it { is_expected.to have_db_column(:name).of_type(:string) }
     it { is_expected.to have_db_column(:description).of_type(:text) }
     it { is_expected.to have_db_column(:generated_slug).of_type(:string) }
     it { is_expected.to have_db_column(:specified_slug).of_type(:string) }
@@ -43,6 +39,7 @@ RSpec.describe Product, type: :model, site_scoped: true do
         .with_options(limit: 8, null: true)
     end
     it { is_expected.to have_db_index(:tax_override_id) }
+
     it { is_expected.to have_db_index([:site_id, :name]).unique }
     it { is_expected.to have_db_index([:site_id, :generated_slug]).unique }
     it { is_expected.to have_db_index([:site_id, :specified_slug]).unique }
