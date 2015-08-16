@@ -10,10 +10,6 @@ class Inventory < ActiveRecord::Base
   has_paper_trail
   valhammer
 
-  def tracked?
-    tracked
-  end
-
   def stock?
     quantity > 0
   end
