@@ -6,7 +6,8 @@ AllCops:
   Exclude:
     - config/initializers/secret_token.rb
     - bin/**/*
-    - db/**/*
+    - db/schema.rb
+    - db/migrate/*.rb
     - lib/templates/rspec/**/*
     - Guardfile
 
