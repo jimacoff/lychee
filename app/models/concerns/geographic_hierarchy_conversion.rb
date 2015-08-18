@@ -4,19 +4,9 @@ module GeographicHierarchyConversion
   private
 
   def geographic_hierarchy_conversion
-    hierarchy = nil
-    hierarchy = ltree_sanitize(country.try(:iso_alpha2), hierarchy)
-
-    return hierarchy unless state
-    hierarchy = ltree_sanitize(state.iso_code, hierarchy)
-
-    return hierarchy unless postcode
-    hierarchy = ltree_sanitize(postcode, hierarchy)
-
-    return hierarchy unless locality
-    hierarchy = ltree_sanitize(locality, hierarchy)
-
-    hierarchy
+    [country.try(:iso_alpha2), state.try(:iso_code), postcode, locality]
+      .take_while { |field| field }
+      .reduce(nil) { |a, e| ltree_sanitize(e, a) }
   end
 
   def ltree_sanitize(identifier, hierarchy)

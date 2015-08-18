@@ -19,7 +19,15 @@ RSpec.describe ShippingLineItem, type: :model, site_scoped: true do
   end
 
   context 'validations' do
-    it { is_expected.to validate_presence_of :shipping_rate_region }
+    # This must be unrolled because `nil` can't be explicitly assigned.
+    it 'validates presence of shipping_rate_region' do
+      attrs = FactoryGirl.attributes_for(:shipping_line_item)
+      obj = ShippingLineItem.new(attrs.except(:shipping_rate_region))
+
+      expect(obj).to be_invalid
+      expect(obj.errors[:shipping_rate_region])
+        .to contain_exactly("can't be blank")
+    end
 
     context 'instance validations' do
     end

@@ -31,17 +31,17 @@ RSpec.shared_examples 'commodity reference' do
       end
 
       context 'neither product nor variant specified' do
-        subject { build factory, product: nil, variant: nil }
+        subject { build factory }
         it { is_expected.to be_invalid }
       end
 
       context 'only product specified' do
-        subject { create(factory, product: product, variant: nil) }
+        subject { create(factory, product: product) }
         it { is_expected.to be_valid }
       end
 
       context 'only variant specified' do
-        subject { create(factory, product: nil, variant: variant) }
+        subject { create(factory, variant: variant) }
         it { is_expected.to be_valid }
       end
     end
@@ -52,14 +52,14 @@ RSpec.shared_examples 'commodity reference' do
     let(:variant) { create(:variant, product: product) }
 
     context 'product specified' do
-      subject { build(factory, product: product, variant: nil) }
+      subject { build(factory, product: product) }
       it 'returns the product' do
         expect(subject.commodity).to eq(product)
       end
     end
 
     context 'variant specified' do
-      subject { build(factory, product: nil, variant: variant) }
+      subject { build(factory, variant: variant) }
       it 'returns the variant' do
         expect(subject.commodity).to eq(variant)
       end

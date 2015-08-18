@@ -4,7 +4,7 @@ class ShippingLineItem < LineItem
   validates :shipping_rate_region, presence: true
 
   def shipping_rate_region=(shipping_rate_region)
-    return unless shipping_rate_region
+    fail("Can't set shipping_rate_region to nil") unless shipping_rate_region
 
     super(shipping_rate_region)
     change_price(shipping_rate_region.price.cents)

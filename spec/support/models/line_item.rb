@@ -53,7 +53,7 @@ RSpec.shared_examples 'line item' do
     it { is_expected.to validate_presence_of :currency }
 
     context 'instance validations' do
-      subject { create factory }
+      subject { create(*factory) }
 
       context 'total_tax_rate' do
         it 'must be greater that or equal to 0' do
@@ -94,7 +94,7 @@ RSpec.shared_examples 'line item' do
     let(:delivery_address) { create :address, country: tr1.country }
     let(:order) { create :order, delivery_address: delivery_address }
     let(:owner_instance) { create owner_factory }
-    subject { create factory, order: order }
+    subject { create(*factory, order: order) }
 
     before do
       subject.send("#{owner}=", owner_instance)

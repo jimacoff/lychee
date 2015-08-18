@@ -16,9 +16,8 @@ module GeographicHierarchy
     end
 
     return if !locality || (state && postcode)
-    errors
-      .add(:locality,
-           'State and postcode must be provided when specifying locality')
+    errors.add(:locality,
+               'State and postcode must be provided when specifying locality')
   end
 
   def determine_geographic_hierarchy

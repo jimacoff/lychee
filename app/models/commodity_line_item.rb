@@ -5,7 +5,7 @@ class CommodityLineItem < LineItem
             presence: true, numericality: { greater_than_or_equal_to: 0 }
 
   def product=(product)
-    return unless product
+    fail("Can't set product to nil") unless product
 
     super(product)
     change_price(product.price.cents)
@@ -13,7 +13,7 @@ class CommodityLineItem < LineItem
   end
 
   def variant=(variant)
-    return unless variant
+    fail("Can't set variant to nil") unless variant
 
     super(variant)
     change_price(variant.price.cents)

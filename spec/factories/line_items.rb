@@ -5,14 +5,15 @@ FactoryGirl.define do
 
   factory :commodity_line_item do
     order
-    association :product, factory: :standalone_product
     quantity { Faker::Number.number(1).to_i + 1 }
-  end
 
-  factory :commodity_variant_line_item, class: :commodity_line_item do
-    order
-    variant
-    quantity { Faker::Number.number(1).to_i + 1 }
+    trait :with_product do
+      association :product, factory: :standalone_product
+    end
+
+    trait :with_variant do
+      variant
+    end
   end
 
   factory :shipping_line_item do
