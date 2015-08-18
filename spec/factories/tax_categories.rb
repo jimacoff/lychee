@@ -1,5 +1,7 @@
 FactoryGirl.define do
   factory :tax_category do
-    name { Faker::Lorem.word }
+    sequence :name do |n|
+      "#{Faker::Lorem.word}#{n}"
+    end
   end
 end
