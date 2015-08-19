@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20150815121657) do
+ActiveRecord::Schema.define(version: 20150819100139) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -92,6 +92,10 @@ ActiveRecord::Schema.define(version: 20150815121657) do
     t.datetime "created_at",              null: false
     t.datetime "updated_at",              null: false
   end
+
+  add_index "countries", ["iso_alpha2"], name: "index_countries_on_iso_alpha2", unique: true, using: :btree
+  add_index "countries", ["iso_alpha3"], name: "index_countries_on_iso_alpha3", unique: true, using: :btree
+  add_index "countries", ["name"], name: "index_countries_on_name", unique: true, using: :btree
 
   create_table "inventories", id: :bigserial, force: :cascade do |t|
     t.boolean  "tracked",                 default: false, null: false
@@ -296,6 +300,7 @@ ActiveRecord::Schema.define(version: 20150815121657) do
   end
 
   add_index "states", ["country_id"], name: "index_states_on_country_id", using: :btree
+  add_index "states", ["iso_code"], name: "index_states_on_iso_code", unique: true, using: :btree
 
   create_table "tax_categories", id: :bigserial, force: :cascade do |t|
     t.integer  "site_id",                      limit: 8, null: false

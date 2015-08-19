@@ -10,6 +10,10 @@ RSpec.describe Country, type: :model do
     it do
       is_expected.to have_db_column(:postal_address_template).of_type(:string)
     end
+
+    it { is_expected.to have_db_index(:name).unique(true) }
+    it { is_expected.to have_db_index(:iso_alpha2).unique(true) }
+    it { is_expected.to have_db_index(:iso_alpha3).unique(true) }
   end
 
   context 'relationships' do
