@@ -1,7 +1,11 @@
 FactoryGirl.define do
   factory :state do
-    name { Faker::Lorem.word }
-    iso_code { Faker::Lorem.word }
+    sequence :name do |n|
+      "#{Faker::Lorem.word}#{n}"
+    end
+    sequence :iso_code do |n|
+      "#{Faker::Lorem.word}#{n}"
+    end
     postal_format { Faker::Lorem.word }
 
     country

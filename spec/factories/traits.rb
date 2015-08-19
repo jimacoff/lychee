@@ -1,6 +1,8 @@
 FactoryGirl.define do
   factory :trait do
-    name { Faker::Lorem.word }
+    sequence :name do |n|
+      "#{Faker::Lorem.word}#{n}"
+    end
     display_name { name }
     description { Faker::Lorem.sentence }
   end

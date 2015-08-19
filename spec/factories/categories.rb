@@ -1,6 +1,8 @@
 FactoryGirl.define do
   factory :category do
-    name { Faker::Lorem.word }
+    sequence :name do |n|
+      "#{Faker::Lorem.word}#{n}"
+    end
     description { Faker::Lorem.sentence }
 
     trait :with_subcategories do

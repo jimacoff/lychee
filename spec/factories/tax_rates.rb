@@ -4,7 +4,9 @@ FactoryGirl.define do
 
     rate { 0.1 } # e.g. GST 10%
 
-    name { Faker::Lorem.word }
+    sequence :name do |n|
+      "#{Faker::Lorem.word}#{n}"
+    end
     description { Faker::Lorem.sentence }
 
     country

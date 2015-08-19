@@ -1,8 +1,14 @@
 FactoryGirl.define do
   factory :country do
-    name { Faker::Address.country }
-    iso_alpha2 { Faker::Lorem.word }
-    iso_alpha3 { Faker::Lorem.word }
+    sequence :name do |n|
+      "#{Faker::Address.country}#{n}"
+    end
+    sequence :iso_alpha2 do |n|
+      "#{Faker::Lorem.word}#{n}"
+    end
+    sequence :iso_alpha3 do |n|
+      "#{Faker::Lorem.word}#{n}"
+    end
     postal_address_template do
       %(%{line1}
 %{line2}

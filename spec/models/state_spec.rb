@@ -10,9 +10,8 @@ RSpec.describe State, type: :model, site_scoped: true do
     it { is_expected.to have_db_column(:name).of_type(:string) }
     it { is_expected.to have_db_column(:iso_code).of_type(:string) }
     it { is_expected.to have_db_column(:postal_format).of_type(:string) }
-  end
 
-  context 'relationships' do
+    it { is_expected.to have_db_index(:iso_code).unique(true) }
   end
 
   context 'validations' do
