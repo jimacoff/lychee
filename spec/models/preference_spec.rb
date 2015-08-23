@@ -64,6 +64,11 @@ RSpec.describe Preference, type: :model, site_scoped: true do
         subject.reserved_paths['blog'] = subject.reserved_paths['blog_tags']
         expect(subject).to be_invalid
       end
+
+      it 'is invalid with reserved paths that are not marked required' do
+        subject.reserved_paths['x'] = "/#{Faker::Internet.slug}"
+        expect(subject).to be_invalid
+      end
     end
   end
 end

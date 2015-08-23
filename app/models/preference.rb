@@ -25,7 +25,7 @@ class Preference < ActiveRecord::Base
 
   def all_reserved_paths
     return if reserved_paths &&
-              REQUIRED_RESERVED_PATHS.all? { |k| reserved_paths.key? k }
+              REQUIRED_RESERVED_PATHS.sort == reserved_paths.keys.sort
 
     errors.add(:reserved_paths,
                'Must include all required reserved paths: ' \
