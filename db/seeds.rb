@@ -17,6 +17,8 @@ ActiveRecord::Base.transaction do
   site = FactoryGirl.create :site
   Site.current = site
 
+  Tenant.create!(site: site, identifier: 'localhost')
+
   # Categories
   men = Category.create!(name: 'Mens Clothing',
                          description: Faker::Lorem.sentence)
