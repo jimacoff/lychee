@@ -1,0 +1,43 @@
+doctype html
+html lang='en'
+  head profile='http://www.w3.org/2005/10/profile'
+    link rel='icon' type='image/png' href=image_path('favicon.png')
+    meta charset='utf-8'
+    meta http-equiv='X-UA-Compatible' content='IE=Edge,chrome=1'
+    meta name='viewport' content='width=device-width, initial-scale=1.0'
+
+    title Zepily Web
+
+    = csrf_meta_tags
+
+    link(href='http://fonts.googleapis.com/css?family=Roboto:400,400italic,700,700italic'
+         rel='stylesheet' type='text/css')
+
+    = stylesheet_link_tag('application')
+    = javascript_include_tag('application')
+  body
+    section
+      header
+        nav
+          a(href='#') zepily
+          ul
+            li: a(href='#') Item
+            li: a(href='#') Item
+            li: a(href='#') Item
+            li: a(href='#') Item
+    section
+      nav.left
+        ul
+          li: a(href='#') Item
+          li: a(href='#') Item
+          li: a(href='#') Item
+          li: a(href='#') Item
+          li: a(href='#') Item
+          li: a(href='#') Item
+          li: a(href='#') Item
+          li: a(href='#') Item
+          li: a(href='#') Item
+      main= yield
+    section
+      footer
+        | (c) 2015 Zepily Pty Ltd, All Rights Reserved

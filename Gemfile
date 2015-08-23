@@ -1,6 +1,9 @@
 source 'https://rubygems.org'
 
 gem 'rails', '~> 4.2'
+gem 'sass-rails', '~> 5.0'
+gem 'slim'
+
 gem 'pg', '~> 0.18'
 gem 'postgres_ext', '~> 2.3'
 
@@ -9,7 +12,6 @@ gem 'stringex', '~> 2.5'
 
 gem 'paper_trail', '~> 4.0'
 gem 'workflow'
-gem 'rails-api'
 
 gem 'valhammer', '~> 0.1'
 
