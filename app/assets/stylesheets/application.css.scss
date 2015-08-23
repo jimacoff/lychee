@@ -1,5 +1,70 @@
+$zepily-green: #6aab37;
+$zepily-grey: #4c4d4f;
+$zepily-white: #eeeeee;
+
 $font-family-base: Roboto, 'Open Sans', 'Helvetica Neue', Arial, sans-serif;
 
+/* Declare variables before importing, because SCSS. */
+@import 'font-awesome-sprockets';
+@import 'font-awesome';
+@import 'bootstrap';
+
 body {
+  @extend .container-fluid;
   font-family: $font-family-base;
+
+  > section {
+    @extend .row;
+  }
+}
+
+header nav {
+  @extend .navbar, .navbar-static-top, .navbar-dark, .bg-inverse;
+
+  ul {
+    @extend .nav, .navbar-nav;
+
+    li {
+      @extend .nav-item;
+
+      a {
+        margin-top: 1px;
+        @extend .nav-link;
+      }
+    }
+  }
+
+  > a:first-child {
+    @extend .navbar-brand;
+    margin-right: 2rem;
+  }
+
+  margin-bottom: 1rem;
+}
+
+main {
+  @extend .col-sm-10;
+}
+
+footer {
+  @extend .col-sm-10, .col-sm-offset-2;
+  color: lighten($zepily-grey, 30%);
+  font-size: 0.9rem;
+}
+
+nav.left {
+  @extend .col-sm-2;
+
+  ul {
+    @extend .nav;
+
+    li {
+      @extend .nav-item;
+
+      a {
+        @extend .nav-link;
+        color: $zepily-grey;
+      }
+    }
+  }
 }

@@ -25,6 +25,13 @@ gem 'bcrypt', '~> 3.1'
 # Deployment
 gem 'unicorn', require: false
 
+source 'https://rails-assets.org' do
+  gem 'rails-assets-jquery', '~> 2.1'
+  gem 'rails-assets-bootstrap', '4.0.0.alpha'
+end
+
+gem 'font-awesome-sass'
+
 group :development, :test do
   gem 'rspec-rails', '~> 3.2'
   gem 'shoulda-matchers'
