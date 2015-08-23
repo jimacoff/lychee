@@ -12,19 +12,19 @@ RSpec.describe Variant, type: :model, site_scoped: true do
   has_context 'enablement' do
     let(:factory) { :variant }
   end
-  has_context 'content' do
+  has_context 'taggable' do
+    let(:factory) { :variant }
+  end
+  has_context 'metadata' do
     let(:factory) { :variant }
   end
 
   context 'table structure' do
-    it { is_expected.to have_db_column(:name).of_type(:string) }
     it { is_expected.to have_db_column(:description).of_type(:text) }
     it { is_expected.to have_db_column(:gtin).of_type(:string) }
     it { is_expected.to have_db_column(:sku).of_type(:string) }
     it { is_expected.to have_db_column(:weight).of_type(:integer) }
     it { is_expected.to have_db_column(:varied_price_cents).of_type(:integer) }
-    it { is_expected.to have_db_column(:generated_slug).of_type(:string) }
-    it { is_expected.to have_db_column(:specified_slug).of_type(:string) }
 
     it 'should have non nullable column product_id of type bigint' do
       expect(subject).to have_db_column(:product_id)
@@ -41,8 +41,6 @@ RSpec.describe Variant, type: :model, site_scoped: true do
     it { is_expected.to have_many :variations }
     it { is_expected.to have_many :traits }
     it { is_expected.to have_one :inventory }
-    it { is_expected.to have_many :category_members }
-    it { is_expected.to have_many :categories }
   end
 
   context 'validations' do
@@ -90,8 +88,7 @@ RSpec.describe Variant, type: :model, site_scoped: true do
                                           'values' => [{ 'name' => 'val1',
                                                          'value' => 'val' }]
                                         }] }
-    localized_attributes = { name: Faker::Lorem.word,
-                             description: Faker::Lorem.sentence,
+    localized_attributes = { description: Faker::Lorem.sentence,
                              gtin: Faker::Number.number(10),
                              sku: Faker::Number.number(10),
                              weight: Faker::Number.number(4).to_i,
