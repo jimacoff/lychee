@@ -4,7 +4,8 @@ class Variant < ActiveRecord::Base
   include Specification
   include Monies
   include Enablement
-  include Content
+  include Metadata
+  include Taggable
 
   belongs_to :product
   delegate :tax_override, to: :product
@@ -33,8 +34,7 @@ class Variant < ActiveRecord::Base
     change_varied_price(value)
   end
 
-  %i(specifications description gtin sku weight
-     name generated_slug specified_slug).each do |attr|
+  %i(specifications description gtin sku weight).each do |attr|
     define_method(attr) do
       read_attribute(attr) || product && product.read_attribute(attr)
     end
