@@ -39,6 +39,10 @@ RSpec.describe Product, type: :model, site_scoped: true do
         .with_options(limit: 8, null: true)
     end
     it { is_expected.to have_db_index(:tax_override_id) }
+
+    it { is_expected.to have_db_index([:site_id, :name]).unique }
+    it { is_expected.to have_db_index([:site_id, :generated_slug]).unique }
+    it { is_expected.to have_db_index([:site_id, :specified_slug]).unique }
   end
 
   context 'relationships' do
@@ -111,5 +115,26 @@ RSpec.describe Product, type: :model, site_scoped: true do
 
   describe '#render' do
     it 'Not implemented.'
+  end
+
+  describe '#path' do
+    subject { create(:standalone_product) }
+
+    context 'using a generated_slug' do
+      it 'equals reserved_paths product preferences / generated_slug' do
+        expect(subject.path)
+          .to eq("#{subject.site.preferences.reserved_paths['products']}" \
+                 "/#{subject.generated_slug}")
+      end
+    end
+
+    context 'using a specified_slug' do
+      it 'equals reserved_paths product preferences / specified_slug' do
+        subject.specified_slug = "#{Faker::Lorem.word}-#{Faker::Lorem.word}"
+        expect(subject.path)
+          .to eq("#{subject.site.preferences.reserved_paths['products']}" \
+                 "/#{subject.specified_slug}")
+      end
+    end
   end
 end

@@ -18,4 +18,8 @@ class Category < ActiveRecord::Base
 
   def render
   end
+
+  def path
+    "#{site.preferences.reserved_paths['categories']}/#{slug}"
+  end
 end

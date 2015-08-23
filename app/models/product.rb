@@ -42,4 +42,8 @@ class Product < ActiveRecord::Base
 
   def render
   end
+
+  def path
+    "#{site.preferences.reserved_paths['products']}/#{slug}"
+  end
 end

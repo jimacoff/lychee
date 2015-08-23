@@ -13,4 +13,8 @@ module Content
   def render
     fail 'not implemented'
   end
+
+  def path
+    fail 'not implemented'
+  end
 end
