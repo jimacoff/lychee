@@ -1,6 +1,9 @@
 source 'https://rubygems.org'
 
 gem 'rails', '~> 4.2'
+gem 'sass-rails', '~> 5.0'
+gem 'slim'
+
 gem 'pg', '~> 0.18'
 gem 'postgres_ext', '~> 2.3'
 
@@ -9,7 +12,6 @@ gem 'stringex', '~> 2.5'
 
 gem 'paper_trail', '~> 4.0'
 gem 'workflow'
-gem 'rails-api'
 
 gem 'valhammer', '~> 0.1'
 
@@ -22,6 +24,13 @@ gem 'bcrypt', '~> 3.1'
 
 # Deployment
 gem 'unicorn', require: false
+
+source 'https://rails-assets.org' do
+  gem 'rails-assets-jquery', '~> 2.1'
+  gem 'rails-assets-bootstrap', '4.0.0.alpha'
+end
+
+gem 'font-awesome-sass'
 
 group :development, :test do
   gem 'rspec-rails', '~> 3.2'
