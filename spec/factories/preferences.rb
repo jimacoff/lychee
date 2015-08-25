@@ -9,7 +9,9 @@ FactoryGirl.define do
         'blog_tags' => "/bt-#{Faker::Internet.slug}",
         'products' => "/p-#{Faker::Internet.slug}",
         'categories' => "/c-#{Faker::Internet.slug}",
-        'images' => "/_assets/i-#{Faker::Internet.slug}" }
+        'images' => "/_assets/i-#{Faker::Internet.slug}",
+        # TODO: Restrict to /shopping-cart
+        'shopping_cart' => "/sc-#{Faker::Internet.slug}" }
     end
   end
 end
