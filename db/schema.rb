@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20150823002622) do
+ActiveRecord::Schema.define(version: 20150825103707) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -99,6 +99,34 @@ ActiveRecord::Schema.define(version: 20150823002622) do
   add_index "countries", ["iso_alpha2"], name: "index_countries_on_iso_alpha2", unique: true, using: :btree
   add_index "countries", ["iso_alpha3"], name: "index_countries_on_iso_alpha3", unique: true, using: :btree
   add_index "countries", ["name"], name: "index_countries_on_name", unique: true, using: :btree
+
+  create_table "image_files", id: :bigserial, force: :cascade do |t|
+    t.integer  "site_id",        limit: 8,                 null: false
+    t.integer  "image_id",       limit: 8,                 null: false
+    t.string   "filename",                                 null: false
+    t.string   "width",                                    null: false
+    t.string   "height"
+    t.string   "x_dimension"
+    t.boolean  "default_image",            default: false, null: false
+    t.boolean  "original_image",           default: false, null: false
+    t.hstore   "metadata"
+    t.datetime "created_at",                               null: false
+    t.datetime "updated_at",                               null: false
+  end
+
+  add_index "image_files", ["image_id"], name: "index_image_files_on_image_id", using: :btree
+  add_index "image_files", ["site_id"], name: "index_image_files_on_site_id", using: :btree
+
+  create_table "images", id: :bigserial, force: :cascade do |t|
+    t.integer  "site_id",     limit: 8,              null: false
+    t.string   "description",                        null: false
+    t.hstore   "metadata"
+    t.text     "tags",                  default: [],              array: true
+    t.datetime "created_at",                         null: false
+    t.datetime "updated_at",                         null: false
+  end
+
+  add_index "images", ["site_id"], name: "index_images_on_site_id", using: :btree
 
   create_table "inventories", id: :bigserial, force: :cascade do |t|
     t.boolean  "tracked",                 default: false, null: false
@@ -471,6 +499,9 @@ ActiveRecord::Schema.define(version: 20150823002622) do
   add_foreign_key "category_members", "products", on_delete: :cascade
   add_foreign_key "category_members", "sites", on_delete: :cascade
   add_foreign_key "category_members", "variants", on_delete: :cascade
+  add_foreign_key "image_files", "images", on_delete: :cascade
+  add_foreign_key "image_files", "sites", on_delete: :cascade
+  add_foreign_key "images", "sites", on_delete: :cascade
   add_foreign_key "inventories", "products", on_delete: :cascade
   add_foreign_key "inventories", "sites", on_delete: :cascade
   add_foreign_key "inventories", "variants", on_delete: :cascade
