@@ -69,6 +69,11 @@ RSpec.describe Preference, type: :model, site_scoped: true do
         subject.reserved_paths['x'] = "/#{Faker::Internet.slug}"
         expect(subject).to be_invalid
       end
+
+      it 'requires a fixed shopping_cart path' do
+        subject.reserved_paths['shopping_cart'] = '/x'
+        expect(subject).to be_invalid
+      end
     end
   end
 end

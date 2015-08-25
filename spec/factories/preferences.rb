@@ -10,8 +10,7 @@ FactoryGirl.define do
         'products' => "/p-#{Faker::Internet.slug}",
         'categories' => "/c-#{Faker::Internet.slug}",
         'images' => "/_assets/i-#{Faker::Internet.slug}",
-        # TODO: Restrict to /shopping-cart
-        'shopping_cart' => "/sc-#{Faker::Internet.slug}" }
+        'shopping_cart' => '/shopping-cart' }
     end
   end
 end
