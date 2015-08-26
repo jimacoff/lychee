@@ -20,6 +20,8 @@ RSpec.describe Image, type: :model, site_scoped: true do
     it { is_expected.to validate_presence_of :description }
 
     context 'instance validations' do
+      subject { create :image }
+      it { is_expected.to be_valid }
     end
   end
 end
