@@ -4,7 +4,7 @@ class Image < ActiveRecord::Base
   include Taggable
 
   has_many :image_files do
-    def base_image
+    def default_image
       find_by(default_image: true)
     end
 
