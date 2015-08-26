@@ -13,5 +13,11 @@ class ImageFile < ActiveRecord::Base
                                            if: :original_image?
 
   def path
+    "#{site.preferences.reserved_paths['images']}" \
+    "/#{image.internal_name}/#{width}.#{image.extension}"
+  end
+
+  def srcset_path
+    "#{path} #{x_dimension || width}"
   end
 end

@@ -59,4 +59,36 @@ RSpec.describe ImageFile, type: :model, site_scoped: true do
       end
     end
   end
+
+  describe '#path' do
+    subject { create :image_file }
+
+    it 'constructs a valid path' do
+      expect(subject.path).to eq(
+        "#{subject.site.preferences.reserved_paths['images']}" \
+        "/#{subject.image.internal_name}/#{subject.width}" \
+        ".#{subject.image.extension}")
+    end
+  end
+
+  describe '#srcset_path' do
+    subject { create :image_file }
+
+    it 'constructs a valid path' do
+      expect(subject.srcset_path).to eq(
+        "#{subject.site.preferences.reserved_paths['images']}" \
+        "/#{subject.image.internal_name}/#{subject.width}" \
+        ".#{subject.image.extension} #{subject.width}")
+    end
+
+    context 'with x_dimension' do
+      it 'constructs a valid path' do
+        subject.x_dimension = '2x'
+        expect(subject.srcset_path).to eq(
+          "#{subject.site.preferences.reserved_paths['images']}" \
+          "/#{subject.image.internal_name}/#{subject.width}" \
+          ".#{subject.image.extension} #{subject.x_dimension}")
+      end
+    end
+  end
 end
