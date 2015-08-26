@@ -3,7 +3,7 @@ class Preference < ActiveRecord::Base
   include Metadata
 
   REQUIRED_RESERVED_PATHS = %w(blog blog_articles blog_categories blog_tags
-                               products categories)
+                               products categories images)
 
   enum tax_basis: { delivery: 0, customer: 1, subscriber: 2 }
 
