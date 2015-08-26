@@ -1,5 +1,8 @@
 FactoryGirl.define do
   factory :image do
+    name { Faker::Lorem.word }
+    internal_name { SecureRandom.hex }
+    extension { Faker::Lorem.word }
     description { Faker::Lorem.sentence }
 
     trait :with_image_files do

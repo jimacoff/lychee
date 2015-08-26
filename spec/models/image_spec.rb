@@ -9,7 +9,12 @@ RSpec.describe Image, type: :model, site_scoped: true do
   has_context 'taggable'
 
   context 'table structure' do
+    it { is_expected.to have_db_column(:name).of_type(:string) }
+    it { is_expected.to have_db_column(:internal_name).of_type(:string) }
+    it { is_expected.to have_db_column(:extension).of_type(:string) }
     it { is_expected.to have_db_column(:description).of_type(:string) }
+
+    it { is_expected.to have_db_index([:site_id, :internal_name]).unique }
   end
 
   context 'relationships' do
@@ -17,6 +22,9 @@ RSpec.describe Image, type: :model, site_scoped: true do
   end
 
   context 'validations' do
+    it { is_expected.to validate_presence_of :name }
+    it { is_expected.to validate_presence_of :internal_name }
+    it { is_expected.to validate_presence_of :extension }
     it { is_expected.to validate_presence_of :description }
 
     context 'instance validations' do

@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20150825103707) do
+ActiveRecord::Schema.define(version: 20150826102934) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -118,14 +118,18 @@ ActiveRecord::Schema.define(version: 20150825103707) do
   add_index "image_files", ["site_id"], name: "index_image_files_on_site_id", using: :btree
 
   create_table "images", id: :bigserial, force: :cascade do |t|
-    t.integer  "site_id",     limit: 8,              null: false
-    t.string   "description",                        null: false
+    t.integer  "site_id",       limit: 8,              null: false
+    t.string   "description",                          null: false
     t.hstore   "metadata"
-    t.text     "tags",                  default: [],              array: true
-    t.datetime "created_at",                         null: false
-    t.datetime "updated_at",                         null: false
+    t.text     "tags",                    default: [],              array: true
+    t.datetime "created_at",                           null: false
+    t.datetime "updated_at",                           null: false
+    t.string   "name",                                 null: false
+    t.string   "extension",                            null: false
+    t.string   "internal_name",                        null: false
   end
 
+  add_index "images", ["site_id", "internal_name"], name: "index_images_on_site_id_and_internal_name", unique: true, using: :btree
   add_index "images", ["site_id"], name: "index_images_on_site_id", using: :btree
 
   create_table "inventories", id: :bigserial, force: :cascade do |t|
