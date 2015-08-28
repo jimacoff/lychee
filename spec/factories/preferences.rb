@@ -8,7 +8,8 @@ FactoryGirl.define do
         'blog_categories' => "/#{Faker::Internet.slug}",
         'blog_tags' => "/#{Faker::Internet.slug}",
         'products' => "/#{Faker::Internet.slug}",
-        'categories' => "/#{Faker::Internet.slug}" }
+        'categories' => "/#{Faker::Internet.slug}",
+        'images' => "/_assets/#{Faker::Internet.slug}" }
     end
   end
 end
