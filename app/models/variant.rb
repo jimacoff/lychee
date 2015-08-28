@@ -39,10 +39,4 @@ class Variant < ActiveRecord::Base
       read_attribute(attr) || product && product.read_attribute(attr)
     end
   end
-
-  def render
-  end
-
-  def path
-  end
 end
