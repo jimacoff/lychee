@@ -133,12 +133,4 @@ RSpec.describe Variant, type: :model, site_scoped: true do
       expect(subject.categories.first.variants.first).to eq(subject)
     end
   end
-
-  describe '#render' do
-    it 'Not implemented. Variants only accessible on product page currently'
-  end
-
-  describe '#path' do
-    it 'Not implemented. Variants only accessible on product page currently'
-  end
 end
