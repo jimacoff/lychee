@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20150828225917) do
+ActiveRecord::Schema.define(version: 20150829013203) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -76,16 +76,14 @@ ActiveRecord::Schema.define(version: 20150828225917) do
   create_table "category_members", id: :bigserial, force: :cascade do |t|
     t.integer  "category_id", limit: 8, null: false
     t.integer  "product_id",  limit: 8
-    t.integer  "variant_id",  limit: 8
     t.datetime "created_at"
     t.datetime "updated_at"
     t.integer  "site_id",     limit: 8, null: false
-    t.string   "description",           null: false
+    t.string   "description"
   end
 
   add_index "category_members", ["product_id"], name: "index_category_members_on_product_id", using: :btree
   add_index "category_members", ["site_id"], name: "index_category_members_on_site_id", using: :btree
-  add_index "category_members", ["variant_id"], name: "index_category_members_on_variant_id", using: :btree
 
   create_table "countries", id: :bigserial, force: :cascade do |t|
     t.string   "name",                    null: false
@@ -517,7 +515,6 @@ ActiveRecord::Schema.define(version: 20150828225917) do
   add_foreign_key "category_members", "categories", on_delete: :cascade
   add_foreign_key "category_members", "products", on_delete: :cascade
   add_foreign_key "category_members", "sites", on_delete: :cascade
-  add_foreign_key "category_members", "variants", on_delete: :cascade
   add_foreign_key "image_files", "images", on_delete: :cascade
   add_foreign_key "image_files", "sites", on_delete: :cascade
   add_foreign_key "image_instances", "images", on_delete: :restrict

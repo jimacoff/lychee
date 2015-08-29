@@ -29,7 +29,6 @@ RSpec.describe Category, type: :model, site_scoped: true do
     it { is_expected.to have_many(:subcategories) }
     it { is_expected.to have_many :category_members }
     it { is_expected.to have_many :products }
-    it { is_expected.to have_many :variants }
   end
 
   context 'validations' do

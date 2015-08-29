@@ -9,7 +9,6 @@ class Category < ActiveRecord::Base
 
   has_many :category_members
   has_many :products, through: :category_members
-  has_many :variants, through: :category_members
 
   has_paper_trail
   valhammer

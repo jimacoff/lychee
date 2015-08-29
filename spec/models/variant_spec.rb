@@ -123,14 +123,4 @@ RSpec.describe Variant, type: :model, site_scoped: true do
       end
     end
   end
-
-  context 'categories' do
-    subject { create(:variant, :with_categories) }
-    it 'associated two subcategories' do
-      expect(subject.categories.size).to eq(2)
-    end
-    it 'category contains product' do
-      expect(subject.categories.first.variants.first).to eq(subject)
-    end
-  end
 end

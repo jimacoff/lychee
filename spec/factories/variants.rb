@@ -11,11 +11,5 @@ FactoryGirl.define do
         v.price = Faker::Number.number(4).to_i
       end
     end
-
-    trait :with_categories do
-      after(:create) do |v|
-        v.category_members.push create_list(:category_member, 2, variant: v)
-      end
-    end
   end
 end
