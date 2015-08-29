@@ -37,6 +37,8 @@ RSpec.describe VariationInstance, type: :model, site_scoped: true do
   context 'relationships' do
     it { is_expected.to belong_to(:variation).class_name('Variation') }
     it { is_expected.to belong_to(:variant).class_name('Variant') }
+    it { is_expected.to have_one(:image_instance) }
+    it { is_expected.to have_one(:image) }
   end
 
   context 'validations' do

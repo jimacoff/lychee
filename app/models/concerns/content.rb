@@ -5,8 +5,10 @@ module Content
   include Slug
   include Taggable
 
-  # has_many :image_instances
-  # has_many :images, through: :image_instances
+  included do
+    has_many :image_instances, as: :imageable
+    has_many :images, through: :image_instances
+  end
   # has_many :media_instances
   # has_many :medias, through: :media_instances
 

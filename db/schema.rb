@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20150826102934) do
+ActiveRecord::Schema.define(version: 20150828225917) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -116,6 +116,21 @@ ActiveRecord::Schema.define(version: 20150826102934) do
 
   add_index "image_files", ["image_id"], name: "index_image_files_on_image_id", using: :btree
   add_index "image_files", ["site_id"], name: "index_image_files_on_site_id", using: :btree
+
+  create_table "image_instances", id: :bigserial, force: :cascade do |t|
+    t.integer  "site_id",        limit: 8, null: false
+    t.integer  "image_id",       limit: 8, null: false
+    t.integer  "imageable_id",   limit: 8, null: false
+    t.string   "imageable_type",           null: false
+    t.hstore   "metadata"
+    t.datetime "created_at",               null: false
+    t.datetime "updated_at",               null: false
+  end
+
+  add_index "image_instances", ["image_id"], name: "index_image_instances_on_image_id", using: :btree
+  add_index "image_instances", ["imageable_type", "imageable_id"], name: "index_image_instances_on_imageable_type_and_imageable_id", using: :btree
+  add_index "image_instances", ["imageable_type"], name: "index_image_instances_on_imageable_type", using: :btree
+  add_index "image_instances", ["site_id"], name: "index_image_instances_on_site_id", using: :btree
 
   create_table "images", id: :bigserial, force: :cascade do |t|
     t.integer  "site_id",       limit: 8,              null: false
@@ -505,6 +520,8 @@ ActiveRecord::Schema.define(version: 20150826102934) do
   add_foreign_key "category_members", "variants", on_delete: :cascade
   add_foreign_key "image_files", "images", on_delete: :cascade
   add_foreign_key "image_files", "sites", on_delete: :cascade
+  add_foreign_key "image_instances", "images", on_delete: :restrict
+  add_foreign_key "image_instances", "sites", on_delete: :cascade
   add_foreign_key "images", "sites", on_delete: :cascade
   add_foreign_key "inventories", "products", on_delete: :cascade
   add_foreign_key "inventories", "sites", on_delete: :cascade
