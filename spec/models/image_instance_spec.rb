@@ -28,4 +28,26 @@ RSpec.describe ImageInstance, type: :model, site_scoped: true do
     it { is_expected.to validate_presence_of :image }
     it { is_expected.to validate_presence_of :imageable }
   end
+
+  context 'polymorphic relationships' do
+    context 'category_member' do
+      subject { create :image_instance, :for_product_category }
+      it { is_expected.to be_valid }
+    end
+
+    context 'variation_instance' do
+      subject { create :image_instance, :for_variation_instance }
+      it { is_expected.to be_valid }
+    end
+
+    context 'product' do
+      subject { create :image_instance, :for_product }
+      it { is_expected.to be_valid }
+    end
+
+    context 'category' do
+      subject { create :image_instance, :for_category }
+      it { is_expected.to be_valid }
+    end
+  end
 end
