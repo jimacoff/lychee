@@ -79,6 +79,41 @@ RSpec.describe ShoppingCart, type: :model, site_scoped: true do
       context 'with no uuid provided' do
         let(:attrs) { commodity_attrs.merge(quantity: 1) }
         include_examples 'apply the operation successfully'
+
+        context 'when the commodity is already in the cart' do
+          let(:op_attrs) { attrs.merge(item_uuid: SecureRandom.uuid) }
+          let!(:op) { subject.shopping_cart_operations.create!(op_attrs) }
+
+          it 'applies to the existing item' do
+            expect { run }.to change { operations.count }.by(1)
+
+            expected = op_attrs.merge(quantity: 2)
+            expect(operations.last).to have_attributes(expected)
+          end
+
+          it 'only applies to the item with matching metadata' do
+            wrong_attrs = op_attrs.merge(item_uuid: SecureRandom.uuid,
+                                         quantity: 4, metadata: { 'a' => '1' })
+            subject.shopping_cart_operations.create!(wrong_attrs)
+
+            expect { run }.to change { operations.count }.by(1)
+
+            expected = op_attrs.merge(quantity: 2)
+            expect(operations.last).to have_attributes(expected)
+          end
+        end
+
+        context 'when the commodity is in the cart with mismatched metadata' do
+          let(:attrs) do
+            commodity_attrs.merge(quantity: 1, metadata: { 'a' => '1' },
+                                  item_uuid: SecureRandom.uuid)
+          end
+
+          let(:op_attrs) { attrs.merge(metadata: { 'b' => '2' }) }
+          let!(:op) { subject.shopping_cart_operations.create!(op_attrs) }
+
+          include_examples 'force a new uuid'
+        end
       end
 
       context 'when providing a uuid' do

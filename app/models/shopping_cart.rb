@@ -35,17 +35,19 @@ class ShoppingCart < ActiveRecord::Base
   private
 
   def apply_item_add(opts)
-    # TODO: Fold
-    shopping_cart_operations.create!(opts.merge(item_uuid: SecureRandom.uuid))
+    prev = shopping_cart_operations.by_commodity(opts).order('id desc').first
+
+    overrides = { item_uuid: (prev.try(:item_uuid) || SecureRandom.uuid) }
+    overrides[:quantity] = opts[:quantity] + prev.quantity if prev
+
+    shopping_cart_operations.create!(opts.merge(overrides))
   end
 
   def apply_item_update(opts)
-    prev = shopping_cart_operations.where(opts.slice(:item_uuid))
+    prev = shopping_cart_operations.by_uuid(opts[:item_uuid])
            .order('id desc').first
 
-    return nil if prev.nil? ||
-                  prev.product_id != opts[:product_id] ||
-                  prev.variant_id != opts[:variant_id]
+    return nil unless prev.try(:matches_commodity?, opts)
 
     shopping_cart_operations.create!(opts)
   end
