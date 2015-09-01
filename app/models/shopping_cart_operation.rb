@@ -5,6 +5,8 @@ class ShoppingCartOperation < ActiveRecord::Base
 
   valhammer
 
+  default_scope { order('id') }
+
   def self.by_uuid(uuid)
     where(item_uuid: uuid)
   end
