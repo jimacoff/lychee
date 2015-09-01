@@ -30,6 +30,11 @@ class ShoppingCart < ActiveRecord::Base
   end
 
   def contents
+    shopping_cart_operations.includes(:product, :variant).reduce({}) do |a, e|
+      item = { product: e.product, variant: e.variant, item_uuid: e.item_uuid,
+               quantity: e.quantity, metadata: e.metadata }
+      a.merge(e.item_uuid => item.compact)
+    end
   end
 
   private

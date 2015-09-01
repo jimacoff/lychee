@@ -182,5 +182,75 @@ RSpec.describe ShoppingCart, type: :model, site_scoped: true do
   end
 
   context '#contents' do
+    def create_op(attrs)
+      attrs[:item_uuid] ||= SecureRandom.uuid
+      subject.shopping_cart_operations.create!(attrs)
+    end
+
+    it 'returns all items' do
+      products = create_list(:product, 3)
+      variants = create_list(:variant, 3)
+      uuids = (1..6).to_a.map { SecureRandom.uuid }
+
+      products.zip(uuids[0..2]).each do |(p, u)|
+        create_op(product_id: p.id, quantity: 1, item_uuid: u)
+      end
+
+      variants.zip(uuids[3..5]).each do |(v, u)|
+        create_op(variant_id: v.id, quantity: 1, item_uuid: u)
+      end
+
+      ActiveRecord::Base.connection.execute('SELECT 1234')
+
+      expect(subject.contents).to eq(
+        uuids[0] => { product: products[0], quantity: 1, item_uuid: uuids[0] },
+        uuids[1] => { product: products[1], quantity: 1, item_uuid: uuids[1] },
+        uuids[2] => { product: products[2], quantity: 1, item_uuid: uuids[2] },
+        uuids[3] => { variant: variants[0], quantity: 1, item_uuid: uuids[3] },
+        uuids[4] => { variant: variants[1], quantity: 1, item_uuid: uuids[4] },
+        uuids[5] => { variant: variants[2], quantity: 1, item_uuid: uuids[5] }
+      )
+    end
+
+    it 'supersedes with later versions of the same item' do
+      uuid1 = SecureRandom.uuid
+      uuid2 = SecureRandom.uuid
+      product1, product2 = create_list(:product, 2)
+
+      create_op(product_id: product1.id, quantity: 1, item_uuid: uuid1)
+      create_op(product_id: product2.id, quantity: 1, item_uuid: uuid2)
+      create_op(product_id: product1.id, quantity: 2, item_uuid: uuid1)
+      create_op(product_id: product1.id, quantity: 4, item_uuid: uuid1)
+      create_op(product_id: product2.id, quantity: 20, item_uuid: uuid2)
+
+      expect(subject.contents).to eq(
+        uuid1 => { product: product1, quantity: 4, item_uuid: uuid1 },
+        uuid2 => { product: product2, quantity: 20, item_uuid: uuid2 }
+      )
+    end
+
+    it 'returns items with metadata' do
+      product = create(:product)
+
+      create_op(product_id: product.id, quantity: 1, metadata: { 'x' => '1' })
+      create_op(product_id: product.id, quantity: 2, metadata: { 'y' => '2' })
+
+      base = { product: product, item_uuid: anything }
+
+      expect(subject.contents.values).to contain_exactly(
+        base.merge(quantity: 1, metadata: { 'x' => '1' }),
+        base.merge(quantity: 2, metadata: { 'y' => '2' })
+      )
+    end
+
+    it 'queries the shopping cart efficiently' do
+      product = create(:product)
+
+      (1..10).each do |i|
+        create_op(product_id: product.id, quantity: i)
+      end
+
+      expect { subject.reload.contents }.not_to exceed_query_limit(4)
+    end
   end
 end
