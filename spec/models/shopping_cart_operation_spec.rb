@@ -9,6 +9,8 @@ RSpec.describe ShoppingCartOperation, type: :model, site_scoped: true do
     let(:factory) { [:shopping_cart_operation, :for_product] }
   end
 
+  has_context 'metadata'
+
   has_context 'commodity reference', indexed: false do
     let(:factory) { :shopping_cart_operation }
   end

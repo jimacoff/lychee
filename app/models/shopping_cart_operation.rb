@@ -1,6 +1,7 @@
 class ShoppingCartOperation < ActiveRecord::Base
   include ParentSite
   include CommodityReference
+  include Metadata
 
   belongs_to :shopping_cart
 
