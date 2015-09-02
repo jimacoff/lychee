@@ -18,9 +18,6 @@ class ShoppingCart < ActiveRecord::Base
     state :abandoned
   end
 
-  belongs_to :product
-  belongs_to :variant
-
   has_many :shopping_cart_operations
 
   valhammer
