@@ -5,6 +5,10 @@ RSpec.describe ShoppingCartOperation, type: :model, site_scoped: true do
 
   subject { build(:shopping_cart_operation) }
 
+  has_context 'parent site' do
+    let(:factory) { [:shopping_cart_operation, :for_product] }
+  end
+
   has_context 'commodity reference', indexed: false do
     let(:factory) { :shopping_cart_operation }
   end

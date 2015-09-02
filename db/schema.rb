@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20150829013203) do
+ActiveRecord::Schema.define(version: 20150902104513) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -341,9 +341,11 @@ ActiveRecord::Schema.define(version: 20150829013203) do
     t.uuid    "item_uuid",                  null: false
     t.integer "quantity",                   null: false
     t.hstore  "metadata"
+    t.integer "site_id",          limit: 8, null: false
   end
 
   add_index "shopping_cart_operations", ["shopping_cart_id"], name: "index_shopping_cart_operations_on_shopping_cart_id", using: :btree
+  add_index "shopping_cart_operations", ["site_id"], name: "index_shopping_cart_operations_on_site_id", using: :btree
 
   create_table "shopping_carts", id: :bigserial, force: :cascade do |t|
     t.integer  "site_id",        limit: 8, null: false
@@ -568,6 +570,7 @@ ActiveRecord::Schema.define(version: 20150829013203) do
   add_foreign_key "shipping_rates", "sites"
   add_foreign_key "shopping_cart_operations", "products", on_delete: :restrict
   add_foreign_key "shopping_cart_operations", "shopping_carts", on_delete: :cascade
+  add_foreign_key "shopping_cart_operations", "sites"
   add_foreign_key "shopping_cart_operations", "variants", on_delete: :restrict
   add_foreign_key "shopping_carts", "sites", on_delete: :cascade
   add_foreign_key "states", "countries", on_delete: :cascade
