@@ -1,10 +1,9 @@
 class AddSiteIdToShoppingCartOperations < ActiveRecord::Migration
   def change
     change_table :shopping_cart_operations do |t|
-      t.integer :site_id, limit: 8, null: false
+      t.references :site, null: false, index: true
     end
 
-    add_index :shopping_cart_operations, :site_id
-    add_foreign_key :shopping_cart_operations, :sites
+    add_foreign_key :shopping_cart_operations, :sites, on_delete: :cascade
   end
 end

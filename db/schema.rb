@@ -570,7 +570,7 @@ ActiveRecord::Schema.define(version: 20150902104513) do
   add_foreign_key "shipping_rates", "sites"
   add_foreign_key "shopping_cart_operations", "products", on_delete: :restrict
   add_foreign_key "shopping_cart_operations", "shopping_carts", on_delete: :cascade
-  add_foreign_key "shopping_cart_operations", "sites"
+  add_foreign_key "shopping_cart_operations", "sites", on_delete: :cascade
   add_foreign_key "shopping_cart_operations", "variants", on_delete: :restrict
   add_foreign_key "shopping_carts", "sites", on_delete: :cascade
   add_foreign_key "states", "countries", on_delete: :cascade
