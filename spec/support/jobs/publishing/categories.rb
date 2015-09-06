@@ -100,8 +100,22 @@ RSpec.shared_examples 'jobs::publishing::categories' do
             end
           end
 
-          context 'category members' do
-            pending
+          context 'with products' do
+            let!(:category_members) do
+              create_list(:category_member, 5, category: category, site: site)
+            end
+
+            before(:each) do
+              category.category_members.last.product.update!(enabled: false)
+              PublishSiteJob.perform_now(site)
+            end
+
+            it { is_expected.to include(:products) }
+
+            it 'includes all active products' do
+              expect(subject[:products].length)
+                .to eq(category.category_members.length - 1)
+            end
           end
         end
 
@@ -118,6 +132,53 @@ RSpec.shared_examples 'jobs::publishing::categories' do
 
           include_examples 'common category fields'
           it { is_expected.to include(parent: primary_category.id) }
+        end
+
+        context 'products' do
+          let(:description) { Faker::Lorem.sentence }
+          let(:category) { primary_category }
+          let(:p) do
+            FactoryGirl.create(:product, site: site,
+                                         metadata: metadata,
+                                         tags: tags)
+          end
+          let!(:cm) do
+            create(:category_member, category: category,
+                                     product: p,
+                                     description: description,
+                                     site: site)
+          end
+          let(:json) do
+            JSON.parse(file, symbolize_names: true)
+          end
+          subject { json[:products].first }
+
+          before { PublishSiteJob.perform_now(site) }
+
+          it { is_expected.to include(id: cm.id) }
+          it { is_expected.to include(product_id: p.id) }
+          it { is_expected.to include(slug: p.slug) }
+          it { is_expected.to include(currency: p.currency) }
+          it { is_expected.to include(weight: p.weight) }
+          it { is_expected.to include(price_cents: p.price.cents) }
+          it { is_expected.to include(description: cm.description) }
+          it { is_expected.not_to include(tags: tags) }
+          it 'is expected to have an image'
+
+          context 'with metadata' do
+            let(:metadata) { { key: Faker::Lorem.word } }
+            it { is_expected.to include(metadata: metadata) }
+          end
+
+          context 'with tags' do
+            let(:tags) { %W(#{Faker::Lorem.word} #{Faker::Lorem.word}) }
+            it { is_expected.to include(tags: tags) }
+          end
+
+          context 'without specific descriptrion' do
+            let(:description) { nil }
+            it { is_expected.to include(description: p.description) }
+          end
         end
       end
     end

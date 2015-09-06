@@ -23,18 +23,15 @@ module Publishing
     def category(json, c)
       json.call(c, :id, :name, :description, :path)
       json.updated_at c.updated_at.iso8601
-      optional_fields(json, c)
+      category_optional_fields(json, c)
       category_members(json, c)
       subcategories(json, c.subcategories) unless c.subcategories.empty?
     end
 
-    def optional_fields(json, c)
+    def category_optional_fields(json, c)
       json.tags c.tags unless c.tags.empty?
       json.metadata c.metadata if c.metadata
       json.parent c.parent_category.id if c.parent_category
-    end
-
-    def category_members(_json, _c)
     end
 
     def subcategories(json, subcategories)
@@ -43,6 +40,30 @@ module Publishing
           category(json, sc) if sc.enabled?
         end
       end
+    end
+
+    def category_members(json, c)
+      json.products do
+        json.array! c.category_members do |cm|
+          category_member(json, cm) if cm.product.enabled?
+        end
+      end
+    end
+
+    def category_member(json, cm)
+      p = cm.product
+      json.id cm.id
+      json.call(p, :name, :slug, :currency, :weight)
+      json.product_id p.id
+      json.price_cents p.price.cents
+
+      category_member_optional_fields(json, cm, p)
+    end
+
+    def category_member_optional_fields(json, cm, p)
+      json.description(cm.description || p.description)
+      json.tags p.tags unless p.tags.empty?
+      json.metadata p.metadata if p.metadata
     end
 
     def write_category(c, frontmatter)

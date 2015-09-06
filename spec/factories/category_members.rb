@@ -1,6 +1,6 @@
 FactoryGirl.define do
   factory :category_member do
-    product
+    association :product, factory: :standalone_product
     category
     description { Faker::Lorem.sentence }
   end
