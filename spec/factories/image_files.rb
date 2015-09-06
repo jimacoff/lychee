@@ -3,7 +3,7 @@ FactoryGirl.define do
     image
 
     filename { "#{Faker::Lorem.word}.png" }
-    width { "#{rand(100..800)}w" }
+    width { "#{rand(100..800)}" }
     default_image { false }
     original_image { false }
 

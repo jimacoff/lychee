@@ -10,4 +10,5 @@ RSpec.describe PublishSiteJob, type: :job do
   before(:each) { Site.current = site }
 
   include_examples 'jobs::publishing::categories'
+  include_examples 'jobs::publishing::images'
 end
