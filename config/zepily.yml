@@ -1,0 +1,14 @@
+defaults: &defaults
+  publishing:
+    paths:
+      base: /tmp
+      categories: /categories
+
+development:
+  <<: *defaults
+
+test:
+  <<: *defaults
+
+production:
+  <<: *defaults

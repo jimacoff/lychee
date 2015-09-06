@@ -70,5 +70,10 @@ RSpec.describe Category, type: :model, site_scoped: true do
                  "/#{subject.specified_slug}")
       end
     end
+
+    context 'with one or more parent categories' do
+      it 'builds path as a tree
+      '
+    end
   end
 end
