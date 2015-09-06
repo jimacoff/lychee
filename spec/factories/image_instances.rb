@@ -1,7 +1,7 @@
 FactoryGirl.define do
   factory :image_instance do
     image
-    association :imageable, factory: :product_category_member
+    association :imageable, factory: :category_member
 
     trait :for_product_category do
     end
