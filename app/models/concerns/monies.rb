@@ -20,7 +20,7 @@ module Monies
                                  allow_nil: allow_nil
 
       after_initialize do
-        write_attribute(:currency, Site.current.currency.iso_code)
+        self[:currency] = Site.current.currency.iso_code
       end
 
       define_public_methods(field, calculated)
@@ -60,7 +60,7 @@ module Monies
     def define_change(field)
       define_method("change_#{field}") do |value|
         money = create_monentary_value(value)
-        write_attribute("#{field}_cents", money.cents)
+        self["#{field}_cents"] = money.cents
       end
     end
   end

@@ -36,7 +36,7 @@ class Variant < ActiveRecord::Base
 
   %i(specifications description gtin sku weight).each do |attr|
     define_method(attr) do
-      read_attribute(attr) || product && product.read_attribute(attr)
+      self[attr] || product && product.read_attribute(attr)
     end
   end
 end
