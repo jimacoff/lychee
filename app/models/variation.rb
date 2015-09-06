@@ -11,5 +11,5 @@ class Variation < ActiveRecord::Base
   has_paper_trail
   valhammer
 
-  validates_numericality_of :order, greater_than_or_equal_to: 0
+  validates :order, numericality: { greater_than_or_equal_to: 0 }
 end

@@ -69,7 +69,7 @@ class Site < ActiveRecord::Base
 
   def currency=(currency)
     cur = Money::Currency.new(currency)
-    write_attribute(:currency_iso_code, cur.iso_code)
+    self[:currency_iso_code] = cur.iso_code
   end
 
   def currency

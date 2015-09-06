@@ -86,7 +86,7 @@ class Order < ActiveRecord::Base
   private
 
   def change_weight(weight)
-    write_attribute(:weight, weight)
+    self[:weight] = weight
   end
 
   def calculate_subtotal_tax_inclusive
