@@ -40,7 +40,7 @@ class ShoppingCart < ActiveRecord::Base
     prev = shopping_cart_operations.by_commodity(opts).order('id desc').first
 
     overrides = { item_uuid: (prev.try(:item_uuid) || SecureRandom.uuid) }
-    overrides[:quantity] = opts[:quantity] + prev.quantity if prev
+    overrides[:quantity] = Integer(opts[:quantity]) + prev.quantity if prev
 
     shopping_cart_operations.create!(opts.merge(overrides))
   end

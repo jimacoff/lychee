@@ -9,7 +9,7 @@ Dir[Rails.root.join('spec/support/**/*.rb')].each { |f| require f }
 # Checks for pending migrations before tests are run.
 ActiveRecord::Migration.maintain_test_schema!
 
-spec_site = nil
+spec_site = spec_tenant = nil
 
 RSpec.configure do |config|
   config.fixture_path = "#{::Rails.root}/spec/fixtures"
@@ -22,6 +22,10 @@ RSpec.configure do |config|
 
   config.before(:suite) do
     spec_site = FactoryGirl.create(:site)
+    spec_tenant = FactoryGirl.create(:tenant, site: spec_site)
+
+    ActionController::TestRequest::DEFAULT_ENV
+      .merge!('HTTP_HOST' => spec_tenant.identifier)
   end
 
   # Supply a site scope when requested
