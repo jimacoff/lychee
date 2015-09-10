@@ -243,6 +243,14 @@ RSpec.describe ShoppingCart, type: :model, site_scoped: true do
       )
     end
 
+    it 'removes items with no quantity' do
+      product = create(:product)
+
+      create_op(product_id: product.id, quantity: 0)
+
+      expect(subject.contents).to be_empty
+    end
+
     it 'queries the shopping cart efficiently' do
       product = create(:product)
 

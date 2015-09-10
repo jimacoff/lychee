@@ -21,4 +21,9 @@ class ShoppingCartOperation < ActiveRecord::Base
   def matches_commodity?(opts)
     %i(product_id variant_id metadata).all? { |k| self[k] == opts[k] }
   end
+
+  def item_attrs
+    { product: product, variant: variant, item_uuid: item_uuid,
+      quantity: quantity, metadata: metadata }.compact
+  end
 end
