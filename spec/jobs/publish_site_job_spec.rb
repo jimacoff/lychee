@@ -1,6 +1,10 @@
 require 'rails_helper'
 
+require 'fakefs/spec_helpers'
+
 RSpec.describe PublishSiteJob, type: :job do
+  include FakeFS::SpecHelpers
+
   let(:site) { create :site }
   let(:categories_path) do
     paths = Rails.configuration.zepily.publishing.paths

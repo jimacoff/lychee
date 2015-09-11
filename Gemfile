@@ -48,4 +48,5 @@ group :development, :test do
   gem 'brakeman'
   gem 'temping'
   gem 'database_cleaner'
+  gem 'fakefs', require: 'fakefs/safe'
 end
