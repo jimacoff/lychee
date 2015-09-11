@@ -1,6 +1,6 @@
 FactoryGirl.define do
   factory :image_file do
-    image
+    association :image, image_files: false
 
     filename { "#{Faker::Lorem.word}.png" }
     width { "#{rand(100..800)}" }

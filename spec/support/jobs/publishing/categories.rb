@@ -1,184 +1,215 @@
 RSpec.shared_examples 'jobs::publishing::categories' do
+  # rubocop:disable Metrics/AbcSize, Metrics/MethodLength
+  def category_member_json(cm)
+    {
+      id: cm.id,
+      name: cm.product.name,
+      description: cm.description || cm.product.description,
+      slug: cm.product.slug,
+      currency: cm.product.currency,
+      weight: cm.product.weight,
+      product_id: cm.product.id,
+      price_cents: cm.product.price_cents
+    }
+  end
+
+  def category_json(c)
+    category = {
+      id: c.id,
+      name: c.name,
+      description: c.description,
+      path: c.path,
+      updated_at: c.updated_at.iso8601,
+      products: c.category_members.map { |e| category_member_json(e) }
+    }
+    category[:parent] = c.parent_category.id if c.parent_category.present?
+
+    if c.subcategories.present?
+      category[:subcategories] = c.subcategories.map { |e| category_json(e) }
+    end
+
+    category
+  end
+  # rubocop:enable Metrics/AbcSize, Metrics/MethodLength
+
   context 'categories' do
+    let(:builder) do
+      Jbuilder.encode do |json|
+        described_class.new.category(json, category)
+      end
+    end
+    let(:category) { create :category, site: site }
+    let(:json) { category_json(category) }
+    subject { JSON.parse(builder, symbolize_names: true) }
+
     context 'file set' do
-      let(:category_count) { 5 }
+      let(:enabled_category_count) { 5 }
       before do
-        create_list(:category, category_count)
+        create_list(:category, enabled_category_count)
         create(:category, enabled: false)
+        PublishSiteJob.perform_now(site)
       end
 
       it 'generates one file per active primary category' do
         expect(site.primary_categories.count)
-          .to eq(category_count + 1)
-
-        PublishSiteJob.perform_now(site)
+          .to eq(enabled_category_count + 1)
 
         expect(Dir.glob("#{categories_path}/**/*").length)
-          .to eq(category_count)
+          .to eq(enabled_category_count)
+      end
+
+      context 'file data' do
+        context 'delimiters' do
+          let(:category) { Site.current.primary_categories.enabled.sample }
+          let(:file) do
+            File.read(File.join(categories_path, "#{category.id}.json"))
+          end
+
+          it 'starts with three dash + json delimiter' do
+            expect(file).to start_with("---json\n")
+          end
+
+          it 'ends with three dash delimiter' do
+            expect(file).to end_with("---\n")
+          end
+
+          context 'json' do
+            let(:file) do
+              File.read(File.join(categories_path, "#{category.id}.json"))
+                .gsub(/---(json)?/, '')
+            end
+            subject { JSON.parse(file, symbolize_names: true) }
+            it { is_expected.to match(json) }
+          end
+        end
       end
     end
 
-    context 'file data' do
-      context 'delimiters' do
-        let!(:primary_category) { create :category, site: site }
-        let(:file) do
-          File.read(File.join(categories_path, "#{primary_category.id}.json"))
-        end
+    context 'with minimal data' do
+      it { is_expected.to match(json) }
+    end
 
-        before { PublishSiteJob.perform_now(site) }
+    context 'with metadata' do
+      let(:metadata) { { key: Faker::Lorem.word } }
+      let(:category) do
+        create :category, metadata: metadata, site: site
+      end
+      before { json[:metadata] = metadata }
 
-        it 'starts with three dash + json delimiter' do
-          expect(file).to start_with("---json\n")
-        end
-        it 'ends with three dash delimiter' do
-          expect(file).to end_with("---\n")
+      it { is_expected.to match(json) }
+    end
+
+    context 'with tags' do
+      let(:tags) { %W(#{Faker::Lorem.word} #{Faker::Lorem.word}) }
+      let(:category) do
+        create :category, tags: tags, site: site
+      end
+      before { json[:tags] = tags }
+
+      it { is_expected.to match(json) }
+    end
+
+    context 'with parent' do
+      let(:parent_category) { create :category }
+      let(:category) do
+        create :category, parent_category: parent_category, site: site
+      end
+
+      it { is_expected.to match(json) }
+    end
+
+    context 'category members' do
+      let(:count) { 3 }
+      let!(:category_members) do
+        create_list :category_member, count, category: category, site: site
+      end
+
+      it 'has all category_members where product is active' do
+        expect(subject[:products].size).to eq(count)
+      end
+
+      it 'has the local description' do
+        expect(subject[:products][0][:description])
+          .to eq(category_members.first.description)
+      end
+
+      it { is_expected.to match(json) }
+
+      context 'disabled products' do
+        before { category_members.sample.product.update(enabled: false) }
+        it 'has only category_members where product is active' do
+          expect(subject[:products].size).to eq(count - 1)
         end
       end
 
-      context 'json' do
-        let(:metadata) { nil }
-        let(:tags) { [] }
-        let(:subcategories) { false }
-        let!(:primary_category) do
-          if subcategories
-            return create :category, :with_subcategories, site: site,
-                                                          metadata: metadata,
-                                                          tags: tags
-          end
-          create :category, site: site, metadata: metadata, tags: tags
-        end
-        let(:file) do
-          File.read(File.join(categories_path, "#{primary_category.id}.json"))
-            .gsub(/---(json)?/, '')
+      context 'without local description' do
+        before { category_members.each { |cm| cm.update(description: nil) } }
+        it 'has products description' do
+          expect(subject[:products][0][:description])
+            .to eq(category_members.first.product.description)
         end
 
-        shared_examples 'common category fields' do
-          it { is_expected.to include(id: category.id) }
-          it { is_expected.to include(name: category.name) }
-          it { is_expected.to include(description: category.description) }
-          it { is_expected.to include(path: category.path) }
-          it { is_expected.to include(updated_at: category.updated_at.iso8601) }
+        it { is_expected.to match(json) }
+      end
 
-          it { is_expected.not_to include(:metadata) }
-          it { is_expected.not_to include(:tags) }
-          it { is_expected.not_to include(:subcategories) }
-        end
-
-        context 'category' do
-          let(:category) { primary_category }
-          subject do
-            JSON.parse(file, symbolize_names: true)
-          end
-
-          context 'without subcategories' do
-            before { PublishSiteJob.perform_now(site) }
-            include_examples 'common category fields'
-
-            context 'with metadata' do
-              let(:metadata) { { key: Faker::Lorem.word } }
-              it { is_expected.to include(metadata: metadata) }
-            end
-
-            context 'with tags' do
-              let(:tags) { %W(#{Faker::Lorem.word} #{Faker::Lorem.word}) }
-              it { is_expected.to include(tags: tags) }
-            end
-          end
-
-          context 'with subcategories' do
-            let(:subcategories) { true }
-            before(:each) do
-              category.subcategories.last.update!(enabled: false)
-              PublishSiteJob.perform_now(site)
-            end
-
-            it { is_expected.to include(:subcategories) }
-
-            it 'includes all active subcategories' do
-              expect(subject[:subcategories].length)
-                .to eq(category.subcategories.length - 1)
-            end
-          end
-
-          context 'with products' do
-            let!(:category_members) do
-              create_list(:category_member, 5, category: category, site: site)
-            end
-
-            before(:each) do
-              category.category_members.last.product.update!(enabled: false)
-              PublishSiteJob.perform_now(site)
-            end
-
-            it { is_expected.to include(:products) }
-
-            it 'includes all active products' do
-              expect(subject[:products].length)
-                .to eq(category.category_members.length - 1)
-            end
+      context 'with product images' do
+        before do
+          category_members.each do |cm|
+            create :image_instance, imageable: cm, site: site
           end
         end
 
-        context 'subcategory' do
-          let(:subcategories) { true }
-          let(:json) do
-            JSON.parse(file, symbolize_names: true)
-          end
+        it 'has image json' do
+          expect(subject[:products].sample).to have_key(:image)
+        end
+      end
 
-          let(:category) { primary_category.subcategories.first }
-          subject { json[:subcategories].first }
-
-          before { PublishSiteJob.perform_now(site) }
-
-          include_examples 'common category fields'
-          it { is_expected.to include(parent: primary_category.id) }
+      context 'with product metadata' do
+        let(:metadata) { { key: Faker::Lorem.word } }
+        let!(:category_members) do
+          create_list :category_member, count, category: category, site: site
+        end
+        before do
+          category_members.each { |cm| cm.product.update!(metadata: metadata) }
+          json[:products].each { |p| p[:metadata] = metadata }
         end
 
-        context 'products' do
-          let(:description) { Faker::Lorem.sentence }
-          let(:category) { primary_category }
-          let(:p) do
-            FactoryGirl.create(:product, site: site,
-                                         metadata: metadata,
-                                         tags: tags)
-          end
-          let!(:cm) do
-            create(:category_member, category: category,
-                                     product: p,
-                                     description: description,
-                                     site: site)
-          end
-          let(:json) do
-            JSON.parse(file, symbolize_names: true)
-          end
-          subject { json[:products].first }
+        it { is_expected.to match(json) }
+      end
 
-          before { PublishSiteJob.perform_now(site) }
+      context 'with product tags' do
+        let(:tags) { %W(#{Faker::Lorem.word} #{Faker::Lorem.word}) }
+        let!(:category_members) do
+          create_list :category_member, 3, category: category, site: site
+        end
+        before do
+          category_members.each { |cm| cm.product.update!(tags: tags) }
+          json[:products].each { |p| p[:tags] = tags }
+        end
 
-          it { is_expected.to include(id: cm.id) }
-          it { is_expected.to include(product_id: p.id) }
-          it { is_expected.to include(slug: p.slug) }
-          it { is_expected.to include(currency: p.currency) }
-          it { is_expected.to include(weight: p.weight) }
-          it { is_expected.to include(price_cents: p.price.cents) }
-          it { is_expected.to include(description: cm.description) }
-          it { is_expected.not_to include(tags: tags) }
-          it 'is expected to have an image'
+        it { is_expected.to match(json) }
+      end
+    end
 
-          context 'with metadata' do
-            let(:metadata) { { key: Faker::Lorem.word } }
-            it { is_expected.to include(metadata: metadata) }
-          end
+    context 'subcategories' do
+      let(:count) { 4 }
+      let(:category) do
+        create :category, :with_subcategories, site: site
+      end
 
-          context 'with tags' do
-            let(:tags) { %W(#{Faker::Lorem.word} #{Faker::Lorem.word}) }
-            it { is_expected.to include(tags: tags) }
-          end
+      it 'has all active subcategories' do
+        expect(subject[:subcategories].size).to eq(count)
+      end
 
-          context 'without specific descriptrion' do
-            let(:description) { nil }
-            it { is_expected.to include(description: p.description) }
-          end
+      it { is_expected.to match(json) }
+
+      context 'disabled subcategories' do
+        before do
+          category.subcategories.sample.update(enabled: false)
+        end
+
+        it 'has only active subcategories' do
+          expect(subject[:subcategories].size).to eq(count - 1)
         end
       end
     end

@@ -28,7 +28,7 @@ RSpec.describe Image, type: :model, site_scoped: true do
     it { is_expected.to validate_presence_of :description }
 
     context 'instance validations' do
-      subject { create :image, :with_image_files }
+      subject { create :image }
       it { is_expected.to be_valid }
 
       it 'is invalid without default_image' do
@@ -45,7 +45,7 @@ RSpec.describe Image, type: :model, site_scoped: true do
     end
 
     context 'image_files association extensions' do
-      subject { create :image, :with_image_files }
+      subject { create :image }
 
       describe '#base_image' do
         let(:image_file) { subject.image_files.last }

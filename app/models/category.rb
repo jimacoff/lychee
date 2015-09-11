@@ -14,6 +14,7 @@ class Category < ActiveRecord::Base
   valhammer
 
   scope :primary, -> { where(parent_category: nil) }
+  scope :enabled, -> { where(enabled: true) }
 
   def render
   end

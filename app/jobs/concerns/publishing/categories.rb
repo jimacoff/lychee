@@ -56,12 +56,17 @@ module Publishing
       json.call(p, :name, :slug, :currency, :weight)
       json.product_id p.id
       json.price_cents p.price.cents
+      json.description(cm.description || p.description)
 
+      category_member_image(json, cm)
       category_member_optional_fields(json, cm, p)
     end
 
-    def category_member_optional_fields(json, cm, p)
-      json.description(cm.description || p.description)
+    def category_member_image(json, cm)
+      image_instance(json, cm.image_instance) if cm.image_instance.present?
+    end
+
+    def category_member_optional_fields(json, _cm, p)
       json.tags p.tags unless p.tags.empty?
       json.metadata p.metadata if p.metadata
     end

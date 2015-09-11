@@ -7,6 +7,7 @@ class PublishSiteJob < ActiveJob::Base
   END_JSON_DELIMITER = '---'.freeze
 
   include Publishing::Categories
+  include Publishing::Images
 
   def perform(site)
     @site = site
