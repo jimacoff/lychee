@@ -23,5 +23,7 @@ vendor/assets/frontend/*
 
 models.yml
 
+config/zepily.yml
+
 # these should all be checked in to normalise the environment:
 # Gemfile.lock, .ruby-version, .ruby-gemset
