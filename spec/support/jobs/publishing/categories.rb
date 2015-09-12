@@ -43,11 +43,6 @@ RSpec.shared_examples 'jobs::publishing::categories' do
     subject { JSON.parse(builder, symbolize_names: true) }
 
     context 'file set' do
-      FakeFS::FileSystem.clone(Rails.root.join('app'))
-      FakeFS::FileSystem.clone(Rails.root.join('config'))
-      FakeFS::FileSystem.clone(Rails.root.join('lib'))
-      FakeFS::FileSystem.clone(Rails.root.join('spec'))
-
       let(:enabled_category_count) { 5 }
       before do
         create_list(:category, enabled_category_count)
