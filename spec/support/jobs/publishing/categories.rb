@@ -105,7 +105,7 @@ RSpec.shared_examples 'jobs::publishing::categories' do
     end
 
     context 'with tags' do
-      let(:tags) { %W(#{Faker::Lorem.word} #{Faker::Lorem.word}) }
+      let(:tags) { Faker::Lorem.words(2) }
       let(:category) do
         create :category, tags: tags, site: site
       end
@@ -183,7 +183,7 @@ RSpec.shared_examples 'jobs::publishing::categories' do
       end
 
       context 'with product tags' do
-        let(:tags) { %W(#{Faker::Lorem.word} #{Faker::Lorem.word}) }
+        let(:tags) { Faker::Lorem.words(2) }
         let!(:category_members) do
           create_list :category_member, 3, category: category, site: site
         end

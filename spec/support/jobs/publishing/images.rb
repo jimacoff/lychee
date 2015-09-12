@@ -59,7 +59,7 @@ RSpec.shared_examples 'jobs::publishing::images' do
       end
 
       context 'with tags' do
-        let(:tags) { %W(#{Faker::Lorem.word} #{Faker::Lorem.word}) }
+        let(:tags) { Faker::Lorem.words(2) }
         let(:image) { create(:image, tags: tags) }
         before { json[:image][:tags] = tags }
 
