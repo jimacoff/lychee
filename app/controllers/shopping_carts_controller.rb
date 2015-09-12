@@ -17,7 +17,8 @@ class ShoppingCartsController < ApplicationController
 
   def operations
     params.require(:shopping_cart).map do |op|
-      op.permit(:product_id, :quantity, :item_uuid)
+      op.permit(:product_id, :variant_id, :quantity, :item_uuid)
+        .merge(metadata: op[:metadata].try(:to_unsafe_hash))
     end
   end
 end
