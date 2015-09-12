@@ -72,8 +72,7 @@ RSpec.describe Category, type: :model, site_scoped: true do
     end
 
     context 'with one or more parent categories' do
-      it 'builds path as a tree
-      '
+      it 'builds path as a tree'
     end
   end
 end
