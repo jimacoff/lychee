@@ -42,7 +42,7 @@ class ShoppingCart < ActiveRecord::Base
     overrides = { item_uuid: (prev.try(:item_uuid) || SecureRandom.uuid) }
     overrides[:quantity] = Integer(opts[:quantity]) + prev.quantity if prev
 
-    shopping_cart_operations.create!(opts.merge(overrides))
+    apply_operation(prev, opts.merge(overrides))
   end
 
   def apply_item_update(opts)
@@ -51,6 +51,11 @@ class ShoppingCart < ActiveRecord::Base
 
     return nil unless prev.try(:matches_commodity?, opts)
 
-    shopping_cart_operations.create!(opts)
+    apply_operation(prev, opts)
+  end
+
+  def apply_operation(prev, attrs)
+    return prev if prev && attrs.all? { |k, v| prev[k] == v }
+    shopping_cart_operations.create!(attrs)
   end
 end

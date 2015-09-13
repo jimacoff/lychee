@@ -142,6 +142,14 @@ RSpec.describe ShoppingCart, type: :model, site_scoped: true do
             let(:op_attrs) { attrs.merge(product: other_product, variant: nil) }
             include_examples 'force a new uuid'
           end
+
+          context 'with no change' do
+            let(:op_attrs) { attrs }
+
+            it 'does not create an operation' do
+              expect { run }.not_to change { operations.count }
+            end
+          end
         end
 
         context 'with a nonexistent item' do
