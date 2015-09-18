@@ -54,6 +54,8 @@ RSpec.describe Product, type: :model, site_scoped: true do
     it { is_expected.to have_one :inventory }
     it { is_expected.to have_many :category_members }
     it { is_expected.to have_many :categories }
+    it { is_expected.to have_many :image_instances }
+    it { is_expected.to have_many :images }
   end
 
   context 'validations' do

@@ -13,6 +13,9 @@ class Product < ActiveRecord::Base
   has_many :categories, through: :category_members
   has_one :inventory
 
+  has_many :image_instances, as: :imageable
+  has_many :images, through: :image_instances
+
   monies [{ field: :price }]
 
   belongs_to :tax_override, class_name: 'TaxCategory',
