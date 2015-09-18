@@ -3,12 +3,17 @@ defaults: &defaults
     paths:
       base: /tmp
       categories: /categories
+      products: /products
 
 development:
   <<: *defaults
 
 test:
-  <<: *defaults
+  publishing:
+    paths:
+      base: /tmp/zw-data        # This will be created AND deleted by spec runner
+      categories: /categories
+      products: /products
 
 production:
   <<: *defaults

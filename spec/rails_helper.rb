@@ -1,11 +1,10 @@
 ENV['RAILS_ENV'] ||= 'test'
-require 'spec_helper'
-require 'factory_girl_rails'
 require File.expand_path('../../config/environment', __FILE__)
+require 'spec_helper'
 require 'rspec/rails'
 require 'capybara/rspec'
 require 'capybara/poltergeist'
-require 'fakefs/spec_helpers'
+require 'factory_girl_rails'
 
 Dir[Rails.root.join('spec/support/**/*.rb')].each { |f| require f }
 
@@ -40,10 +39,16 @@ RSpec.configure do |config|
   config.around(:example, :site_scoped) { |e| with_spec_site { e.run } }
 
   config.before(:suite) { DatabaseCleaner.clean_with(:truncation) }
+
   config.around do |example|
     strategies = Hash.new(:transaction).merge(feature: :truncation)
     DatabaseCleaner.strategy = strategies[example.metadata[:type]]
     DatabaseCleaner.cleaning { example.run }
+  end
+
+  config.after(:suite) do
+    paths = Rails.configuration.zepily.publishing.paths
+    FileUtils.rm_rf(paths.base)
   end
 
   config.around(:example, :debug) do |example|
@@ -58,9 +63,3 @@ RSpec.configure do |config|
 
   Capybara.default_driver = Capybara.javascript_driver = :poltergeist
 end
-
-FakeFS::FileSystem.clone(Rails.root.join('app'))
-FakeFS::FileSystem.clone(Rails.root.join('config'))
-FakeFS::FileSystem.clone(Rails.root.join('lib'))
-FakeFS::FileSystem.clone(Rails.root.join('public'))
-FakeFS::FileSystem.clone(Rails.root.join('spec'))
