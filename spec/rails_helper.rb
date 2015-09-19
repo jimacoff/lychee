@@ -27,7 +27,7 @@ end
 
 RSpec.configure do |config|
   config.fixture_path = "#{::Rails.root}/spec/fixtures"
-  config.use_transactional_fixtures = true
+  config.use_transactional_fixtures = false
 
   # Use FactoryGirl
   config.include FactoryGirl::Syntax::Methods
@@ -37,6 +37,13 @@ RSpec.configure do |config|
   # Supply a site scope when requested
   config.include SpecSite, site_scoped: true
   config.around(:example, :site_scoped) { |e| with_spec_site { e.run } }
+
+  config.before(:suite) { DatabaseCleaner.clean_with(:truncation) }
+  config.around do |example|
+    strategies = Hash.new(:transaction).merge(feature: :truncation)
+    DatabaseCleaner.strategy = strategies[example.metadata[:type]]
+    DatabaseCleaner.cleaning { example.run }
+  end
 
   config.around(:example, :debug) do |example|
     old = ActiveRecord::Base.logger
