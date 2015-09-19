@@ -36,26 +36,17 @@ RSpec.describe ImageFile, type: :model, site_scoped: true do
     end
 
     context 'unique image files' do
-      let(:image) { create :image, :with_image_files }
-      let(:image_file1) { image.image_files.first }
-      let(:image_file2) { image.image_files.last }
+      let(:image) { create :image }
+      let(:image_file) { image.image_files.srcset.first }
 
       it 'validates that only one image_file is set to default' do
-        image_file1.default_image = true
-        image_file1.save!
-        expect(image_file1).to be_valid
-
-        image_file2.default_image = true
-        expect(image_file2).not_to be_valid
+        image_file.update(default_image: true)
+        expect(image_file).not_to be_valid
       end
 
       it 'validates that only one image_file is set to original' do
-        image_file1.original_image = true
-        image_file1.save!
-        expect(image_file1).to be_valid
-
-        image_file2.original_image = true
-        expect(image_file2).not_to be_valid
+        image_file.update(original_image: true)
+        expect(image_file).not_to be_valid
       end
     end
   end

@@ -5,6 +5,7 @@ require File.expand_path('../../config/environment', __FILE__)
 require 'rspec/rails'
 require 'capybara/rspec'
 require 'capybara/poltergeist'
+require 'fakefs/spec_helpers'
 
 Dir[Rails.root.join('spec/support/**/*.rb')].each { |f| require f }
 
@@ -57,3 +58,9 @@ RSpec.configure do |config|
 
   Capybara.default_driver = Capybara.javascript_driver = :poltergeist
 end
+
+FakeFS::FileSystem.clone(Rails.root.join('app'))
+FakeFS::FileSystem.clone(Rails.root.join('config'))
+FakeFS::FileSystem.clone(Rails.root.join('lib'))
+FakeFS::FileSystem.clone(Rails.root.join('public'))
+FakeFS::FileSystem.clone(Rails.root.join('spec'))

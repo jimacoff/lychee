@@ -12,11 +12,10 @@ gem 'stringex', '~> 2.5'
 
 gem 'paper_trail', '~> 4.0'
 gem 'workflow'
-
 gem 'valhammer', '~> 0.1'
-
-# JSON
 gem 'json-schema', '~> 2.5'
+gem 'jbuilder', '~> 2.3'
+gem 'recursive-open-struct', '~> 0.6'
 
 # Security
 # Use ActiveModel has_secure_password
@@ -48,6 +47,7 @@ group :development, :test do
   gem 'pry-byebug'
   gem 'brakeman'
   gem 'temping'
+  gem 'fakefs', require: 'fakefs/safe'
   gem 'database_cleaner'
 
   gem 'capybara'
