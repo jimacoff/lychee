@@ -11,7 +11,19 @@ Dir[Rails.root.join('spec/support/**/*.rb')].each { |f| require f }
 # Checks for pending migrations before tests are run.
 ActiveRecord::Migration.maintain_test_schema!
 
-spec_site = spec_tenant = nil
+module SpecSite
+  def with_spec_site
+    tenant = Tenant.find_by(identifier: '127.0.0.1') ||
+             FactoryGirl.create(:tenant, identifier: '127.0.0.1')
+
+    ActionController::TestRequest::DEFAULT_ENV
+      .merge!('HTTP_HOST' => tenant.identifier)
+
+    Site.current = tenant.site
+    yield
+    Site.current = nil
+  end
+end
 
 RSpec.configure do |config|
   config.fixture_path = "#{::Rails.root}/spec/fixtures"
@@ -22,24 +34,9 @@ RSpec.configure do |config|
 
   config.infer_spec_type_from_file_location!
 
-  config.before(:suite) do
-    spec_site = FactoryGirl.create(:site)
-    spec_tenant = FactoryGirl.create(:tenant, site: spec_site)
-
-    ActionController::TestRequest::DEFAULT_ENV
-      .merge!('HTTP_HOST' => spec_tenant.identifier)
-  end
-
   # Supply a site scope when requested
-  config.around(:example, :site_scoped) do |example|
-    Site.current = spec_site
-    example.run
-    Site.current = nil
-  end
-
-  config.after(:suite) do
-    spec_site.delete if spec_site
-  end
+  config.include SpecSite, site_scoped: true
+  config.around(:example, :site_scoped) { |e| with_spec_site { e.run } }
 
   config.around(:example, :debug) do |example|
     old = ActiveRecord::Base.logger
