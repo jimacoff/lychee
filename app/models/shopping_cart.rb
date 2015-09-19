@@ -54,7 +54,7 @@ class ShoppingCart < ActiveRecord::Base
   end
 
   def apply_operation(prev, attrs)
-    return prev if prev && attrs.all? { |k, v| prev[k] == v }
+    return prev if prev && attrs.all? { |k, v| prev[k].to_s == v.to_s }
     shopping_cart_operations.create!(attrs)
   end
 end

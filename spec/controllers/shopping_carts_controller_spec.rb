@@ -115,6 +115,13 @@ RSpec.describe ShoppingCartsController, type: :controller, site_scoped: true do
               expect { run }.to change { cart.reload.contents }.to be_empty
             end
           end
+
+          context 'updating the cart to the same contents' do
+            it 'creates no new operations' do
+              run
+              expect { run }.not_to change { operations.length }
+            end
+          end
         end
       end
     end
