@@ -2,6 +2,8 @@ class Variation < ActiveRecord::Base
   include ParentSite
   include Metadata
 
+  enum render_as: [:radio, :drop_down]
+
   belongs_to :product
   belongs_to :trait
 
