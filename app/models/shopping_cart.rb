@@ -37,7 +37,7 @@ class ShoppingCart < ActiveRecord::Base
   private
 
   def apply_item_add(opts)
-    prev = shopping_cart_operations.by_commodity(opts).order('id desc').first
+    prev = shopping_cart_operations.by_commodity(opts).last
 
     overrides = { item_uuid: (prev.try(:item_uuid) || SecureRandom.uuid) }
     overrides[:quantity] = Integer(opts[:quantity]) + prev.quantity if prev
@@ -46,8 +46,7 @@ class ShoppingCart < ActiveRecord::Base
   end
 
   def apply_item_update(opts)
-    prev = shopping_cart_operations.by_uuid(opts[:item_uuid])
-           .order('id desc').first
+    prev = shopping_cart_operations.by_uuid(opts[:item_uuid]).last
 
     return nil unless prev.try(:matches_commodity?, opts)
 

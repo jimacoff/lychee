@@ -12,7 +12,7 @@ RSpec.describe ShoppingCartsController, type: :controller, site_scoped: true do
 
   context 'patch :update' do
     def run
-      patch :update, shopping_cart: updates
+      patch :update, operations: updates
     end
 
     shared_context 'shopping cart updates' do
@@ -39,6 +39,11 @@ RSpec.describe ShoppingCartsController, type: :controller, site_scoped: true do
 
           it 'creates an operation' do
             expect { run }.to change(ShoppingCartOperation, :count).by(1)
+          end
+
+          it 'redirects to the shopping cart' do
+            run
+            expect(response).to redirect_to(shopping_cart_path)
           end
 
           it 'updates the cart contents' do
@@ -146,6 +151,34 @@ RSpec.describe ShoppingCartsController, type: :controller, site_scoped: true do
       let(:commodity_item_attrs) { { variant: variant, metadata: metadata } }
 
       include_context 'shopping cart updates'
+    end
+  end
+
+  context 'get :show' do
+    let(:cart) { create(:shopping_cart) }
+
+    before { get :show }
+    subject { response }
+
+    it { is_expected.to have_http_status(:ok) }
+    it { is_expected.to render_template('shopping_carts/show') }
+
+    it 'assigns the cart' do
+      expect(assigns[:cart]).to eq(cart)
+    end
+
+    context 'with a non-empty cart' do
+      let(:products) { create_list(:product, 3) }
+
+      let(:cart) do
+        create(:shopping_cart).tap do |cart|
+          products.each { |p| cart.apply(product_id: p.id, quantity: 1) }
+        end
+      end
+
+      it 'assigns the contents' do
+        expect(assigns[:contents]).to eq(cart.contents.values)
+      end
     end
   end
 end

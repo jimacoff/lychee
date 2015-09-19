@@ -1,9 +1,13 @@
 class ShoppingCartsController < ApplicationController
   def update
     operations.each { |op| cart.apply(op) }
-    render nothing: true
+    redirect_to :shopping_cart
   rescue ActionController::ParameterMissing
     render nothing: true
+  end
+
+  def show
+    @contents = cart.contents.values
   end
 
   private
@@ -16,7 +20,7 @@ class ShoppingCartsController < ApplicationController
   end
 
   def operations
-    params.require(:shopping_cart).map do |op|
+    params.require(:operations).map do |op|
       op.permit(:product_id, :variant_id, :quantity, :item_uuid)
         .merge(metadata: op[:metadata].try(:to_unsafe_hash))
     end

@@ -1,0 +1,28 @@
+h1 Totes production ready shopping cart page
+
+= form_tag({}, method: :patch) do
+  table#cart
+    tbody
+      - @contents.each do |entry|
+        = fields_for('operations[]', []) do |f|
+          - product = entry[:product]
+          tr
+            td
+              = f.hidden_field(:item_uuid, value: entry[:item_uuid])
+              = f.hidden_field(:product_id, value: product.id)
+              = product.description
+            td= f.text_field(:quantity, value: entry[:quantity], size: 3)
+  button.btn(type='submit') Update Cart
+
+= form_tag({}, method: :patch) do
+  h2 Adding a thing to the cart
+
+  .field
+    = label_tag :'operations[][product_id]', 'Product ID'
+    = text_field_tag :'operations[][product_id]'
+
+  .field
+    = label_tag :'operations[][quantity]', 'Quantity'
+    = text_field_tag :'operations[][quantity]'
+
+  button.btn(type='submit') Add to Cart
