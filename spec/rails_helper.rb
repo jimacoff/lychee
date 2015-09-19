@@ -3,6 +3,8 @@ require 'spec_helper'
 require 'factory_girl_rails'
 require File.expand_path('../../config/environment', __FILE__)
 require 'rspec/rails'
+require 'capybara/rspec'
+require 'capybara/poltergeist'
 
 Dir[Rails.root.join('spec/support/**/*.rb')].each { |f| require f }
 
@@ -48,4 +50,6 @@ RSpec.configure do |config|
       ActiveRecord::Base.logger = old
     end
   end
+
+  Capybara.default_driver = Capybara.javascript_driver = :poltergeist
 end

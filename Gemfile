@@ -49,4 +49,8 @@ group :development, :test do
   gem 'brakeman'
   gem 'temping'
   gem 'database_cleaner'
+
+  gem 'capybara'
+  gem 'poltergeist'
+  gem 'phantomjs', require: 'phantomjs/poltergeist'
 end
