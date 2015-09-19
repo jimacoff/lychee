@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20150902104513) do
+ActiveRecord::Schema.define(version: 20150919032557) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -335,13 +335,14 @@ ActiveRecord::Schema.define(version: 20150902104513) do
   add_index "shipping_rates", ["site_id"], name: "index_shipping_rates_on_site_id", using: :btree
 
   create_table "shopping_cart_operations", id: :bigserial, force: :cascade do |t|
-    t.integer "shopping_cart_id", limit: 8, null: false
-    t.integer "product_id",       limit: 8
-    t.integer "variant_id",       limit: 8
-    t.uuid    "item_uuid",                  null: false
-    t.integer "quantity",                   null: false
-    t.hstore  "metadata"
-    t.integer "site_id",          limit: 8, null: false
+    t.integer  "shopping_cart_id", limit: 8, null: false
+    t.integer  "product_id",       limit: 8
+    t.integer  "variant_id",       limit: 8
+    t.uuid     "item_uuid",                  null: false
+    t.integer  "quantity",                   null: false
+    t.hstore   "metadata"
+    t.integer  "site_id",          limit: 8, null: false
+    t.datetime "created_at",                 null: false
   end
 
   add_index "shopping_cart_operations", ["shopping_cart_id"], name: "index_shopping_cart_operations_on_shopping_cart_id", using: :btree
