@@ -29,8 +29,7 @@ module Publishing
     end
 
     def category_optional_fields(json, c)
-      json.tags c.tags unless c.tags.empty?
-      json.metadata c.metadata if c.metadata
+      optional_fields(json, c, [:tags, :metadata])
       json.parent c.parent_category.id if c.parent_category
     end
 
@@ -59,16 +58,11 @@ module Publishing
       json.description(cm.description || p.description)
 
       category_member_image(json, cm)
-      category_member_optional_fields(json, cm, p)
+      optional_fields(json, p, [:tags, :metadata])
     end
 
     def category_member_image(json, cm)
       image_instance(json, cm.image_instance) if cm.image_instance.present?
-    end
-
-    def category_member_optional_fields(json, _cm, p)
-      json.tags p.tags unless p.tags.empty?
-      json.metadata p.metadata if p.metadata
     end
 
     def write_category(c, frontmatter)
