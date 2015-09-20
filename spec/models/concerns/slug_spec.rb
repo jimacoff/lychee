@@ -1,7 +1,7 @@
 require 'rails_helper'
 
 RSpec.describe Slug do
-  before(:all) do
+  before do
     Temping.create :slug_model do
       include Slug
 
@@ -13,12 +13,14 @@ RSpec.describe Slug do
     end
   end
 
-  context 'validations' do
-    it { is_expected.to validate_presence_of(:name) }
-  end
+  after { Temping.teardown }
 
   subject { SlugModel.new(name: Faker::Lorem.sentence) }
   let(:specified_slug) { Faker::Lorem.sentence.to_url }
+
+  context 'validations' do
+    it { is_expected.to validate_presence_of(:name) }
+  end
 
   describe '#slug' do
     it 'provides generated_slug by default' do

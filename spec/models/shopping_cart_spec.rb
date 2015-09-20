@@ -142,6 +142,14 @@ RSpec.describe ShoppingCart, type: :model, site_scoped: true do
             let(:op_attrs) { attrs.merge(product: other_product, variant: nil) }
             include_examples 'force a new uuid'
           end
+
+          context 'with no change' do
+            let(:op_attrs) { attrs }
+
+            it 'does not create an operation' do
+              expect { run }.not_to change { operations.count }
+            end
+          end
         end
 
         context 'with a nonexistent item' do
@@ -241,6 +249,14 @@ RSpec.describe ShoppingCart, type: :model, site_scoped: true do
         base.merge(quantity: 1, metadata: { 'x' => '1' }),
         base.merge(quantity: 2, metadata: { 'y' => '2' })
       )
+    end
+
+    it 'removes items with no quantity' do
+      product = create(:product)
+
+      create_op(product_id: product.id, quantity: 0)
+
+      expect(subject.contents).to be_empty
     end
 
     it 'queries the shopping cart efficiently' do

@@ -1,13 +1,15 @@
 require 'rails_helper'
 
 RSpec.describe Content do
-  before(:all) do
+  before do
     Temping.create :content_model do
       include Content
     end
   end
 
-  let(:subject) { ContentModel.new }
+  after { Temping.teardown }
+
+  subject { ContentModel.new }
 
   context 'relationships' do
     it { is_expected.to have_many(:image_instances) }

@@ -219,4 +219,40 @@ RSpec.describe ShoppingCartOperation, type: :model, site_scoped: true do
       end
     end
   end
+
+  context '#item_attrs' do
+    context 'with a product' do
+      let(:product) { create(:product) }
+
+      let(:operation) do
+        create(:shopping_cart_operation, metadata: { 'a' => 'b' },
+                                         product: product)
+      end
+
+      subject { operation.item_attrs }
+
+      it { is_expected.to include(product: operation.product) }
+      it { is_expected.not_to have_key(:variant) }
+      it { is_expected.to include(item_uuid: operation.item_uuid) }
+      it { is_expected.to include(quantity: operation.quantity) }
+      it { is_expected.to include(metadata: operation.metadata) }
+    end
+
+    context 'with a variant' do
+      let(:variant) { create(:variant) }
+
+      let(:operation) do
+        create(:shopping_cart_operation, metadata: { 'a' => 'b' },
+                                         variant: variant)
+      end
+
+      subject { operation.item_attrs }
+
+      it { is_expected.not_to have_key(:product) }
+      it { is_expected.to include(variant: operation.variant) }
+      it { is_expected.to include(item_uuid: operation.item_uuid) }
+      it { is_expected.to include(quantity: operation.quantity) }
+      it { is_expected.to include(metadata: operation.metadata) }
+    end
+  end
 end

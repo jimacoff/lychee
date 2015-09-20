@@ -47,6 +47,10 @@ group :development, :test do
   gem 'pry-byebug'
   gem 'brakeman'
   gem 'temping'
-  gem 'database_cleaner'
   gem 'fakefs', require: 'fakefs/safe'
+  gem 'database_cleaner'
+
+  gem 'capybara'
+  gem 'poltergeist'
+  gem 'phantomjs', require: 'phantomjs/poltergeist'
 end

@@ -28,29 +28,33 @@ class ShoppingCart < ActiveRecord::Base
 
   def contents
     shopping_cart_operations.includes(:product, :variant).reduce({}) do |a, e|
-      item = { product: e.product, variant: e.variant, item_uuid: e.item_uuid,
-               quantity: e.quantity, metadata: e.metadata }
-      a.merge(e.item_uuid => item.compact)
+      next a.except(e.item_uuid) if e.quantity.zero?
+
+      a.merge(e.item_uuid => e.item_attrs)
     end
   end
 
   private
 
   def apply_item_add(opts)
-    prev = shopping_cart_operations.by_commodity(opts).order('id desc').first
+    prev = shopping_cart_operations.by_commodity(opts).last
 
     overrides = { item_uuid: (prev.try(:item_uuid) || SecureRandom.uuid) }
-    overrides[:quantity] = opts[:quantity] + prev.quantity if prev
+    overrides[:quantity] = Integer(opts[:quantity]) + prev.quantity if prev
 
-    shopping_cart_operations.create!(opts.merge(overrides))
+    apply_operation(prev, opts.merge(overrides))
   end
 
   def apply_item_update(opts)
-    prev = shopping_cart_operations.by_uuid(opts[:item_uuid])
-           .order('id desc').first
+    prev = shopping_cart_operations.by_uuid(opts[:item_uuid]).last
 
     return nil unless prev.try(:matches_commodity?, opts)
 
-    shopping_cart_operations.create!(opts)
+    apply_operation(prev, opts)
+  end
+
+  def apply_operation(prev, attrs)
+    return prev if prev && attrs.all? { |k, v| prev[k].to_s == v.to_s }
+    shopping_cart_operations.create!(attrs)
   end
 end

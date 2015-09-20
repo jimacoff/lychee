@@ -2,7 +2,7 @@ require 'rails_helper'
 require 'json'
 
 RSpec.describe Specification do
-  before(:all) do
+  before do
     Temping.create :specification_model do
       include Specification
 
@@ -11,6 +11,8 @@ RSpec.describe Specification do
       end
     end
   end
+
+  after { Temping.teardown }
 
   subject { SpecificationModel.new }
 
