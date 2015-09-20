@@ -1,7 +1,7 @@
 require 'rails_helper'
 
 RSpec.describe Taggable, site_scoped: true do
-  before(:all) do
+  before do
     Temping.create :taggable_model do
       include Taggable
       include ParentSite
@@ -12,6 +12,8 @@ RSpec.describe Taggable, site_scoped: true do
       end
     end
   end
+
+  after { Temping.teardown }
 
   subject { TaggableModel.new }
 

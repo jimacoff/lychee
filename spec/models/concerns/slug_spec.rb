@@ -1,7 +1,7 @@
 require 'rails_helper'
 
 RSpec.describe Slug do
-  before(:all) do
+  before do
     Temping.create :slug_model do
       include Slug
 
@@ -12,6 +12,8 @@ RSpec.describe Slug do
       end
     end
   end
+
+  after { Temping.teardown }
 
   subject { SlugModel.new(name: Faker::Lorem.sentence) }
   let(:specified_slug) { Faker::Lorem.sentence.to_url }

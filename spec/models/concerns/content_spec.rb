@@ -1,11 +1,13 @@
 require 'rails_helper'
 
 RSpec.describe Content do
-  before(:all) do
+  before do
     Temping.create :content_model do
       include Content
     end
   end
+
+  after { Temping.teardown }
 
   subject { ContentModel.new }
 

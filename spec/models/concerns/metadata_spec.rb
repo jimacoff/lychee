@@ -1,7 +1,7 @@
 require 'rails_helper'
 
 RSpec.describe Metadata do
-  before(:all) do
+  before do
     Temping.create :metadata_model do
       include Metadata
 
@@ -10,6 +10,8 @@ RSpec.describe Metadata do
       end
     end
   end
+
+  after { Temping.teardown }
 
   let!(:key) { Faker::Lorem.word }
   let!(:value) { Faker::Lorem.sentence }
