@@ -52,11 +52,27 @@ ActiveRecord::Base.transaction do
     [[women, women_casual], womens_casual_color_trait, womens_casual_colors]
   ].each do |(categories, color_trait, color_trait_values)|
     # 5 Casual Shirts for each gender
-    (1..5).each do
-      name = "Casual #{Faker::Lorem.word} shirt"
-      desc = "A casual shirt made from 100% #{Faker::Lorem.word}"
+    (1..5).each do |i|
+      name = "Casual #{Faker::Lorem.word} shirt #{i}"
+      short_description = "A casual shirt made from 100% #{Faker::Lorem.word}"
+      desc = <<-EOF.strip_heredoc
+        <h2>#{Faker::Lorem.word}</h2>
+        <ol>
+          <li>Thing</li>
+          <li>Thing2</li>
+        </ol>
+
+        #{Faker::Lorem.paragraph}
+
+        #{Faker::Lorem.paragraph}
+
+        #{Faker::Lorem.paragraph}
+
+        #{Faker::Lorem.paragraph}
+      EOF
 
       product = Product.create!(name: name, description: desc,
+                                short_description: short_description,
                                 price: Faker::Number.number(6).to_i)
       categories.each do |c|
         product.category_members.create!(category: c, description: desc)

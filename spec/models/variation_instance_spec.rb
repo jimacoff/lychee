@@ -16,8 +16,6 @@ RSpec.describe VariationInstance, type: :model, site_scoped: true do
     it { is_expected.to have_db_column(:name).of_type(:string) }
     it { is_expected.to have_db_column(:description).of_type(:string) }
 
-    it { is_expected.to have_db_column(:render_as).of_type(:integer) }
-
     it 'should have non nullable column variation_id of type bigint' do
       expect(subject).to have_db_column(:variation_id)
         .of_type(:integer)
@@ -48,14 +46,6 @@ RSpec.describe VariationInstance, type: :model, site_scoped: true do
 
     it { is_expected.to validate_presence_of :name }
     it { is_expected.to validate_presence_of :description }
-    it { is_expected.to validate_presence_of :render_as }
-  end
-
-  context 'frontend rendering' do
-    it 'stores an enum to dictate html type' do
-      expect(subject).to define_enum_for(:render_as)
-        .with([:radio, :drop_down])
-    end
   end
 
   context 'allows users to choose this instance via image' do

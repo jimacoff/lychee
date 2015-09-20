@@ -4,7 +4,8 @@ FactoryGirl.define do
       "#{Faker::Commerce.product_name}#{n}"
     end
 
-    description { Faker::Lorem.sentence }
+    short_description { Faker::Lorem.sentence }
+    description { Faker::Lorem.paragraph }
     active true
 
     after(:build) do |p|
@@ -30,17 +31,17 @@ FactoryGirl.define do
         sizes = %w(small medium large)
         colors = %w(blue red green)
 
-        size_trait = Trait.create(name: 'Size',
-                                  display_name: Faker::Lorem.sentence,
-                                  default_values: sizes)
+        size_trait = create(:trait, name: 'Size',
+                                    display_name: Faker::Lorem.sentence,
+                                    default_values: sizes)
 
-        color_trait = Trait.create(name: 'Color',
-                                   display_name: Faker::Lorem.sentence,
-                                   default_values: colors)
+        color_trait = create(:trait, name: 'Color',
+                                     display_name: Faker::Lorem.sentence,
+                                     default_values: colors)
 
         # Product specific variations
-        var_size = Variation.create(order: 1, product: p, trait: size_trait)
-        var_color = Variation.create(order: 2, product: p, trait: color_trait)
+        var_size = create(:variation, order: 1, product: p, trait: size_trait)
+        var_color = create(:variation, order: 2, product: p, trait: color_trait)
 
         variation_instances = [size_trait.default_values,
                                color_trait.default_values].inject(&:product)
@@ -48,10 +49,12 @@ FactoryGirl.define do
         variation_instances.each do |vi|
           variant = create(:variant, product: p)
 
-          VariationInstance.create(variation: var_size, variant: variant,
-                                   value: vi[0])
-          VariationInstance.create(variation: var_color, variant: variant,
-                                   value: vi[1])
+          create :variation_instance, variation: var_size,
+                                      variant: variant,
+                                      value: vi[0]
+          create :variation_instance, variation: var_color,
+                                      variant: variant,
+                                      value: vi[1]
         end
       end
     end

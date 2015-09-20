@@ -13,6 +13,9 @@ class Product < ActiveRecord::Base
   has_many :categories, through: :category_members
   has_one :inventory
 
+  has_many :image_instances, as: :imageable
+  has_many :images, through: :image_instances
+
   monies [{ field: :price }]
 
   belongs_to :tax_override, class_name: 'TaxCategory',
@@ -38,9 +41,6 @@ class Product < ActiveRecord::Base
   def inventory_not_required
     return unless inventory.present? && variants.present?
     errors.add(:inventory, 'must not be provided if product defines variants')
-  end
-
-  def render
   end
 
   def path

@@ -19,6 +19,7 @@ RSpec.describe Product, type: :model, site_scoped: true do
 
   context 'table structure' do
     it { is_expected.to have_db_column(:name).of_type(:string) }
+    it { is_expected.to have_db_column(:short_description).of_type(:string) }
     it { is_expected.to have_db_column(:description).of_type(:text) }
     it { is_expected.to have_db_column(:generated_slug).of_type(:string) }
     it { is_expected.to have_db_column(:specified_slug).of_type(:string) }
@@ -54,10 +55,13 @@ RSpec.describe Product, type: :model, site_scoped: true do
     it { is_expected.to have_one :inventory }
     it { is_expected.to have_many :category_members }
     it { is_expected.to have_many :categories }
+    it { is_expected.to have_many :image_instances }
+    it { is_expected.to have_many :images }
   end
 
   context 'validations' do
     it { is_expected.to validate_presence_of :name }
+    it { is_expected.to validate_presence_of :short_description }
     it { is_expected.to validate_presence_of :description }
     it { is_expected.to validate_numericality_of(:weight).allow_nil }
 
@@ -111,10 +115,6 @@ RSpec.describe Product, type: :model, site_scoped: true do
     it 'has a unique tax_category' do
       expect(subject.tax_override).not_to eq(Site.current.primary_tax_category)
     end
-  end
-
-  describe '#render' do
-    it 'Not implemented.'
   end
 
   describe '#path' do

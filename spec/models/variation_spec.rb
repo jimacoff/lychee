@@ -18,6 +18,8 @@ RSpec.describe Variation, type: :model, site_scoped: true do
     end
     it { is_expected.to have_db_index(:product_id) }
 
+    it { is_expected.to have_db_column(:render_as).of_type(:integer) }
+
     it 'should have non nullable column trait_id of type bigint' do
       expect(subject).to have_db_column(:trait_id)
         .of_type(:integer)
@@ -38,6 +40,7 @@ RSpec.describe Variation, type: :model, site_scoped: true do
     it { is_expected.to validate_presence_of :trait }
     it { is_expected.to validate_presence_of(:order) }
     it { is_expected.to validate_numericality_of(:order).only_integer }
+    it { is_expected.to validate_presence_of :render_as }
   end
 
   it 'only allow integers for order which are greater than or equal to 0' do
@@ -75,6 +78,13 @@ RSpec.describe Variation, type: :model, site_scoped: true do
         expect(variation2).to be_valid
         expect(variation3).to be_valid
       end
+    end
+  end
+
+  context 'frontend rendering' do
+    it 'stores an enum to dictate html type' do
+      expect(subject).to define_enum_for(:render_as)
+        .with([:radio, :drop_down])
     end
   end
 end
