@@ -55,7 +55,7 @@ ActiveRecord::Base.transaction do
     (1..5).each do |i|
       name = "Casual #{Faker::Lorem.word} shirt #{i}"
       short_description = "A casual shirt made from 100% #{Faker::Lorem.word}"
-      desc = "
+      desc = <<-EOF.strip_heredoc
         <h2>#{Faker::Lorem.word}</h2>
         <ol>
           <li>Thing</li>
@@ -69,7 +69,7 @@ ActiveRecord::Base.transaction do
         #{Faker::Lorem.paragraph}
 
         #{Faker::Lorem.paragraph}
-      "
+      EOF
 
       product = Product.create!(name: name, description: desc,
                                 short_description: short_description,
