@@ -11,7 +11,8 @@ development:
 test:
   publishing:
     paths:
-      base: /tmp/zw-data        # This will be created AND deleted by spec runner
+      # This will be created AND deleted by spec runner
+      base: <%= Rails.root.join('tmp', 'spec') %>
       categories: /categories
       products: /products
 
