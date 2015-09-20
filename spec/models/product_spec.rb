@@ -117,10 +117,6 @@ RSpec.describe Product, type: :model, site_scoped: true do
     end
   end
 
-  describe '#render' do
-    it 'Not implemented.'
-  end
-
   describe '#path' do
     subject { create(:standalone_product) }
 

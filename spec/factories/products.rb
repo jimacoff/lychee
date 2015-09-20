@@ -5,7 +5,7 @@ FactoryGirl.define do
     end
 
     short_description { Faker::Lorem.sentence }
-    description { Faker::Lorem.paragraphs(4) }
+    description { Faker::Lorem.paragraph }
     active true
 
     after(:build) do |p|

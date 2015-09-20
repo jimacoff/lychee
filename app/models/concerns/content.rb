@@ -12,10 +12,6 @@ module Content
   # has_many :media_instances
   # has_many :medias, through: :media_instances
 
-  def render
-    fail 'not implemented'
-  end
-
   def path
     fail 'not implemented'
   end

@@ -43,9 +43,6 @@ class Product < ActiveRecord::Base
     errors.add(:inventory, 'must not be provided if product defines variants')
   end
 
-  def render
-  end
-
   def path
     "#{site.preferences.reserved_paths['products']}/#{slug}"
   end
