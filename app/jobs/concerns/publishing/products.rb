@@ -21,8 +21,8 @@ module Publishing
     end
 
     def product(json, p)
-      json.call(p, :id, :name, :description, :path, :price_cents,
-                :currency, :weight)
+      json.call(p, :id, :name, :short_description, :path,
+                :price_cents, :currency, :weight)
       json.updated_at p.updated_at.iso8601
       product_optional_fields(json, p)
     end
