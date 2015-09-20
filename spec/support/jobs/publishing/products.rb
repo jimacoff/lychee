@@ -3,7 +3,7 @@ RSpec.shared_examples 'jobs::publishing::products' do
     {
       id: p.id,
       name: p.name,
-      description: p.description,
+      short_description: p.short_description,
       path: p.path,
       updated_at: p.updated_at.iso8601,
       price_cents: p.price_cents,
