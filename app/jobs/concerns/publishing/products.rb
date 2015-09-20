@@ -90,7 +90,7 @@ module Publishing
     end
 
     def write_product(p, frontmatter)
-      File.open(File.join(products_path, "#{p.id}.json"), 'w') do |f|
+      File.open(File.join(products_path, "#{p.id}.html"), 'w') do |f|
         f.puts PublishSiteJob::START_JSON_DELIMITER
         f.puts frontmatter
         f.puts PublishSiteJob::END_JSON_DELIMITER

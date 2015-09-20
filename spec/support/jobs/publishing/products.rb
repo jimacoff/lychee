@@ -95,7 +95,7 @@ RSpec.shared_examples 'jobs::publishing::products' do
       context 'file data' do
         let(:product) { Site.current.products.enabled.sample }
         let(:file) do
-          File.read(File.join(products_path, "#{product.id}.json"))
+          File.read(File.join(products_path, "#{product.id}.html"))
         end
         let(:regex) { /---json\n(.*)---\n\n(.*)\n/m }
         let(:frontmatter) { file.match(regex)[1] }
