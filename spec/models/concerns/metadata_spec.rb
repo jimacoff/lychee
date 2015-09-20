@@ -11,15 +11,18 @@ RSpec.describe Metadata do
     end
   end
 
-  let(:key) { Faker::Lorem.word }
-  let(:value) { Faker::Lorem.sentence }
-  let(:subject) { MetadataModel.new(metadata: { key => value }) }
+  let!(:key) { Faker::Lorem.word }
+  let!(:value) { Faker::Lorem.sentence }
 
-  it 'stores json backed metadata' do
-    expect(subject).to be_valid
-  end
+  subject { MetadataModel.new(metadata: { key => value }) }
 
-  it 'can retrieve stored json value' do
-    expect(subject.metadata[key]).to eq(value)
+  context 'read/write' do
+    it 'stores json backed metadata' do
+      expect(subject).to be_valid
+    end
+
+    it 'can retrieve stored json value' do
+      expect(subject.metadata[key]).to eq(value)
+    end
   end
 end

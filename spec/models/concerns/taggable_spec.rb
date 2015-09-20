@@ -13,9 +13,10 @@ RSpec.describe Taggable, site_scoped: true do
     end
   end
 
+  subject { TaggableModel.new }
+
   context 'manipulating tag data' do
     let(:tag) { Faker::Lorem.word }
-    subject { TaggableModel.create }
 
     context 'addition' do
       before { expect(subject.tags).to be_empty }
