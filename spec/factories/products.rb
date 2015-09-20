@@ -4,7 +4,8 @@ FactoryGirl.define do
       "#{Faker::Commerce.product_name}#{n}"
     end
 
-    description { Faker::Lorem.sentence }
+    short_description { Faker::Lorem.sentence }
+    description { Faker::Lorem.paragraphs(4) }
     active true
 
     after(:build) do |p|
