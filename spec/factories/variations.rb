@@ -1,6 +1,6 @@
 FactoryGirl.define do
   factory :variation do
-    association :product
+    product
     association :trait
     sequence :order
   end

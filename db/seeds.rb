@@ -79,7 +79,14 @@ ActiveRecord::Base.transaction do
       end
 
       size_variation = product.variations.create!(order: 1, trait: size_trait)
+      size_trait.default_values.each_with_index do |v, o|
+        VariationValue.create(variation: size_variation, value: v, order: o)
+      end
+
       color_variation = product.variations.create!(order: 2, trait: color_trait)
+      color_trait.default_values.each_with_index do |v, o|
+        VariationValue.create(variation: color_variation, value: v, order: o)
+      end
 
       variation_choices = size_trait.default_values.product(color_trait_values)
 
