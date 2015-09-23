@@ -41,7 +41,14 @@ FactoryGirl.define do
 
         # Product specific variations
         var_size = create(:variation, order: 1, product: p, trait: size_trait)
+        size_trait.default_values.each_with_index do |v, o|
+          VariationValue.create(variation: var_size, value: v, order: o)
+        end
+
         var_color = create(:variation, order: 2, product: p, trait: color_trait)
+        color_trait.default_values.each_with_index do |v, o|
+          VariationValue.create(variation: var_color, value: v, order: o)
+        end
 
         variation_instances = [size_trait.default_values,
                                color_trait.default_values].inject(&:product)
