@@ -80,12 +80,14 @@ ActiveRecord::Base.transaction do
 
       size_variation = product.variations.create!(order: 1, trait: size_trait)
       size_trait.default_values.each_with_index do |v, o|
-        VariationValue.create(variation: size_variation, value: v, order: o)
+        VariationValue.create!(variation: size_variation,
+                               name: v, order: o, description: "#{v} sizing")
       end
 
       color_variation = product.variations.create!(order: 2, trait: color_trait)
-      color_trait.default_values.each_with_index do |v, o|
-        VariationValue.create(variation: color_variation, value: v, order: o)
+      color_trait_values.each_with_index do |v, o|
+        VariationValue.create!(variation: color_variation,
+                               name: v, order: o, description: "#{v} color")
       end
 
       variation_choices = size_trait.default_values.product(color_trait_values)
@@ -97,12 +99,17 @@ ActiveRecord::Base.transaction do
         variant.create_inventory!(tracked: true, back_orders: false,
                                   quantity: Faker::Number.number(3))
 
+        size_variation_value =
+          VariationValue.find_by(variation: size_variation, name: size_value)
         variant.variation_instances
-          .create!(variation: size_variation, value: size_value,
-                   name: size_value, description: "#{size_value} size")
+          .create!(variation: size_variation,
+                   variation_value: size_variation_value)
+
+        color_variation_value =
+          VariationValue.find_by(variation: color_variation, name: color_value)
         variant.variation_instances
-          .create!(variation: color_variation, value: color_value,
-                   name: color_value, description: "#{color_value} color")
+          .create!(variation: color_variation,
+                   variation_value: color_variation_value)
       end
 
       product.add_tag('clothing')
