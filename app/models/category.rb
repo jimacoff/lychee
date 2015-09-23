@@ -20,6 +20,10 @@ class Category < ActiveRecord::Base
   end
 
   def path
-    "#{site.preferences.reserved_paths['categories']}/#{slug}"
+    if parent_category
+      "#{parent_category.path}/#{slug}"
+    else
+      "#{site.preferences.reserved_paths['categories']}/#{slug}"
+    end
   end
 end
