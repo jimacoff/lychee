@@ -1,4 +1,11 @@
 class ShoppingCartsController < ApplicationController
+  def add
+    @product = Product.find(params[:product_id])
+
+    params[:variations] ? add_variant : add_product
+    redirect_to :shopping_cart
+  end
+
   def update
     operations.each { |op| cart.apply(op) }
     redirect_to :shopping_cart
@@ -11,6 +18,15 @@ class ShoppingCartsController < ApplicationController
   end
 
   private
+
+  def add_product
+    cart.apply(product_id: @product.id, quantity: 1)
+  end
+
+  def add_variant
+    @variant = @product.variant(params[:variations])
+    cart.apply(variant_id: @variant.try(:id), quantity: 1)
+  end
 
   def cart
     id = session[:shopping_cart_id]

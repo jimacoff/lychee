@@ -188,4 +188,112 @@ RSpec.describe ShoppingCartsController, type: :controller, site_scoped: true do
       end
     end
   end
+
+  context 'post :add' do
+    def run
+      post :add, opts
+    end
+
+    shared_context 'add to cart' do
+      let(:opts) { commodity_opts }
+
+      context 'with no cart' do
+        let(:cart) { nil }
+
+        it 'adds the item to a new cart' do
+          expect { run }.to change(ShoppingCart, :count).by(1)
+          expect(assigns[:cart].contents.values)
+            .to contain_exactly(include(commodity_item_attrs))
+        end
+
+        it 'redirects to the cart' do
+          run
+          expect(response).to redirect_to(shopping_cart_path)
+        end
+      end
+
+      context 'with an existing cart' do
+        let!(:cart) { create(:shopping_cart) }
+
+        it 'adds the item to the cart' do
+          run
+          expect(cart.contents.values)
+            .to contain_exactly(include(commodity_item_attrs))
+        end
+
+        it 'redirects to the cart' do
+          run
+          expect(response).to redirect_to(shopping_cart_path)
+        end
+      end
+    end
+
+    context 'for a product' do
+      let(:product) { create(:product) }
+      let(:commodity_opts) { { product_id: product.id } }
+      let(:commodity_item_attrs) { { product: product, quantity: 1 } }
+
+      include_context 'add to cart'
+    end
+
+    context 'for a variant' do
+      def create_default_values(trait)
+        trait.default_values.reduce({}) do |hash, value|
+          attrs = { name: value, order: 1, description: 'x' }
+          hash.merge(value => size.variation_values.create!(attrs))
+        end
+      end
+
+      def create_variation_instance(variant, variation, variation_value)
+        attrs = { variation_id: variation.id,
+                  variation_value_id: variation_value.id }
+        variant.variation_instances.create!(attrs)
+      end
+
+      def variant_with(size_value, color_value)
+        create(:variant, product: product).tap do |variant|
+          create_variation_instance(variant, size, size_value)
+          create_variation_instance(variant, color, color_value)
+        end
+      end
+
+      let(:color_trait) do
+        create(:trait, name: 'Color', default_values: %w(z y))
+      end
+
+      let(:size_trait) do
+        create(:trait, name: 'Size', default_values: %w(a b))
+      end
+
+      let(:size_values)  { create_default_values(size_trait) }
+      let(:color_values) { create_default_values(color_trait) }
+
+      let(:color) { create(:variation, product: product, trait: color_trait) }
+      let(:size) { create(:variation, product: product, trait: size_trait) }
+
+      let!(:wrong_variants) do
+        size_values.values.product(color_values.values).map do |s, c|
+          next if s.name == 'a' && c.name == 'z'
+          variant_with(s, c)
+        end
+      end
+
+      let!(:variant) { variant_with(size_values['a'], color_values['z']) }
+      let(:product) { create(:product) }
+
+      let(:commodity_opts) do
+        {
+          product_id: product.id,
+          variations: {
+            size.id => size_values['a'].id,
+            color.id => color_values['z'].id
+          }
+        }
+      end
+
+      let(:commodity_item_attrs) { { variant: variant, quantity: 1 } }
+
+      include_context 'add to cart'
+    end
+  end
 end
