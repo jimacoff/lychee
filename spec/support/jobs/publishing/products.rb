@@ -202,6 +202,22 @@ RSpec.shared_examples 'jobs::publishing::products' do
 
         it { is_expected.to match(json) }
       end
+
+      context 'variation values have image_instance' do
+        let(:metadata) { { key: Faker::Lorem.word } }
+        before do
+          product.variations.each do |var|
+            var.variation_values.each do |vv|
+              vv.image_instance = create :image_instance, imageable: vv,
+                                                          site: site
+            end
+          end
+        end
+
+        it 'has all child images' do
+          expect(subject[:variations].sample[:values].sample[:image]).to be
+        end
+      end
     end
 
     context 'with categories' do

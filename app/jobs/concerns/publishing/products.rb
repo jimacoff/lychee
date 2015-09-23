@@ -70,10 +70,11 @@ module Publishing
       end
     end
 
-    def variation_value(json, vi)
-      json.id vi.id
-      json.name vi.name
-      json.description vi.description
+    def variation_value(json, vv)
+      json.id vv.id
+      json.name vv.name
+      json.description vv.description
+      image_instance(json, vv.image_instance) if vv.image_instance.present?
     end
 
     def product_categories(json, categories)
