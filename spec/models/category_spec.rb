@@ -47,10 +47,6 @@ RSpec.describe Category, type: :model, site_scoped: true do
     end
   end
 
-  describe '#render' do
-    it 'Not implemented.'
-  end
-
   describe '#path' do
     subject { create(:category) }
 
