@@ -8,14 +8,8 @@ RSpec.describe VariationInstance, type: :model, site_scoped: true do
   has_context 'versioned'
   has_context 'metadata'
 
-  let(:uniq_value_cols) { [:variant_id, :variation_id, :value] }
-
   context 'table structure' do
-    it { is_expected.to have_db_column(:value).of_type(:string) }
-
-    it { is_expected.to have_db_column(:name).of_type(:string) }
-    it { is_expected.to have_db_column(:description).of_type(:string) }
-
+    it { is_expected.not_to have_db_column(:value).of_type(:string) }
     it 'should have non nullable column variation_id of type bigint' do
       expect(subject).to have_db_column(:variation_id)
         .of_type(:integer)
@@ -29,7 +23,6 @@ RSpec.describe VariationInstance, type: :model, site_scoped: true do
         .with_options(limit: 8, null: false)
     end
     it { is_expected.to have_db_index(:variant_id) }
-    it { is_expected.to have_db_index(uniq_value_cols).unique(true) }
   end
 
   context 'relationships' do
@@ -42,10 +35,6 @@ RSpec.describe VariationInstance, type: :model, site_scoped: true do
   context 'validations' do
     it { is_expected.to validate_presence_of :variation }
     it { is_expected.to validate_presence_of :variant }
-    it { is_expected.to validate_presence_of :value }
-
-    it { is_expected.to validate_presence_of :name }
-    it { is_expected.to validate_presence_of :description }
   end
 
   context 'allows users to choose this instance via image' do

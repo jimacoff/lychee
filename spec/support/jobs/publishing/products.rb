@@ -24,22 +24,21 @@ RSpec.shared_examples 'jobs::publishing::products' do
         display_name: v.trait.display_name,
         description: v.trait.description
       },
-      instances: variation_instances_json(v)
+      values: variation_values_json(v)
     }
   end
   # rubocop:enable Metrics/MethodLength
 
-  def variation_instances_json(v)
-    instances = []
-    v.variation_instances.each do |vi|
-      instances << {
+  def variation_values_json(v)
+    values = []
+    v.variation_values.each do |vi|
+      values << {
         id: vi.id,
         name: vi.name,
-        description: vi.description,
-        value: vi.value
+        description: vi.description
       }
     end
-    instances
+    values
   end
 
   def specification_json
@@ -199,20 +198,6 @@ RSpec.shared_examples 'jobs::publishing::products' do
         before do
           product.variations.each { |var| var.metadata = metadata }
           json[:variations].each { |var| var[:metadata] = metadata }
-        end
-
-        it { is_expected.to match(json) }
-      end
-
-      context 'variation instances have metadata' do
-        let(:metadata) { { key: Faker::Lorem.word } }
-        before do
-          product.variations.each do |var|
-            var.variation_instances.each { |vi| vi.metadata = metadata }
-          end
-          json[:variations].each do |var|
-            var[:instances].each { |vi| vi[:metadata] = metadata }
-          end
         end
 
         it { is_expected.to match(json) }
