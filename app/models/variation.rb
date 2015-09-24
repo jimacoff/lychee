@@ -9,6 +9,7 @@ class Variation < ActiveRecord::Base
 
   has_many :variation_instances
   has_many :variants, through: :variation_instances
+  has_many :variation_values
 
   has_paper_trail
   valhammer

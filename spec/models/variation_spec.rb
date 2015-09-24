@@ -33,6 +33,7 @@ RSpec.describe Variation, type: :model, site_scoped: true do
     it { is_expected.to belong_to(:trait).class_name('Trait') }
     it { is_expected.to have_many :variation_instances }
     it { is_expected.to have_many :variants }
+    it { is_expected.to have_many :variation_values }
   end
 
   context 'validations' do

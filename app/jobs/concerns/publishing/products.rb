@@ -53,9 +53,9 @@ module Publishing
     def product_variation(json, var)
       json.call(var, :id, :order, :render_as)
       variation_trait(json, var.trait)
-      json.instances do
-        json.array! var.variation_instances do |vi|
-          variation_instance(json, vi)
+      json.values do
+        json.array! var.variation_values do |vi|
+          variation_value(json, vi)
         end
       end
       optional_fields(json, var, [:metadata])
@@ -70,12 +70,10 @@ module Publishing
       end
     end
 
-    def variation_instance(json, vi)
+    def variation_value(json, vi)
       json.id vi.id
       json.name vi.name
       json.description vi.description
-      json.value vi.value
-      optional_fields(json, vi, [:metadata])
     end
 
     def product_categories(json, categories)

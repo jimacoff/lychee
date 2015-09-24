@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20150920003051) do
+ActiveRecord::Schema.define(version: 20150923095752) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -462,21 +462,32 @@ ActiveRecord::Schema.define(version: 20150920003051) do
   add_index "variants", ["site_id"], name: "index_variants_on_site_id", using: :btree
 
   create_table "variation_instances", id: :bigserial, force: :cascade do |t|
-    t.integer  "variation_id", limit: 8, null: false
-    t.integer  "variant_id",   limit: 8, null: false
-    t.string   "value",                  null: false
+    t.integer  "variation_id",       limit: 8, null: false
+    t.integer  "variant_id",         limit: 8, null: false
     t.hstore   "metadata"
     t.datetime "created_at"
     t.datetime "updated_at"
+    t.integer  "site_id",            limit: 8, null: false
+    t.integer  "variation_value_id", limit: 8, null: false
+  end
+
+  add_index "variation_instances", ["site_id"], name: "index_variation_instances_on_site_id", using: :btree
+  add_index "variation_instances", ["variant_id"], name: "index_variation_instances_on_variant_id", using: :btree
+  add_index "variation_instances", ["variation_id"], name: "index_variation_instances_on_variation_id", using: :btree
+  add_index "variation_instances", ["variation_value_id"], name: "index_variation_instances_on_variation_value_id", using: :btree
+
+  create_table "variation_values", id: :bigserial, force: :cascade do |t|
     t.integer  "site_id",      limit: 8, null: false
+    t.integer  "variation_id", limit: 8, null: false
+    t.integer  "order",                  null: false
+    t.datetime "created_at",             null: false
+    t.datetime "updated_at",             null: false
     t.string   "name",                   null: false
     t.string   "description",            null: false
   end
 
-  add_index "variation_instances", ["site_id"], name: "index_variation_instances_on_site_id", using: :btree
-  add_index "variation_instances", ["variant_id", "variation_id", "value"], name: "variant_unique_value", unique: true, using: :btree
-  add_index "variation_instances", ["variant_id"], name: "index_variation_instances_on_variant_id", using: :btree
-  add_index "variation_instances", ["variation_id"], name: "index_variation_instances_on_variation_id", using: :btree
+  add_index "variation_values", ["site_id"], name: "index_variation_values_on_site_id", using: :btree
+  add_index "variation_values", ["variation_id"], name: "index_variation_values_on_variation_id", using: :btree
 
   create_table "variations", id: :bigserial, force: :cascade do |t|
     t.integer  "product_id", limit: 8,             null: false
@@ -588,7 +599,10 @@ ActiveRecord::Schema.define(version: 20150920003051) do
   add_foreign_key "variants", "sites", on_delete: :cascade
   add_foreign_key "variation_instances", "sites", on_delete: :cascade
   add_foreign_key "variation_instances", "variants", on_delete: :cascade
+  add_foreign_key "variation_instances", "variation_values", on_delete: :restrict
   add_foreign_key "variation_instances", "variations", on_delete: :cascade
+  add_foreign_key "variation_values", "sites", on_delete: :cascade
+  add_foreign_key "variation_values", "variations", on_delete: :cascade
   add_foreign_key "variations", "products", on_delete: :cascade
   add_foreign_key "variations", "sites", on_delete: :cascade
   add_foreign_key "variations", "traits", on_delete: :cascade
