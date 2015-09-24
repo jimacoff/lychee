@@ -1,8 +1,9 @@
 class ShoppingCartsController < ApplicationController
   def add
     @product = Product.find(params[:product_id])
+    attrs = { quantity: 1, metadata: params[:metadata] }
 
-    params[:variations] ? add_variant : add_product
+    params[:variations] ? add_variant(attrs) : add_product(attrs)
     redirect_to :shopping_cart
   end
 
@@ -19,13 +20,13 @@ class ShoppingCartsController < ApplicationController
 
   private
 
-  def add_product
-    cart.apply(product_id: @product.id, quantity: 1)
+  def add_product(attrs)
+    cart.apply(attrs.merge(product_id: @product.id))
   end
 
-  def add_variant
+  def add_variant(attrs)
     @variant = @product.variant(params[:variations])
-    cart.apply(variant_id: @variant.try(:id), quantity: 1)
+    cart.apply(attrs.merge(variant_id: @variant.try(:id)))
   end
 
   def cart

@@ -234,6 +234,18 @@ RSpec.describe ShoppingCartsController, type: :controller, site_scoped: true do
       let(:commodity_item_attrs) { { product: product, quantity: 1 } }
 
       include_context 'add to cart'
+
+      context 'with metadata' do
+        let(:commodity_opts) do
+          { product_id: product.id, metadata: { x: 'y' } }
+        end
+
+        let(:commodity_item_attrs) do
+          { product: product, quantity: 1, metadata: { 'x' => 'y' } }
+        end
+
+        include_context 'add to cart'
+      end
     end
 
     context 'for a variant' do
@@ -294,6 +306,25 @@ RSpec.describe ShoppingCartsController, type: :controller, site_scoped: true do
       let(:commodity_item_attrs) { { variant: variant, quantity: 1 } }
 
       include_context 'add to cart'
+
+      context 'with metadata' do
+        let(:commodity_opts) do
+          {
+            product_id: product.id,
+            variations: {
+              size.id => size_values['a'].id,
+              color.id => color_values['z'].id
+            },
+            metadata: { x: 'y' }
+          }
+        end
+
+        let(:commodity_item_attrs) do
+          { variant: variant, quantity: 1, metadata: { 'x' => 'y' } }
+        end
+
+        include_context 'add to cart'
+      end
     end
   end
 end
