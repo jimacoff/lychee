@@ -47,10 +47,6 @@ RSpec.describe Category, type: :model, site_scoped: true do
     end
   end
 
-  describe '#render' do
-    it 'Not implemented.'
-  end
-
   describe '#path' do
     subject { create(:category) }
 
@@ -71,8 +67,28 @@ RSpec.describe Category, type: :model, site_scoped: true do
       end
     end
 
-    context 'with one or more parent categories' do
-      it 'builds path as a tree'
+    context 'with one or more parent categories builds path as a tree' do
+      let(:parent_category) { create(:category, :with_subcategories) }
+      subject { parent_category.subcategories.first }
+
+      context 'using a generated_slug' do
+        it 'equals reserved_paths category preferences / generated_slug' do
+          expect(subject.path)
+            .to eq("#{subject.site.preferences.reserved_paths['categories']}" \
+                   "/#{parent_category.generated_slug}" \
+                   "/#{subject.generated_slug}")
+        end
+      end
+
+      context 'using a specified_slug' do
+        it 'equals reserved_paths category preferences / specified_slug' do
+          subject.specified_slug = "#{Faker::Lorem.word}-#{Faker::Lorem.word}"
+          expect(subject.path)
+            .to eq("#{subject.site.preferences.reserved_paths['categories']}" \
+                   "/#{parent_category.generated_slug}" \
+                   "/#{subject.specified_slug}")
+        end
+      end
     end
   end
 end
