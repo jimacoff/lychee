@@ -30,14 +30,14 @@ RSpec.shared_examples 'jobs::publishing::images' do
       i = image_instance.image
       {
         id: image_instance.id,
-        image: {
+        name: image_instance.name,
+        description: image_instance.description,
+        data: {
           id: i.id,
-          name: i.name,
-          description: i.description,
           internal_name: i.internal_name,
           extension: i.extension,
-          original_image: image_file_json(i.image_files.original_image),
-          default_image: image_file_json(i.image_files.default_image),
+          original: image_file_json(i.image_files.original_image),
+          default: image_file_json(i.image_files.default_image),
           srcset: image.image_files.srcset.map { |e| image_file_json(e, true) }
         }
       }
@@ -60,7 +60,7 @@ RSpec.shared_examples 'jobs::publishing::images' do
     context 'images' do
       context 'with metadata' do
         let(:image) { create(:image, metadata: metadata) }
-        before { json[:image][:metadata] = metadata }
+        before { json[:data][:metadata] = metadata }
 
         it { is_expected.to match(json) }
       end
@@ -68,7 +68,7 @@ RSpec.shared_examples 'jobs::publishing::images' do
       context 'with tags' do
         let(:tags) { Faker::Lorem.words(2) }
         let(:image) { create(:image, tags: tags) }
-        before { json[:image][:tags] = tags }
+        before { json[:data][:tags] = tags }
 
         it { is_expected.to match(json) }
       end
@@ -104,17 +104,17 @@ RSpec.shared_examples 'jobs::publishing::images' do
         end
       end
 
-      context 'original_image' do
+      context 'original' do
         include_examples 'image_file behaviour' do
           let(:target_instance) { image.image_files.original_image }
-          let(:target_json) { json[:image][:original_image] }
+          let(:target_json) { json[:data][:original] }
         end
       end
 
       context 'default_image' do
         include_examples 'image_file behaviour' do
           let(:target_instance) { image.image_files.default_image }
-          let(:target_json) { json[:image][:default_image] }
+          let(:target_json) { json[:data][:default] }
         end
       end
 
@@ -122,7 +122,7 @@ RSpec.shared_examples 'jobs::publishing::images' do
         include_examples 'image_file behaviour' do
           let(:srcset_instance) { rand(0..2) }
           let(:target_instance) { image.image_files.srcset[srcset_instance] }
-          let(:target_json) { json[:image][:srcset][srcset_instance] }
+          let(:target_json) { json[:data][:srcset][srcset_instance] }
         end
       end
     end
