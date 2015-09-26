@@ -32,7 +32,7 @@ module Publishing
     def image_srcset(json, img)
       json.srcset do
         json.array! img.image_files.srcset do |image_file|
-          image_file(json, image_file, true)
+          image_file(json, image_file, srcset_path: true)
         end
       end
     end
