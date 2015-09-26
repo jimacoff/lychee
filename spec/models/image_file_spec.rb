@@ -58,7 +58,7 @@ RSpec.describe ImageFile, type: :model, site_scoped: true do
     it 'constructs a valid path' do
       expect(subject.path).to eq(
         "#{subject.site.preferences.reserved_paths['images']}" \
-        "/#{subject.image.internal_name}/#{subject.width}" \
+        "/#{subject.image.internal_name}/#{subject.width}.#{subject.height}" \
         ".#{subject.image.extension}")
     end
   end
@@ -69,7 +69,7 @@ RSpec.describe ImageFile, type: :model, site_scoped: true do
     it 'constructs a valid path' do
       expect(subject.srcset_path).to eq(
         "#{subject.site.preferences.reserved_paths['images']}" \
-        "/#{subject.image.internal_name}/#{subject.width}" \
+        "/#{subject.image.internal_name}/#{subject.width}.#{subject.height}" \
         ".#{subject.image.extension} #{subject.width}")
     end
 
@@ -78,7 +78,7 @@ RSpec.describe ImageFile, type: :model, site_scoped: true do
         subject.x_dimension = '2x'
         expect(subject.srcset_path).to eq(
           "#{subject.site.preferences.reserved_paths['images']}" \
-          "/#{subject.image.internal_name}/#{subject.width}" \
+          "/#{subject.image.internal_name}/#{subject.width}.#{subject.height}" \
           ".#{subject.image.extension} #{subject.x_dimension}")
       end
     end

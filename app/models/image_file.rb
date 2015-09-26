@@ -14,7 +14,7 @@ class ImageFile < ActiveRecord::Base
 
   def path
     "#{site.preferences.reserved_paths['images']}" \
-    "/#{image.internal_name}/#{width}.#{image.extension}"
+    "/#{image.internal_name}/#{width}.#{height}.#{image.extension}"
   end
 
   def srcset_path
