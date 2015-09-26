@@ -6,6 +6,7 @@ RSpec.describe Slug do
       include Slug
 
       with_columns do |t|
+        t.integer :site_id, null: false
         t.string :name, null: false
         t.string :generated_slug, null: false
         t.string :specified_slug
@@ -15,7 +16,7 @@ RSpec.describe Slug do
 
   after { Temping.teardown }
 
-  subject { SlugModel.new(name: Faker::Lorem.sentence) }
+  subject { SlugModel.new(name: Faker::Lorem.sentence, site_id: rand(1..100)) }
   let(:specified_slug) { Faker::Lorem.sentence.to_url }
 
   context 'validations' do

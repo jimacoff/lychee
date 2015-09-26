@@ -3,7 +3,8 @@ module Slug
 
   included do
     validates :name, :generated_slug, presence: true
-    acts_as_url :name, url_attribute: :generated_slug, sync_url: true
+    acts_as_url :name, url_attribute: :generated_slug,
+                       scope: :site_id, sync_url: true
   end
 
   def slug
