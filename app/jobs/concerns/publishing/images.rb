@@ -32,13 +32,14 @@ module Publishing
     def image_srcset(json, img)
       json.srcset do
         json.array! img.image_files.srcset do |image_file|
-          image_file(json, image_file)
+          image_file(json, image_file, true)
         end
       end
     end
 
-    def image_file(json, image_file)
-      json.call(image_file, :id, :filename, :width, :height)
+    def image_file(json, image_file, srcset_path = false)
+      json.call(image_file, :id, :filename, :width, :height, :path)
+      json.srcset_path image_file.srcset_path if srcset_path
       json.x_dimension image_file.x_dimension if image_file.x_dimension
       image_file_optional_fields(json, image_file)
     end

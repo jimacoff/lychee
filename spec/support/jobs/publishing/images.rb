@@ -1,16 +1,18 @@
 RSpec.shared_examples 'jobs::publishing::images' do
   # rubocop:disable Metrics/MethodLength
-  def image_file_json(image_file)
+  def image_file_json(image_file, srcset_path = false)
     image = {
       id: image_file.id,
       filename: image_file.filename,
       width: image_file.width,
-      height: image_file.height
+      height: image_file.height,
+      path: image_file.path
     }
     image[:x_dimension] = image_file.x_dimension if image_file.x_dimension
     if image_file.metadata
       image[:metadata] = image_file.metadata.symbolize_keys!
     end
+    image[:srcset_path] = image_file.srcset_path if srcset_path
 
     image
   end
@@ -39,7 +41,7 @@ RSpec.shared_examples 'jobs::publishing::images' do
           extension: i.extension,
           original_image: image_file_json(i.image_files.original_image),
           default_image: image_file_json(i.image_files.default_image),
-          srcset: image.image_files.srcset.map { |e| image_file_json(e) }
+          srcset: image.image_files.srcset.map { |e| image_file_json(e, true) }
         }
       }
     end
