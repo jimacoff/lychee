@@ -31,21 +31,21 @@ module Publishing
 
     def image_srcset(json, img)
       json.srcset do
-        json.array! img.image_files.srcset do |img_file|
-          image_file(json, img_file)
+        json.array! img.image_files.srcset do |image_file|
+          image_file(json, image_file)
         end
       end
     end
 
-    def image_file(json, img_file)
-      json.call(img_file, :id, :filename, :width)
-      json.height img_file.height if img_file.height
-      json.x_dimension img_file.x_dimension if img_file.x_dimension
-      image_file_optional_fields(json, img_file)
+    def image_file(json, image_file)
+      json.call(image_file, :id, :filename, :width)
+      json.height image_file.height if image_file.height
+      json.x_dimension image_file.x_dimension if image_file.x_dimension
+      image_file_optional_fields(json, image_file)
     end
 
-    def image_file_optional_fields(json, img_file)
-      json.metadata img_file.metadata if img_file.metadata
+    def image_file_optional_fields(json, image_file)
+      json.metadata image_file.metadata if image_file.metadata
     end
   end
 end

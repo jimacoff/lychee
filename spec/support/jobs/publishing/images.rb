@@ -1,11 +1,21 @@
 RSpec.shared_examples 'jobs::publishing::images' do
+  # rubocop:disable Metrics/MethodLength
   def image_file_json(image_file)
-    {
+    image = {
       id: image_file.id,
       filename: image_file.filename,
       width: image_file.width
     }
+    image[:x_dimension] = image_file.x_dimension if image_file.x_dimension
+    image[:height] = image_file.height if image_file.height
+
+    if image_file.metadata
+      image[:metadata] = image_file.metadata.symbolize_keys!
+    end
+
+    image
   end
+  # rubocop:enable Metrics/MethodLength
 
   context 'image_instance' do
     let(:builder) do
@@ -34,13 +44,13 @@ RSpec.shared_examples 'jobs::publishing::images' do
         }
       }
     end
+    let(:metadata) { { key: Faker::Lorem.word } }
 
     context 'with minimal data' do
       it { is_expected.to match(json) }
     end
 
     context 'with metadata' do
-      let(:metadata) { { key: Faker::Lorem.word } }
       let(:image_instance) do
         create :image_instance, image: image, metadata: metadata, site: site
       end
@@ -51,7 +61,6 @@ RSpec.shared_examples 'jobs::publishing::images' do
 
     context 'images' do
       context 'with metadata' do
-        let(:metadata) { { key: Faker::Lorem.word } }
         let(:image) { create(:image, metadata: metadata) }
         before { json[:image][:metadata] = metadata }
 
@@ -88,7 +97,6 @@ RSpec.shared_examples 'jobs::publishing::images' do
         end
 
         context 'with metadata' do
-          let(:metadata) { { key: Faker::Lorem.word } }
           before do
             target_instance.update!(metadata: metadata)
             target_json[:metadata] = metadata

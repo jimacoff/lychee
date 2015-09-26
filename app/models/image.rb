@@ -13,7 +13,7 @@ class Image < ActiveRecord::Base
     end
 
     def srcset
-      where(default_image: false, original_image: false)
+      where(original_image: false)
     end
   end
 
