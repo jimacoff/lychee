@@ -1,11 +1,11 @@
 module Publishing
   module Categories
     def categories
-      return if @site.primary_categories.empty?
+      return if Site.current.primary_categories.empty?
 
       FileUtils.mkdir_p(categories_path)
 
-      @site.primary_categories.each do |c|
+      Site.current.primary_categories.each do |c|
         next unless c.enabled?
 
         frontmatter = Jbuilder.encode do |json|
@@ -17,7 +17,7 @@ module Publishing
 
     def categories_path
       paths = Rails.configuration.zepily.publishing.paths
-      File.join(paths.base, @site.id.to_s, paths.categories)
+      File.join(paths.base, Site.current.id.to_s, paths.categories)
     end
 
     def category(json, c)

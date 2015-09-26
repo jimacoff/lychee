@@ -1,11 +1,11 @@
 module Publishing
   module Products
     def products
-      return if @site.products.empty?
+      return if Site.current.products.empty?
 
       FileUtils.mkdir_p(products_path)
 
-      @site.products.each do |p|
+      Site.current.products.each do |p|
         next unless p.enabled?
 
         frontmatter = Jbuilder.encode do |json|
@@ -17,7 +17,7 @@ module Publishing
 
     def products_path
       paths = Rails.configuration.zepily.publishing.paths
-      File.join(paths.base, @site.id.to_s, paths.products)
+      File.join(paths.base, Site.current.id.to_s, paths.products)
     end
 
     def product(json, p)

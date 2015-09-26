@@ -11,7 +11,7 @@ class PublishSiteJob < ActiveJob::Base
   include Publishing::Products
 
   def perform(site)
-    @site = site
+    Site.current = site
     categories
     products
   end
