@@ -8,7 +8,7 @@ RSpec.describe ImageFile, type: :model, site_scoped: true do
   has_context 'metadata'
 
   context 'table structure' do
-    it { is_expected.to have_db_column(:filename).of_type(:string) }
+    it { is_expected.not_to have_db_column(:filename).of_type(:string) }
     it { is_expected.to have_db_column(:width).of_type(:string) }
     it { is_expected.to have_db_column(:height).of_type(:string) }
     it { is_expected.to have_db_column(:x_dimension).of_type(:string) }
@@ -27,7 +27,6 @@ RSpec.describe ImageFile, type: :model, site_scoped: true do
   end
 
   context 'validations' do
-    it { is_expected.to validate_presence_of :filename }
     it { is_expected.to validate_presence_of :width }
     it { is_expected.to validate_presence_of :height }
 
@@ -49,6 +48,15 @@ RSpec.describe ImageFile, type: :model, site_scoped: true do
         image_file.update(original_image: true)
         expect(image_file).not_to be_valid
       end
+    end
+  end
+
+  describe '#filename' do
+    subject { create :image_file }
+
+    it 'constructs a valid filename' do
+      expect(subject.filename).to eq(
+        "#{subject.width}.#{subject.height}.#{subject.image.extension}")
     end
   end
 

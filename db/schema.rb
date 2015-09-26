@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20150926030659) do
+ActiveRecord::Schema.define(version: 20150926033137) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -101,7 +101,6 @@ ActiveRecord::Schema.define(version: 20150926030659) do
   create_table "image_files", id: :bigserial, force: :cascade do |t|
     t.integer  "site_id",        limit: 8,                 null: false
     t.integer  "image_id",       limit: 8,                 null: false
-    t.string   "filename",                                 null: false
     t.string   "width",                                    null: false
     t.string   "height",                                   null: false
     t.string   "x_dimension"
