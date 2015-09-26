@@ -6,14 +6,11 @@ RSpec.shared_examples 'jobs::publishing::images' do
       filename: image_file.filename,
       width: image_file.width,
       height: image_file.height,
-      path: image_file.path
-    }
-    image[:x_dimension] = image_file.x_dimension if image_file.x_dimension
-    if image_file.metadata
-      image[:metadata] = image_file.metadata.symbolize_keys!
-    end
+      path: image_file.path,
+      x_dimension: image_file.x_dimension,
+      metadata: image_file.metadata.try(:symbolize_keys)
+    }.compact
     image[:srcset_path] = image_file.srcset_path if srcset_path
-
     image
   end
   # rubocop:enable Metrics/MethodLength
