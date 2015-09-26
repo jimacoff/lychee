@@ -38,8 +38,7 @@ module Publishing
     end
 
     def image_file(json, image_file)
-      json.call(image_file, :id, :filename, :width)
-      json.height image_file.height if image_file.height
+      json.call(image_file, :id, :filename, :width, :height)
       json.x_dimension image_file.x_dimension if image_file.x_dimension
       image_file_optional_fields(json, image_file)
     end

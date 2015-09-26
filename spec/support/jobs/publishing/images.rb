@@ -4,11 +4,10 @@ RSpec.shared_examples 'jobs::publishing::images' do
     image = {
       id: image_file.id,
       filename: image_file.filename,
-      width: image_file.width
+      width: image_file.width,
+      height: image_file.height
     }
     image[:x_dimension] = image_file.x_dimension if image_file.x_dimension
-    image[:height] = image_file.height if image_file.height
-
     if image_file.metadata
       image[:metadata] = image_file.metadata.symbolize_keys!
     end

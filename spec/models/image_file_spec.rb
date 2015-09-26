@@ -29,6 +29,7 @@ RSpec.describe ImageFile, type: :model, site_scoped: true do
   context 'validations' do
     it { is_expected.to validate_presence_of :filename }
     it { is_expected.to validate_presence_of :width }
+    it { is_expected.to validate_presence_of :height }
 
     context 'instance validations' do
       subject { create :image_file }
