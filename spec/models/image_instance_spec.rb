@@ -9,6 +9,8 @@ RSpec.describe ImageInstance, type: :model, site_scoped: true do
 
   context 'table structure' do
     it { is_expected.to have_db_column(:imageable_type).of_type(:string) }
+    it { is_expected.to have_db_column(:name).of_type(:string) }
+    it { is_expected.to have_db_column(:description).of_type(:string) }
 
     it 'should have non nullable column imageable_id of type bigint' do
       expect(subject).to have_db_column(:imageable_id)
