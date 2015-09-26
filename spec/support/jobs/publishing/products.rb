@@ -216,7 +216,7 @@ RSpec.shared_examples 'jobs::publishing::products' do
 
         it 'has all child images' do
           expect(subject[:variations])
-            .to all include(values: all(have_key(:image)))
+            .to all include(values: all(have_key(:data)))
         end
       end
     end

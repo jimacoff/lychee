@@ -1,8 +1,8 @@
 module Publishing
   module Images
     def image_instance(json, ii)
-      json.call(ii, :id)
-      json.image do
+      json.call(ii, :id, :name, :description)
+      json.data do
         image(json, ii.image)
       end
       image_instance_optional_fields(json, ii)
@@ -13,12 +13,12 @@ module Publishing
     end
 
     def image(json, img)
-      json.call(img, :id, :name, :description, :internal_name, :extension)
+      json.call(img, :id, :internal_name, :extension)
       image_optional_fields(json, img)
-      json.default_image do
+      json.default do
         image_file(json, img.image_files.default_image)
       end
-      json.original_image do
+      json.original do
         image_file(json, img.image_files.original_image)
       end
       image_srcset(json, img)
