@@ -3,8 +3,6 @@ require 'factory_girl'
 
 include FactoryGirl::Syntax::Methods
 
-puts "Seeding Acme Clothing Shop"
-
 ActiveRecord::Base.transaction do
   site = FactoryGirl.create :site, name: 'Acme Clothing Shop'
   Site.current = site
