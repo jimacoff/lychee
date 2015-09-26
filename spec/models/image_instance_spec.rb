@@ -52,4 +52,34 @@ RSpec.describe ImageInstance, type: :model, site_scoped: true do
       it { is_expected.to be_valid }
     end
   end
+
+  describe '#name' do
+    let(:name) { Faker::Lorem.word }
+    subject { create :image_instance }
+
+    it 'supplies local name if defined' do
+      subject.name = name
+      expect(subject.name).to eq(name)
+      expect(subject.name).not_to eq(subject.image.name)
+    end
+
+    it 'supplies image name when undefined' do
+      expect(subject.name).to eq(subject.image.name)
+    end
+  end
+
+  describe '#description' do
+    let(:description) { Faker::Lorem.paragraph }
+    subject { create :image_instance }
+
+    it 'supplies local description if defined' do
+      subject.description = description
+      expect(subject.description).to eq(description)
+      expect(subject.description).not_to eq(subject.image.description)
+    end
+
+    it 'supplies image description when undefined' do
+      expect(subject.description).to eq(subject.image.description)
+    end
+  end
 end

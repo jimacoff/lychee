@@ -7,4 +7,12 @@ class ImageInstance < ActiveRecord::Base
 
   has_paper_trail
   valhammer
+
+  def name
+    self[:name] || image.name
+  end
+
+  def description
+    self[:description] || image.description
+  end
 end
