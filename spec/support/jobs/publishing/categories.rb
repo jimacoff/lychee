@@ -159,7 +159,7 @@ RSpec.shared_examples 'jobs::publishing::categories' do
         end
 
         it 'has image json' do
-          expect(subject[:products].sample).to have_key(:image)
+          expect(subject[:products]).to all(have_key(:image))
         end
       end
 
