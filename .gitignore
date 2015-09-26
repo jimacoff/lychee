@@ -24,7 +24,7 @@ vendor/assets/frontend/*
 models.yml
 
 config/zepily.yml
-/db/seeds
+/db/seeds/private
 
 # these should all be checked in to normalise the environment:
 # Gemfile.lock, .ruby-version, .ruby-gemset
