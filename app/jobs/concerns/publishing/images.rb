@@ -37,7 +37,7 @@ module Publishing
       end
     end
 
-    def image_file(json, image_file, srcset_path = false)
+    def image_file(json, image_file, srcset_path: false)
       json.call(image_file, :id, :filename, :width, :height, :path)
       json.srcset_path image_file.srcset_path if srcset_path
       json.x_dimension image_file.x_dimension if image_file.x_dimension
