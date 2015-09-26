@@ -12,9 +12,13 @@ class ImageFile < ActiveRecord::Base
   validates :original_image,
             uniqueness: { scope: :image_id, if: :original_image? }
 
+  def filename
+    "#{width}.#{height}.#{image.extension}"
+  end
+
   def path
     "#{site.preferences.reserved_paths['images']}" \
-    "/#{image.internal_name}/#{width}.#{image.extension}"
+    "/#{image.internal_name}/#{filename}"
   end
 
   def srcset_path

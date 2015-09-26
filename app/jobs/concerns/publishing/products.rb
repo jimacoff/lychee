@@ -1,11 +1,11 @@
 module Publishing
   module Products
     def products
-      return if @site.products.empty?
+      return if Site.current.products.empty?
 
       FileUtils.mkdir_p(products_path)
 
-      @site.products.each do |p|
+      Site.current.products.each do |p|
         next unless p.enabled?
 
         frontmatter = Jbuilder.encode do |json|
@@ -17,7 +17,7 @@ module Publishing
 
     def products_path
       paths = Rails.configuration.zepily.publishing.paths
-      File.join(paths.base, @site.id.to_s, paths.products)
+      File.join(paths.base, Site.current.id.to_s, paths.products)
     end
 
     def product(json, p)
@@ -70,10 +70,11 @@ module Publishing
       end
     end
 
-    def variation_value(json, vi)
-      json.id vi.id
-      json.name vi.name
-      json.description vi.description
+    def variation_value(json, vv)
+      json.id vv.id
+      json.name vv.name
+      json.description vv.description
+      image_instance(json, vv.image_instance) if vv.image_instance.present?
     end
 
     def product_categories(json, categories)
@@ -90,7 +91,7 @@ module Publishing
     end
 
     def write_product(p, frontmatter)
-      File.open(File.join(products_path, "#{p.id}.json"), 'w') do |f|
+      File.open(File.join(products_path, "#{p.id}.html"), 'w') do |f|
         f.puts PublishSiteJob::START_JSON_DELIMITER
         f.puts frontmatter
         f.puts PublishSiteJob::END_JSON_DELIMITER

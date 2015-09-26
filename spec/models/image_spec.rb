@@ -68,9 +68,12 @@ RSpec.describe Image, type: :model, site_scoped: true do
       end
 
       describe '#srcset' do
-        it 'provides the default image file' do
+        it 'all images except the original' do
           expect(subject.image_files.srcset.length)
-            .to eq(subject.image_files.length - 2)
+            .to eq(subject.image_files.length - 1)
+
+          expect(subject.image_files.srcset)
+            .not_to include(subject.image_files.original_image)
         end
       end
     end

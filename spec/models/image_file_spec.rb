@@ -8,7 +8,7 @@ RSpec.describe ImageFile, type: :model, site_scoped: true do
   has_context 'metadata'
 
   context 'table structure' do
-    it { is_expected.to have_db_column(:filename).of_type(:string) }
+    it { is_expected.not_to have_db_column(:filename).of_type(:string) }
     it { is_expected.to have_db_column(:width).of_type(:string) }
     it { is_expected.to have_db_column(:height).of_type(:string) }
     it { is_expected.to have_db_column(:x_dimension).of_type(:string) }
@@ -27,8 +27,8 @@ RSpec.describe ImageFile, type: :model, site_scoped: true do
   end
 
   context 'validations' do
-    it { is_expected.to validate_presence_of :filename }
     it { is_expected.to validate_presence_of :width }
+    it { is_expected.to validate_presence_of :height }
 
     context 'instance validations' do
       subject { create :image_file }
@@ -51,13 +51,22 @@ RSpec.describe ImageFile, type: :model, site_scoped: true do
     end
   end
 
+  describe '#filename' do
+    subject { create :image_file }
+
+    it 'constructs a valid filename' do
+      expect(subject.filename).to eq(
+        "#{subject.width}.#{subject.height}.#{subject.image.extension}")
+    end
+  end
+
   describe '#path' do
     subject { create :image_file }
 
     it 'constructs a valid path' do
       expect(subject.path).to eq(
         "#{subject.site.preferences.reserved_paths['images']}" \
-        "/#{subject.image.internal_name}/#{subject.width}" \
+        "/#{subject.image.internal_name}/#{subject.width}.#{subject.height}" \
         ".#{subject.image.extension}")
     end
   end
@@ -68,7 +77,7 @@ RSpec.describe ImageFile, type: :model, site_scoped: true do
     it 'constructs a valid path' do
       expect(subject.srcset_path).to eq(
         "#{subject.site.preferences.reserved_paths['images']}" \
-        "/#{subject.image.internal_name}/#{subject.width}" \
+        "/#{subject.image.internal_name}/#{subject.width}.#{subject.height}" \
         ".#{subject.image.extension} #{subject.width}")
     end
 
@@ -77,7 +86,7 @@ RSpec.describe ImageFile, type: :model, site_scoped: true do
         subject.x_dimension = '2x'
         expect(subject.srcset_path).to eq(
           "#{subject.site.preferences.reserved_paths['images']}" \
-          "/#{subject.image.internal_name}/#{subject.width}" \
+          "/#{subject.image.internal_name}/#{subject.width}.#{subject.height}" \
           ".#{subject.image.extension} #{subject.x_dimension}")
       end
     end

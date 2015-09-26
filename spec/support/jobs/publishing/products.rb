@@ -95,7 +95,7 @@ RSpec.shared_examples 'jobs::publishing::products' do
       context 'file data' do
         let(:product) { Site.current.products.enabled.sample }
         let(:file) do
-          File.read(File.join(products_path, "#{product.id}.json"))
+          File.read(File.join(products_path, "#{product.id}.html"))
         end
         let(:regex) { /---json\n(.*)---\n\n(.*)\n/m }
         let(:frontmatter) { file.match(regex)[1] }
@@ -201,6 +201,23 @@ RSpec.shared_examples 'jobs::publishing::products' do
         end
 
         it { is_expected.to match(json) }
+      end
+
+      context 'variation values have image_instance' do
+        let(:metadata) { { key: Faker::Lorem.word } }
+        before do
+          product.variations.each do |var|
+            var.variation_values.each do |vv|
+              vv.image_instance = create :image_instance, imageable: vv,
+                                                          site: site
+            end
+          end
+        end
+
+        it 'has all child images' do
+          expect(subject[:variations])
+            .to all include(values: all(have_key(:image)))
+        end
       end
     end
 

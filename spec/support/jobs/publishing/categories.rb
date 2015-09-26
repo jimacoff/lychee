@@ -20,14 +20,13 @@ RSpec.shared_examples 'jobs::publishing::categories' do
       description: c.description,
       path: c.path,
       updated_at: c.updated_at.iso8601,
-      products: c.category_members.map { |e| category_member_json(e) }
-    }
-    category[:parent] = c.parent_category.id if c.parent_category.present?
+      products: c.category_members.map { |e| category_member_json(e) },
+      parent: c.parent_category.try(:id)
+    }.compact
 
     if c.subcategories.present?
       category[:subcategories] = c.subcategories.map { |e| category_json(e) }
     end
-
     category
   end
   # rubocop:enable Metrics/AbcSize, Metrics/MethodLength
@@ -160,7 +159,7 @@ RSpec.shared_examples 'jobs::publishing::categories' do
         end
 
         it 'has image json' do
-          expect(subject[:products].sample).to have_key(:image)
+          expect(subject[:products]).to all(have_key(:image))
         end
       end
 

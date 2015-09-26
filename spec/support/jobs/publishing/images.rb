@@ -1,11 +1,19 @@
 RSpec.shared_examples 'jobs::publishing::images' do
-  def image_file_json(image_file)
-    {
+  # rubocop:disable Metrics/MethodLength
+  def image_file_json(image_file, srcset_path = false)
+    image = {
       id: image_file.id,
       filename: image_file.filename,
-      width: image_file.width
-    }
+      width: image_file.width,
+      height: image_file.height,
+      path: image_file.path,
+      x_dimension: image_file.x_dimension,
+      metadata: image_file.metadata.try(:symbolize_keys)
+    }.compact
+    image[:srcset_path] = image_file.srcset_path if srcset_path
+    image
   end
+  # rubocop:enable Metrics/MethodLength
 
   context 'image_instance' do
     let(:builder) do
@@ -30,17 +38,17 @@ RSpec.shared_examples 'jobs::publishing::images' do
           extension: i.extension,
           original_image: image_file_json(i.image_files.original_image),
           default_image: image_file_json(i.image_files.default_image),
-          srcset: image.image_files.srcset.map { |e| image_file_json(e) }
+          srcset: image.image_files.srcset.map { |e| image_file_json(e, true) }
         }
       }
     end
+    let(:metadata) { { key: Faker::Lorem.word } }
 
     context 'with minimal data' do
       it { is_expected.to match(json) }
     end
 
     context 'with metadata' do
-      let(:metadata) { { key: Faker::Lorem.word } }
       let(:image_instance) do
         create :image_instance, image: image, metadata: metadata, site: site
       end
@@ -51,7 +59,6 @@ RSpec.shared_examples 'jobs::publishing::images' do
 
     context 'images' do
       context 'with metadata' do
-        let(:metadata) { { key: Faker::Lorem.word } }
         let(:image) { create(:image, metadata: metadata) }
         before { json[:image][:metadata] = metadata }
 
@@ -88,7 +95,6 @@ RSpec.shared_examples 'jobs::publishing::images' do
         end
 
         context 'with metadata' do
-          let(:metadata) { { key: Faker::Lorem.word } }
           before do
             target_instance.update!(metadata: metadata)
             target_json[:metadata] = metadata
