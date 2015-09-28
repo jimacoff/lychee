@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20150926100153) do
+ActiveRecord::Schema.define(version: 20150930104732) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -19,28 +19,22 @@ ActiveRecord::Schema.define(version: 20150926100153) do
   enable_extension "ltree"
 
   create_table "addresses", id: :bigserial, force: :cascade do |t|
-    t.string   "line1",                                null: false
+    t.string   "line1",                null: false
     t.string   "line2"
     t.string   "line3"
     t.string   "line4"
     t.string   "locality"
     t.string   "postcode"
     t.hstore   "metadata"
-    t.integer  "country_id",                 limit: 8, null: false
-    t.integer  "site_id",                    limit: 8, null: false
-    t.datetime "created_at",                           null: false
-    t.datetime "updated_at",                           null: false
-    t.integer  "order_customer_address_id",  limit: 8
-    t.integer  "order_delivery_address_id",  limit: 8
-    t.integer  "site_subscriber_address_id", limit: 8
-    t.integer  "state_id",                   limit: 8
+    t.integer  "country_id", limit: 8, null: false
+    t.integer  "site_id",    limit: 8, null: false
+    t.datetime "created_at",           null: false
+    t.datetime "updated_at",           null: false
+    t.integer  "state_id",   limit: 8
   end
 
   add_index "addresses", ["country_id"], name: "index_addresses_on_country_id", using: :btree
-  add_index "addresses", ["order_customer_address_id"], name: "index_addresses_on_order_customer_address_id", using: :btree
-  add_index "addresses", ["order_delivery_address_id"], name: "index_addresses_on_order_delivery_address_id", using: :btree
   add_index "addresses", ["site_id"], name: "index_addresses_on_site_id", using: :btree
-  add_index "addresses", ["site_subscriber_address_id"], name: "index_addresses_on_site_subscriber_address_id", using: :btree
   add_index "addresses", ["state_id"], name: "index_addresses_on_state_id", using: :btree
 
   create_table "blacklisted_countries", id: :bigserial, force: :cascade do |t|
@@ -238,6 +232,8 @@ ActiveRecord::Schema.define(version: 20150926100153) do
     t.integer  "total_shipping_cents",                default: 0,     null: false
     t.integer  "total_tax_cents",                     default: 0,     null: false
     t.string   "workflow_state"
+    t.integer  "customer_address_id",     limit: 8
+    t.integer  "delivery_address_id",     limit: 8
   end
 
   add_index "orders", ["site_id"], name: "index_orders_on_site_id", using: :btree
@@ -360,11 +356,13 @@ ActiveRecord::Schema.define(version: 20150926100153) do
   add_index "shopping_carts", ["site_id"], name: "index_shopping_carts_on_site_id", using: :btree
 
   create_table "sites", id: :bigserial, force: :cascade do |t|
-    t.string   "name",              null: false
-    t.datetime "created_at",        null: false
-    t.datetime "updated_at",        null: false
-    t.string   "currency_iso_code", null: false
+    t.string   "name",                                            null: false
+    t.datetime "created_at",                                      null: false
+    t.datetime "updated_at",                                      null: false
+    t.string   "currency_iso_code",                               null: false
     t.hstore   "metadata"
+    t.integer  "subscriber_address_id", limit: 8
+    t.boolean  "enabled",                         default: false, null: false
   end
 
   create_table "states", id: :bigserial, force: :cascade do |t|
@@ -539,9 +537,6 @@ ActiveRecord::Schema.define(version: 20150926100153) do
   add_index "whitelisted_countries", ["site_id"], name: "index_whitelisted_countries_on_site_id", using: :btree
 
   add_foreign_key "addresses", "countries", on_delete: :restrict
-  add_foreign_key "addresses", "orders", column: "order_customer_address_id", on_delete: :cascade
-  add_foreign_key "addresses", "orders", column: "order_delivery_address_id", on_delete: :cascade
-  add_foreign_key "addresses", "sites", column: "site_subscriber_address_id", on_delete: :cascade
   add_foreign_key "addresses", "sites", on_delete: :cascade
   add_foreign_key "addresses", "states", on_delete: :restrict
   add_foreign_key "blacklisted_countries", "countries"
@@ -570,6 +565,8 @@ ActiveRecord::Schema.define(version: 20150926100153) do
   add_foreign_key "order_taxes", "orders", on_delete: :cascade
   add_foreign_key "order_taxes", "sites", on_delete: :cascade
   add_foreign_key "order_taxes", "tax_rates", on_delete: :restrict
+  add_foreign_key "orders", "addresses", column: "customer_address_id", on_delete: :restrict
+  add_foreign_key "orders", "addresses", column: "delivery_address_id", on_delete: :restrict
   add_foreign_key "orders", "sites", on_delete: :cascade
   add_foreign_key "preferences", "sites", on_delete: :cascade
   add_foreign_key "prioritized_countries", "countries"
@@ -587,6 +584,7 @@ ActiveRecord::Schema.define(version: 20150926100153) do
   add_foreign_key "shopping_cart_operations", "sites", on_delete: :cascade
   add_foreign_key "shopping_cart_operations", "variants", on_delete: :restrict
   add_foreign_key "shopping_carts", "sites", on_delete: :cascade
+  add_foreign_key "sites", "addresses", column: "subscriber_address_id", on_delete: :restrict
   add_foreign_key "states", "countries", on_delete: :cascade
   add_foreign_key "tax_categories", "sites", column: "site_primary_tax_category_id", on_delete: :cascade
   add_foreign_key "tax_categories", "sites", on_delete: :cascade
