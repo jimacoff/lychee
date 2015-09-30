@@ -31,10 +31,8 @@ class Order < ActiveRecord::Base
     # Refunds?
   end
 
-  has_one :customer_address, class_name: 'Address',
-                             foreign_key: 'order_customer_address_id'
-  has_one :delivery_address, class_name: 'Address',
-                             foreign_key: 'order_delivery_address_id'
+  belongs_to :customer_address, class_name: 'Address'
+  belongs_to :delivery_address, class_name: 'Address'
 
   has_many :commodity_line_items
   has_many :shipping_line_items

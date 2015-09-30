@@ -9,10 +9,9 @@ FactoryGirl.define do
                                       site: s
       s.tax_categories << s.primary_tax_category
 
-      s.subscriber_address = create :address, site_subscriber_address: s,
-                                              site: s
-
       s.preferences = create :preference, site: s
+
+      s.update! subscriber_address: create(:address, site: s)
     end
   end
 end
