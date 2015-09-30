@@ -32,6 +32,7 @@ RSpec.shared_examples 'jobs::publishing::images' do
         id: image_instance.id,
         name: image_instance.name,
         description: image_instance.description,
+        order: image_instance.order,
         data: {
           id: i.id,
           internal_name: i.internal_name,

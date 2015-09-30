@@ -1,7 +1,7 @@
 module Publishing
   module Images
     def image_instance(json, ii)
-      json.call(ii, :id, :name, :description)
+      json.call(ii, :id, :name, :description, :order)
       json.data do
         image(json, ii.image)
       end

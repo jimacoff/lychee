@@ -38,7 +38,7 @@ module Publishing
 
     def product_images(json, image_instances)
       json.images do
-        json.array! image_instances do |ii|
+        json.array! image_instances.sort_by(&:order) do |ii|
           image_instance(json, ii)
         end
       end

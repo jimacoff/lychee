@@ -2,6 +2,7 @@ FactoryGirl.define do
   factory :image_instance do
     image
     association :imageable, factory: :category_member
+    sequence :order
 
     trait :for_product_category do
     end

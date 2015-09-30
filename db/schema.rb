@@ -11,8 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20151003002208) do
-
+ActiveRecord::Schema.define(version: 20150930104732) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
   enable_extension "hstore"
@@ -118,6 +117,7 @@ ActiveRecord::Schema.define(version: 20151003002208) do
     t.datetime "updated_at",               null: false
     t.string   "name"
     t.string   "description"
+    t.integer  "order",                    null: false
   end
 
   add_index "image_instances", ["image_id"], name: "index_image_instances_on_image_id", using: :btree
