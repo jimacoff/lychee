@@ -21,6 +21,8 @@ module Publishing
     end
 
     def product(json, p)
+      json.template 'product'
+      json.format 'html'
       json.call(p, :id, :name, :short_description, :path,
                 :price_cents, :currency, :weight)
       json.updated_at p.updated_at.iso8601
