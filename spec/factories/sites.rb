@@ -3,7 +3,13 @@ FactoryGirl.define do
     name { Faker::Lorem.sentence }
     currency { 'AUD' }
 
-    after(:create) do |s|
+    transient { enable_on_create true }
+
+    trait :disabled do
+      transient { enable_on_create false }
+    end
+
+    after(:create) do |s, a|
       s.primary_tax_category = create :tax_category,
                                       site_primary_tax_category: s,
                                       site: s
@@ -11,7 +17,8 @@ FactoryGirl.define do
 
       s.preferences = create :preference, site: s
 
-      s.update! subscriber_address: create(:address, site: s)
+      s.update! subscriber_address: create(:address, site: s),
+                enabled: a.enable_on_create
     end
   end
 end

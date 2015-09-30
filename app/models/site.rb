@@ -26,9 +26,8 @@ class Site < ActiveRecord::Base
 
   validate :only_whitelisted_or_blacklisted_countries
   validate :prioritized_countries_are_valid
-  validates :subscriber_address, presence: true, on: :update
-  validates :primary_tax_category, presence: true, on: :update
-  validates :preferences, presence: true, on: :update
+  validates :subscriber_address, :primary_tax_category, :preferences,
+            presence: { if: :enabled? }
 
   after_save :reload_current
 
