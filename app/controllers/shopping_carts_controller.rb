@@ -32,9 +32,8 @@ class ShoppingCartsController < ApplicationController
 
   def cart
     id = session[:shopping_cart_id]
-    return @cart = ShoppingCart.find(id) if id
-
-    @cart = ShoppingCart.create!.tap { |c| session[:shopping_cart_id] = c.id }
+    @cart = ShoppingCart.find_by_id(id) if id
+    @cart ||= ShoppingCart.create!.tap { |c| session[:shopping_cart_id] = c.id }
   end
 
   def operations
