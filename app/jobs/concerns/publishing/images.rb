@@ -2,6 +2,10 @@ module Publishing
   module Images
     def image_instance(json, ii)
       json.call(ii, :id, :name, :description, :order)
+      json.paths do
+        json.default ii.image.default_path
+        json.srcset ii.image.srcset_path
+      end
       json.data do
         image(json, ii.image)
       end
