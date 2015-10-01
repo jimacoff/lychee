@@ -12,10 +12,6 @@ h1 Totes super production ready shopping cart page
               = f.hidden_field(:item_uuid, value: entry[:item_uuid])
               - if variant
                 = f.hidden_field(:variant_id, value: variant.id)
-                - variant.variation_instances.each do |instance|
-                  - k = instance.variation_id
-                  - v = instance.variation_value_id
-                  = f.hidden_field("variations[#{k}]", value: v)
               - else
                 = f.hidden_field(:product_id, value: product.id)
               - metadata.each do |k, v|
