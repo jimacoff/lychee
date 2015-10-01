@@ -6,6 +6,11 @@ RSpec.describe ShoppingCartsController, type: :routing do
     it { is_expected.to route_to('shopping_carts#show') }
   end
 
+  context 'post /shopping-cart' do
+    subject { { post: '/shopping-cart' } }
+    it { is_expected.to route_to('shopping_carts#add') }
+  end
+
   context 'patch /shopping-cart' do
     subject { { patch: '/shopping-cart' } }
     it { is_expected.to route_to('shopping_carts#update') }

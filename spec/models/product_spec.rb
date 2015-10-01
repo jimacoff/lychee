@@ -137,4 +137,74 @@ RSpec.describe Product, type: :model, site_scoped: true do
       end
     end
   end
+
+  describe '#variant' do
+    let!(:product) { create(:product) }
+
+    let(:size_trait) do
+      create(:trait, name: 'size', default_values: %w(small medium large))
+    end
+
+    let(:color_trait) do
+      create(:trait, name: 'color', default_values: %w(azure taupe indigo))
+    end
+
+    let(:size) { create(:variation, product: product, trait: size_trait) }
+    let(:color) { create(:variation, product: product, trait: color_trait) }
+
+    def create_default_values(trait)
+      trait.default_values.reduce({}) do |hash, value|
+        attrs = { name: value, order: 1, description: 'x' }
+        hash.merge(value => size.variation_values.create!(attrs))
+      end
+    end
+
+    let(:size_values)  { create_default_values(size_trait) }
+    let(:color_values) { create_default_values(color_trait) }
+
+    let(:opts1) do
+      { size.id => size_values['small'], color.id => color_values['azure'] }
+    end
+
+    let(:opts2) do
+      { size.id => size_values['medium'], color.id => color_values['taupe'] }
+    end
+
+    def variant_with(opts)
+      create(:variant, product: product).tap do |variant|
+        opts.each do |k, v|
+          attrs = { variation_id: k, variation_value: v }
+          variant.variation_instances.create!(attrs)
+        end
+      end
+    end
+
+    context 'with a matching variant' do
+      let!(:variant1) { variant_with(opts1) }
+      let!(:variant2) { variant_with(opts2) }
+
+      it 'returns the variant' do
+        expect(product.variant(opts1)).to eq(variant1)
+        expect(product.variant(opts2)).to eq(variant2)
+      end
+
+      it 'returns in a single query' do
+        expect { product.variant(opts1) }.not_to exceed_query_limit(1)
+      end
+    end
+
+    context 'with a partially matched variant' do
+      let!(:variant) { variant_with(opts1) }
+
+      it 'returns nil' do
+        expect(product.variant(opts1.slice(size.id))).to be_nil
+      end
+    end
+
+    context 'with no matching variant' do
+      it 'returns nil' do
+        expect(product.variant(opts1)).to be_nil
+      end
+    end
+  end
 end

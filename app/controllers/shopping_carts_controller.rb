@@ -1,4 +1,12 @@
 class ShoppingCartsController < ApplicationController
+  def add
+    @product = Product.find(params[:product_id])
+    attrs = { quantity: 1, metadata: params[:metadata] }
+
+    params[:variations] ? add_variant(attrs) : add_product(attrs)
+    redirect_to :shopping_cart
+  end
+
   def update
     operations.each { |op| cart.apply(op) }
     redirect_to :shopping_cart
@@ -11,6 +19,16 @@ class ShoppingCartsController < ApplicationController
   end
 
   private
+
+  def add_product(attrs)
+    fail("Product #{@product.id} needs variations") if @product.variants.any?
+    cart.apply(attrs.merge(product_id: @product.id))
+  end
+
+  def add_variant(attrs)
+    @variant = @product.variant(params[:variations])
+    cart.apply(attrs.merge(variant_id: @variant.try(:id)))
+  end
 
   def cart
     id = session[:shopping_cart_id]
