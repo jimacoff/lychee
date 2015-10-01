@@ -25,68 +25,17 @@ RSpec.describe Address, type: :model, site_scoped: true do
 
     it { is_expected.to have_db_column(:locality).of_type(:string) }
     it { is_expected.to have_db_column(:postcode).of_type(:string) }
-
-    it 'should have nullable column order_customer_address_id of type bigint' do
-      expect(subject).to have_db_column(:order_customer_address_id)
-        .of_type(:integer)
-        .with_options(limit: 8, null: true)
-    end
-    it { is_expected.to have_db_index(:order_customer_address_id) }
-
-    it 'should have nullable column order_delivery_address_id of type bigint' do
-      expect(subject).to have_db_column(:order_delivery_address_id)
-        .of_type(:integer)
-        .with_options(limit: 8, null: true)
-    end
-    it { is_expected.to have_db_index(:order_delivery_address_id) }
-  end
-
-  context 'relationships' do
-    it { is_expected.to belong_to(:order_customer_address) }
-    it { is_expected.to belong_to(:order_delivery_address) }
   end
 
   context 'validations' do
     it { is_expected.to validate_presence_of :line1 }
 
     context 'instance validations' do
-      context 'without order or site address reference' do
-        subject { create(:address) }
-        it { is_expected.not_to be_valid }
-      end
-
-      context 'with multiple address references' do
-        subject do
-          create(:address, order_customer_address: (create :order),
-                           site_subscriber_address: Site.current)
-        end
-        it { is_expected.not_to be_valid }
-      end
-
-      context 'orders' do
-        context 'customer association' do
-          subject { create(:address, order_customer_address: (create :order)) }
-          it { is_expected.to be_valid }
-        end
-        context 'delivery association' do
-          subject { create(:address, order_delivery_address: (create :order)) }
-          it { is_expected.to be_valid }
-        end
-      end
-
-      context 'site' do
-        context 'subscriber association' do
-          subject { create(:address, site_subscriber_address: Site.current) }
-          it { is_expected.to be_valid }
-        end
-      end
-
       context 'states' do
         context 'with country that does not require state' do
           let(:country) { create :country }
           subject do
-            create(:address, country: country,
-                             site_subscriber_address: Site.current)
+            create(:address, country: country)
           end
           it 'is valid when address has no linked state' do
             expect(subject).to be_valid
@@ -101,8 +50,7 @@ RSpec.describe Address, type: :model, site_scoped: true do
           let(:country) { create :country, :with_states }
           let(:state) { create :state, country: country }
           subject do
-            create(:address, state: state, country: country,
-                             site_subscriber_address: Site.current)
+            create(:address, state: state, country: country)
           end
           it 'is invalid when address has no linked state' do
             subject.state = nil
@@ -147,7 +95,7 @@ RSpec.describe Address, type: :model, site_scoped: true do
   end
 
   describe '#state?' do
-    subject { create(:address, site_subscriber_address: Site.current) }
+    subject { create(:address) }
     it 'is false when state is not specified' do
       expect(subject.state?).not_to be
     end

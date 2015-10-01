@@ -20,8 +20,8 @@ RSpec.describe Order, type: :model, site_scoped: true do
   end
 
   context 'relationships' do
-    it { is_expected.to have_one :customer_address }
-    it { is_expected.to have_one :delivery_address }
+    it { is_expected.to belong_to :customer_address }
+    it { is_expected.to belong_to :delivery_address }
 
     it { is_expected.to have_many :commodity_line_items }
     it { is_expected.to have_many :shipping_line_items }

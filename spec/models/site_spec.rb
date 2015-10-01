@@ -22,7 +22,7 @@ RSpec.describe Site, type: :model do
     it { is_expected.to have_many :categories }
     it { is_expected.to have_many :primary_categories }
 
-    it { is_expected.to have_one :subscriber_address }
+    it { is_expected.to belong_to :subscriber_address }
     it { is_expected.to have_one :preferences }
   end
 
@@ -31,18 +31,27 @@ RSpec.describe Site, type: :model do
 
     context 'instance validations' do
       subject { create(:site) }
+
       it { is_expected.to be_valid }
 
-      context 'without subscriber address' do
-        subject { create(:site, subscriber_address: nil) }
-        it 'is invalid' do
-          expect(subject.reload).not_to be_valid
+      context 'when disabled' do
+        subject { create(:site, :disabled) }
+
+        it { is_expected.not_to validate_presence_of(:subscriber_address) }
+        it { is_expected.not_to validate_presence_of(:primary_tax_category) }
+
+        it 'is valid without preferences' do
+          subject.preferences.destroy
+          expect(subject.reload).to be_valid
         end
       end
 
-      context 'without primary tax category' do
-        subject { create(:site, primary_tax_category: nil) }
-        it 'is invalid' do
+      context 'when disabled' do
+        it { is_expected.to validate_presence_of(:subscriber_address) }
+        it { is_expected.to validate_presence_of(:primary_tax_category) }
+
+        it 'is invalid without preferences' do
+          subject.preferences.destroy
           expect(subject.reload).not_to be_valid
         end
       end

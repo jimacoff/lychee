@@ -181,19 +181,13 @@ RSpec.shared_examples 'line item' do
         let(:customer_address) do
           create :address, country: tr2.country
         end
-        let(:subscriber_address) do
-          create :address, country: tr3.country
-        end
         let(:order) do
           create :order, delivery_address: delivery_address,
                          customer_address: customer_address
         end
 
-        before do
-          Site.current.subscriber_address.delete
-          Site.current.subscriber_address = subscriber_address
-          Site.current.save
-        end
+        before { Site.current.subscriber_address.update!(country: tr3.country) }
+
         after do
           Site.current.preferences.tax_basis = :delivery
           Site.current.preferences.save
