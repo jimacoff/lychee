@@ -21,6 +21,7 @@ class ShoppingCartsController < ApplicationController
   private
 
   def add_product(attrs)
+    fail("Product #{@product.id} needs variations") if @product.variants.any?
     cart.apply(attrs.merge(product_id: @product.id))
   end
 

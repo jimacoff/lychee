@@ -325,6 +325,14 @@ RSpec.describe ShoppingCartsController, type: :controller, site_scoped: true do
 
         include_context 'add to cart'
       end
+
+      context 'adding the parent product' do
+        let(:commodity_opts) { { product_id: product.id } }
+
+        it 'adds the item to a new cart' do
+          expect { run }.to raise_error(/Product \d+ needs variations/)
+        end
+      end
     end
   end
 end
