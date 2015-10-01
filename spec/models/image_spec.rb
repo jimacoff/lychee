@@ -47,7 +47,7 @@ RSpec.describe Image, type: :model, site_scoped: true do
     context 'image_files association extensions' do
       subject { create :image }
 
-      describe '#base_image' do
+      describe '#default_image' do
         let(:image_file) { subject.image_files.last }
         it 'provides the default image file' do
           image_file.default_image = true
@@ -77,5 +77,34 @@ RSpec.describe Image, type: :model, site_scoped: true do
         end
       end
     end
+
+    describe '#default_path' do
+      subject { create :image }
+      let(:image_file) { subject.image_files.last }
+
+      it 'provides the default image file path' do
+        image_file.default_image = true
+        image_file.save
+
+        expect(subject.default_path).to eq(image_file.path)
+      end
+    end
+
+    describe '#srcset_path' do
+      subject { create :image }
+      let(:image_file) { subject.image_files.first }
+      let(:expected_srcset_path) do
+        subject.image_files.srcset.map(&:srcset_path).join(', ')
+      end
+
+      it 'provides the default image file path' do
+        image_file.original_image = true
+        image_file.save
+
+        expect(subject.srcset_path).to eq(expected_srcset_path)
+        puts subject.srcset_path
+      end
+    end
+
   end
 end

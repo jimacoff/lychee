@@ -32,4 +32,12 @@ class Image < ActiveRecord::Base
     return if image_files.default_image
     errors.add(:default_image, 'not registered')
   end
+
+  def default_path
+    image_files.default_image.path
+  end
+
+  def srcset_path
+    image_files.srcset.map(&:srcset_path).join(', ')
+  end
 end
