@@ -225,6 +225,14 @@ RSpec.describe ShoppingCartsController, type: :controller, site_scoped: true do
           run
           expect(response).to redirect_to(shopping_cart_path)
         end
+
+        context 'when the cart is deleted' do
+          it 'creates a new cart' do
+            cart.destroy
+            expect { run }.to change(ShoppingCart, :count).by(1)
+            expect(session[:shopping_cart_id]).to eq(ShoppingCart.last.id)
+          end
+        end
       end
     end
 
