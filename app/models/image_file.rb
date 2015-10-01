@@ -22,6 +22,8 @@ class ImageFile < ActiveRecord::Base
   end
 
   def srcset_path
-    "#{path} #{x_dimension || width}"
+    return "#{path} #{x_dimension}" if x_dimension
+
+    "#{path} #{width}w"
   end
 end
