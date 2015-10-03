@@ -1,7 +1,7 @@
 require 'rails_helper'
 
 RSpec.describe ShoppingBagOperation, type: :model, site_scoped: true do
-  let(:cart) { create(:shopping_bag) }
+  let(:bag) { create(:shopping_bag) }
 
   subject { build(:shopping_bag_operation) }
 
@@ -39,7 +39,7 @@ RSpec.describe ShoppingBagOperation, type: :model, site_scoped: true do
   context '::by_uuid' do
     let!(:ops) do
       create_list(:shopping_bag_operation, 5, :for_product,
-                  shopping_bag: cart)
+                  shopping_bag: bag)
     end
 
     it 'scopes the operations by uuid' do
@@ -51,15 +51,15 @@ RSpec.describe ShoppingBagOperation, type: :model, site_scoped: true do
   context '::by_commodity' do
     let!(:no_metadata_op) do
       create(:shopping_bag_operation,
-             commodity_attr.merge(shopping_bag: cart))
+             commodity_attr.merge(shopping_bag: bag))
     end
 
     let!(:ops) do
       [{ 'a' => '1' }, { 'b' => '2' }, { 'c' => '3' }].map do |m|
         create(:shopping_bag_operation,
-               commodity_attr.merge(shopping_bag: cart, metadata: m))
+               commodity_attr.merge(shopping_bag: bag, metadata: m))
         create(:shopping_bag_operation,
-               commodity2_attr.merge(shopping_bag: cart, metadata: m))
+               commodity2_attr.merge(shopping_bag: bag, metadata: m))
       end
     end
 

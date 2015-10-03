@@ -72,7 +72,7 @@ RSpec.describe ShoppingBag, type: :model, site_scoped: true do
       end
     end
 
-    shared_examples 'an operable cart item' do
+    shared_examples 'an operable bag item' do
       let!(:commodity) { create(kind) }
       let(:commodity_attrs) { { :"#{kind}_id" => commodity.id } }
 
@@ -80,7 +80,7 @@ RSpec.describe ShoppingBag, type: :model, site_scoped: true do
         let(:attrs) { commodity_attrs.merge(quantity: 1) }
         include_examples 'apply the operation successfully'
 
-        context 'when the commodity is already in the cart' do
+        context 'when the commodity is already in the bag' do
           let(:op_attrs) { attrs.merge(item_uuid: SecureRandom.uuid) }
           let!(:op) { subject.shopping_bag_operations.create!(op_attrs) }
 
@@ -103,7 +103,7 @@ RSpec.describe ShoppingBag, type: :model, site_scoped: true do
           end
         end
 
-        context 'when the commodity is in the cart with mismatched metadata' do
+        context 'when the commodity is in the bag with mismatched metadata' do
           let(:attrs) do
             commodity_attrs.merge(quantity: 1, metadata: { 'a' => '1' },
                                   item_uuid: SecureRandom.uuid)
@@ -180,12 +180,12 @@ RSpec.describe ShoppingBag, type: :model, site_scoped: true do
 
     context 'with a product' do
       let(:kind) { :product }
-      it_behaves_like 'an operable cart item'
+      it_behaves_like 'an operable bag item'
     end
 
     context 'with a variant' do
       let(:kind) { :variant }
-      it_behaves_like 'an operable cart item'
+      it_behaves_like 'an operable bag item'
     end
   end
 
@@ -259,7 +259,7 @@ RSpec.describe ShoppingBag, type: :model, site_scoped: true do
       expect(subject.contents).to be_empty
     end
 
-    it 'queries the shopping cart efficiently' do
+    it 'queries the shopping bag efficiently' do
       product = create(:product)
 
       (1..10).each do |i|

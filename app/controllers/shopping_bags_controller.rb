@@ -8,32 +8,32 @@ class ShoppingBagsController < ApplicationController
   end
 
   def update
-    operations.each { |op| cart.apply(op) }
+    operations.each { |op| bag.apply(op) }
     redirect_to :shopping_bag
   rescue ActionController::ParameterMissing
     render nothing: true
   end
 
   def show
-    @contents = cart.contents.values
+    @contents = bag.contents.values
   end
 
   private
 
   def add_product(attrs)
     fail("Product #{@product.id} needs variations") if @product.variants.any?
-    cart.apply(attrs.merge(product_id: @product.id))
+    bag.apply(attrs.merge(product_id: @product.id))
   end
 
   def add_variant(attrs)
     @variant = @product.variant(params[:variations])
-    cart.apply(attrs.merge(variant_id: @variant.try(:id)))
+    bag.apply(attrs.merge(variant_id: @variant.try(:id)))
   end
 
-  def cart
+  def bag
     id = session[:shopping_bag_id]
-    @cart = ShoppingBag.find_by_id(id) if id
-    @cart ||= ShoppingBag.create!.tap { |c| session[:shopping_bag_id] = c.id }
+    @bag = ShoppingBag.find_by_id(id) if id
+    @bag ||= ShoppingBag.create!.tap { |c| session[:shopping_bag_id] = c.id }
   end
 
   def operations

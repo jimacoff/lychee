@@ -5,7 +5,7 @@ class Preference < ActiveRecord::Base
   REQUIRED_RESERVED_PATHS = %w(blog blog_articles blog_categories blog_tags
                                products categories images shopping_bag)
 
-  FIXED_RESERVED_PATHS = { 'shopping_bag' => '/shopping-cart' }
+  FIXED_RESERVED_PATHS = { 'shopping_bag' => '/shopping-bag' }
 
   enum tax_basis: { delivery: 0, customer: 1, subscriber: 2 }
 

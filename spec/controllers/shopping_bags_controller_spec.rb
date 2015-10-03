@@ -1,11 +1,11 @@
 require 'rails_helper'
 
 RSpec.describe ShoppingBagsController, type: :controller, site_scoped: true do
-  let(:cart) { nil }
-  before { session[:shopping_bag_id] = cart.try(:id) }
+  let(:bag) { nil }
+  before { session[:shopping_bag_id] = bag.try(:id) }
 
   def operations
-    cart.shopping_bag_operations(true)
+    bag.shopping_bag_operations(true)
   end
 
   let(:uuid) { SecureRandom.uuid }
@@ -15,24 +15,24 @@ RSpec.describe ShoppingBagsController, type: :controller, site_scoped: true do
       patch :update, operations: updates
     end
 
-    shared_context 'shopping cart updates' do
-      context 'when no shopping cart exists' do
+    shared_context 'shopping bag updates' do
+      context 'when no shopping bag exists' do
         context 'with no operations' do
           let(:updates) { [] }
 
-          it 'creates no shopping cart' do
+          it 'creates no shopping bag' do
             expect { run }.not_to change(ShoppingBag, :count)
           end
         end
 
-        context 'with an "add to cart" operation' do
+        context 'with an "add to bag" operation' do
           let(:updates) { [commodity_attrs.merge(quantity: 1)] }
 
-          it 'creates a shopping cart' do
+          it 'creates a shopping bag' do
             expect { run }.to change(ShoppingBag, :count).by(1)
           end
 
-          it 'assigns the shopping cart to the session' do
+          it 'assigns the shopping bag to the session' do
             run
             expect(session[:shopping_bag_id]).to eq(ShoppingBag.last.id)
           end
@@ -41,12 +41,12 @@ RSpec.describe ShoppingBagsController, type: :controller, site_scoped: true do
             expect { run }.to change(ShoppingBagOperation, :count).by(1)
           end
 
-          it 'redirects to the shopping cart' do
+          it 'redirects to the shopping bag' do
             run
             expect(response).to redirect_to(shopping_bag_path)
           end
 
-          it 'updates the cart contents' do
+          it 'updates the bag contents' do
             run
             c = ShoppingBag.last.contents
             expect(c.keys.length).to eq(1)
@@ -56,8 +56,8 @@ RSpec.describe ShoppingBagsController, type: :controller, site_scoped: true do
         end
       end
 
-      context 'when a shopping cart exists' do
-        let(:cart) { create(:shopping_bag) }
+      context 'when a shopping bag exists' do
+        let(:bag) { create(:shopping_bag) }
 
         context 'with no operations' do
           let(:updates) { [] }
@@ -67,14 +67,14 @@ RSpec.describe ShoppingBagsController, type: :controller, site_scoped: true do
           end
         end
 
-        context 'with an "add to cart" operation' do
+        context 'with an "add to bag" operation' do
           let(:updates) { [commodity_attrs.merge(quantity: 1)] }
 
           it 'adds an operation' do
             expect { run }.to change { operations.length }.by(1)
           end
 
-          it 'updates the cart contents' do
+          it 'updates the bag contents' do
             run
             c = ShoppingBag.last.contents
             expect(c.keys.length).to eq(1)
@@ -83,23 +83,23 @@ RSpec.describe ShoppingBagsController, type: :controller, site_scoped: true do
           end
         end
 
-        context 'with an "update cart" operation' do
+        context 'with an "update bag" operation' do
           let(:updates) do
             [commodity_attrs.merge(item_uuid: uuid, quantity: 1)]
           end
 
           before do
             attrs = updates.first.merge(quantity: 3)
-            cart.shopping_bag_operations.create!(attrs)
+            bag.shopping_bag_operations.create!(attrs)
           end
 
           it 'adds an operation' do
             expect { run }.to change { operations.length }.by(1)
           end
 
-          it 'updates the cart contents' do
+          it 'updates the bag contents' do
             run
-            c = cart.reload.contents
+            c = bag.reload.contents
             expect(c.keys).to contain_exactly(uuid)
             expect(c.values.first)
               .to include(commodity_item_attrs)
@@ -111,12 +111,12 @@ RSpec.describe ShoppingBagsController, type: :controller, site_scoped: true do
               [commodity_attrs.merge(item_uuid: uuid, quantity: 0)]
             end
 
-            it 'removes the item from the cart' do
-              expect { run }.to change { cart.reload.contents }.to be_empty
+            it 'removes the item from the bag' do
+              expect { run }.to change { bag.reload.contents }.to be_empty
             end
           end
 
-          context 'updating the cart to the same contents' do
+          context 'updating the bag to the same contents' do
             it 'creates no new operations' do
               run
               expect { run }.not_to change { operations.length }
@@ -131,7 +131,7 @@ RSpec.describe ShoppingBagsController, type: :controller, site_scoped: true do
       let(:commodity_attrs) { { product_id: product.id } }
       let(:commodity_item_attrs) { { product: product } }
 
-      include_context 'shopping cart updates'
+      include_context 'shopping bag updates'
     end
 
     context 'for a product with metadata' do
@@ -140,7 +140,7 @@ RSpec.describe ShoppingBagsController, type: :controller, site_scoped: true do
       let(:commodity_attrs) { { product_id: product.id, metadata: metadata } }
       let(:commodity_item_attrs) { { product: product, metadata: metadata } }
 
-      include_context 'shopping cart updates'
+      include_context 'shopping bag updates'
     end
 
     context 'for a variant' do
@@ -148,7 +148,7 @@ RSpec.describe ShoppingBagsController, type: :controller, site_scoped: true do
       let(:commodity_attrs) { { variant_id: variant.id } }
       let(:commodity_item_attrs) { { variant: variant } }
 
-      include_context 'shopping cart updates'
+      include_context 'shopping bag updates'
     end
 
     context 'for a variant with metadata' do
@@ -157,12 +157,12 @@ RSpec.describe ShoppingBagsController, type: :controller, site_scoped: true do
       let(:commodity_attrs) { { variant_id: variant.id, metadata: metadata } }
       let(:commodity_item_attrs) { { variant: variant, metadata: metadata } }
 
-      include_context 'shopping cart updates'
+      include_context 'shopping bag updates'
     end
   end
 
   context 'get :show' do
-    let(:cart) { create(:shopping_bag) }
+    let(:bag) { create(:shopping_bag) }
 
     before { get :show }
     subject { response }
@@ -170,21 +170,21 @@ RSpec.describe ShoppingBagsController, type: :controller, site_scoped: true do
     it { is_expected.to have_http_status(:ok) }
     it { is_expected.to render_template('shopping_bags/show') }
 
-    it 'assigns the cart' do
-      expect(assigns[:cart]).to eq(cart)
+    it 'assigns the bag' do
+      expect(assigns[:bag]).to eq(bag)
     end
 
-    context 'with a non-empty cart' do
+    context 'with a non-empty bag' do
       let(:products) { create_list(:product, 3) }
 
-      let(:cart) do
-        create(:shopping_bag).tap do |cart|
-          products.each { |p| cart.apply(product_id: p.id, quantity: 1) }
+      let(:bag) do
+        create(:shopping_bag).tap do |bag|
+          products.each { |p| bag.apply(product_id: p.id, quantity: 1) }
         end
       end
 
       it 'assigns the contents' do
-        expect(assigns[:contents]).to eq(cart.contents.values)
+        expect(assigns[:contents]).to eq(bag.contents.values)
       end
     end
   end
@@ -194,41 +194,41 @@ RSpec.describe ShoppingBagsController, type: :controller, site_scoped: true do
       post :add, opts
     end
 
-    shared_context 'add to cart' do
+    shared_context 'add to bag' do
       let(:opts) { commodity_opts }
 
-      context 'with no cart' do
-        let(:cart) { nil }
+      context 'with no bag' do
+        let(:bag) { nil }
 
-        it 'adds the item to a new cart' do
+        it 'adds the item to a new bag' do
           expect { run }.to change(ShoppingBag, :count).by(1)
-          expect(assigns[:cart].contents.values)
+          expect(assigns[:bag].contents.values)
             .to contain_exactly(include(commodity_item_attrs))
         end
 
-        it 'redirects to the cart' do
+        it 'redirects to the bag' do
           run
           expect(response).to redirect_to(shopping_bag_path)
         end
       end
 
-      context 'with an existing cart' do
-        let!(:cart) { create(:shopping_bag) }
+      context 'with an existing bag' do
+        let!(:bag) { create(:shopping_bag) }
 
-        it 'adds the item to the cart' do
+        it 'adds the item to the bag' do
           run
-          expect(cart.contents.values)
+          expect(bag.contents.values)
             .to contain_exactly(include(commodity_item_attrs))
         end
 
-        it 'redirects to the cart' do
+        it 'redirects to the bag' do
           run
           expect(response).to redirect_to(shopping_bag_path)
         end
 
-        context 'when the cart is deleted' do
-          it 'creates a new cart' do
-            cart.destroy
+        context 'when the bag is deleted' do
+          it 'creates a new bag' do
+            bag.destroy
             expect { run }.to change(ShoppingBag, :count).by(1)
             expect(session[:shopping_bag_id]).to eq(ShoppingBag.last.id)
           end
@@ -241,7 +241,7 @@ RSpec.describe ShoppingBagsController, type: :controller, site_scoped: true do
       let(:commodity_opts) { { product_id: product.id } }
       let(:commodity_item_attrs) { { product: product, quantity: 1 } }
 
-      include_context 'add to cart'
+      include_context 'add to bag'
 
       context 'with metadata' do
         let(:commodity_opts) do
@@ -252,7 +252,7 @@ RSpec.describe ShoppingBagsController, type: :controller, site_scoped: true do
           { product: product, quantity: 1, metadata: { 'x' => 'y' } }
         end
 
-        include_context 'add to cart'
+        include_context 'add to bag'
       end
     end
 
@@ -313,7 +313,7 @@ RSpec.describe ShoppingBagsController, type: :controller, site_scoped: true do
 
       let(:commodity_item_attrs) { { variant: variant, quantity: 1 } }
 
-      include_context 'add to cart'
+      include_context 'add to bag'
 
       context 'with metadata' do
         let(:commodity_opts) do
@@ -331,13 +331,13 @@ RSpec.describe ShoppingBagsController, type: :controller, site_scoped: true do
           { variant: variant, quantity: 1, metadata: { 'x' => 'y' } }
         end
 
-        include_context 'add to cart'
+        include_context 'add to bag'
       end
 
       context 'adding the parent product' do
         let(:commodity_opts) { { product_id: product.id } }
 
-        it 'adds the item to a new cart' do
+        it 'adds the item to a new bag' do
           expect { run }.to raise_error(/Product \d+ needs variations/)
         end
       end
