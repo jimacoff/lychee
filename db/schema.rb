@@ -223,7 +223,7 @@ ActiveRecord::Schema.define(version: 20151004061826) do
     t.integer  "total_cents",                         default: 0,     null: false
     t.string   "currency",                            default: "USD", null: false
     t.string   "status",                  limit: 255,                 null: false
-    t.hstore   "metadata"
+    t.hstore   "metadata",                                            null: false
     t.text     "tags",                                default: [],                 array: true
     t.integer  "site_id",                 limit: 8,                   null: false
     t.datetime "created_at",                                          null: false
@@ -233,7 +233,7 @@ ActiveRecord::Schema.define(version: 20151004061826) do
     t.integer  "total_commodities_cents",             default: 0,     null: false
     t.integer  "total_shipping_cents",                default: 0,     null: false
     t.integer  "total_tax_cents",                     default: 0,     null: false
-    t.string   "workflow_state"
+    t.string   "workflow_state",                                      null: false
     t.integer  "customer_address_id",     limit: 8
     t.integer  "delivery_address_id",     limit: 8
   end
