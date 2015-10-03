@@ -25,7 +25,8 @@ class Order < ActiveRecord::Base
   has_paper_trail
   valhammer
 
-  validates :customer_address, :delivery_address, presence: true
+  validates :customer_address, :delivery_address,
+            presence: { unless: :can_omit_customer_details? }
 
   # TODO: Store environment details about order, country, IP, browser etc
   # as many details as possible for use with risk APIs

@@ -33,11 +33,31 @@ RSpec.describe Order, type: :model, site_scoped: true do
     it { is_expected.to validate_presence_of :weight }
     it { is_expected.to validate_presence_of :status }
     it { is_expected.to validate_length_of(:status).is_at_most(255) }
-    it { is_expected.to validate_presence_of :customer_address }
-    it { is_expected.to validate_presence_of :delivery_address }
 
-    context 'instance validations' do
-      subject { create :order }
+    shared_examples 'a state that requires customer details' do
+      it { is_expected.to validate_presence_of :customer_address }
+      it { is_expected.to validate_presence_of :delivery_address }
+    end
+
+    shared_examples 'a state that does not require customer details' do
+      it { is_expected.not_to validate_presence_of :customer_address }
+      it { is_expected.not_to validate_presence_of :delivery_address }
+    end
+
+    no_customer_info_states = %i(new collecting cancelled abandoned)
+
+    no_customer_info_states.each do |state|
+      context "when #{state}" do
+        subject { create(:order, workflow_state: state) }
+        it_behaves_like 'a state that does not require customer details'
+      end
+    end
+
+    (Order.workflow_spec.states.keys - no_customer_info_states).each do |state|
+      context "when #{state}" do
+        subject { create(:order, workflow_state: state) }
+        it_behaves_like 'a state that requires customer details'
+      end
     end
   end
 
