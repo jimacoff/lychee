@@ -226,7 +226,7 @@ RSpec.describe ShoppingBagOperation, type: :model, site_scoped: true do
 
       let(:operation) do
         create(:shopping_bag_operation, metadata: { 'a' => 'b' },
-                                         product: product)
+                                        product: product)
       end
 
       subject { operation.item_attrs }
@@ -243,7 +243,7 @@ RSpec.describe ShoppingBagOperation, type: :model, site_scoped: true do
 
       let(:operation) do
         create(:shopping_bag_operation, metadata: { 'a' => 'b' },
-                                         variant: variant)
+                                        variant: variant)
       end
 
       subject { operation.item_attrs }
