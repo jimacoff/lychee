@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20150930104732) do
+ActiveRecord::Schema.define(version: 20151003002208) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -332,28 +332,28 @@ ActiveRecord::Schema.define(version: 20150930104732) do
 
   add_index "shipping_rates", ["site_id"], name: "index_shipping_rates_on_site_id", using: :btree
 
-  create_table "shopping_cart_operations", id: :bigserial, force: :cascade do |t|
-    t.integer  "shopping_cart_id", limit: 8, null: false
-    t.integer  "product_id",       limit: 8
-    t.integer  "variant_id",       limit: 8
-    t.uuid     "item_uuid",                  null: false
-    t.integer  "quantity",                   null: false
+  create_table "shopping_bag_operations", id: :bigserial, force: :cascade do |t|
+    t.integer  "shopping_bag_id", limit: 8, null: false
+    t.integer  "product_id",      limit: 8
+    t.integer  "variant_id",      limit: 8
+    t.uuid     "item_uuid",                 null: false
+    t.integer  "quantity",                  null: false
     t.hstore   "metadata"
-    t.integer  "site_id",          limit: 8, null: false
-    t.datetime "created_at",                 null: false
+    t.integer  "site_id",         limit: 8, null: false
+    t.datetime "created_at",                null: false
   end
 
-  add_index "shopping_cart_operations", ["shopping_cart_id"], name: "index_shopping_cart_operations_on_shopping_cart_id", using: :btree
-  add_index "shopping_cart_operations", ["site_id"], name: "index_shopping_cart_operations_on_site_id", using: :btree
+  add_index "shopping_bag_operations", ["shopping_bag_id"], name: "index_shopping_bag_operations_on_shopping_bag_id", using: :btree
+  add_index "shopping_bag_operations", ["site_id"], name: "index_shopping_bag_operations_on_site_id", using: :btree
 
-  create_table "shopping_carts", id: :bigserial, force: :cascade do |t|
+  create_table "shopping_bags", id: :bigserial, force: :cascade do |t|
     t.integer  "site_id",        limit: 8, null: false
     t.string   "workflow_state",           null: false
     t.datetime "created_at",               null: false
     t.datetime "updated_at",               null: false
   end
 
-  add_index "shopping_carts", ["site_id"], name: "index_shopping_carts_on_site_id", using: :btree
+  add_index "shopping_bags", ["site_id"], name: "index_shopping_bags_on_site_id", using: :btree
 
   create_table "sites", id: :bigserial, force: :cascade do |t|
     t.string   "name",                                            null: false
@@ -579,11 +579,11 @@ ActiveRecord::Schema.define(version: 20150930104732) do
   add_foreign_key "shipping_rate_regions", "states"
   add_foreign_key "shipping_rate_regions", "tax_categories", column: "tax_override_id", on_delete: :restrict
   add_foreign_key "shipping_rates", "sites"
-  add_foreign_key "shopping_cart_operations", "products", on_delete: :restrict
-  add_foreign_key "shopping_cart_operations", "shopping_carts", on_delete: :cascade
-  add_foreign_key "shopping_cart_operations", "sites", on_delete: :cascade
-  add_foreign_key "shopping_cart_operations", "variants", on_delete: :restrict
-  add_foreign_key "shopping_carts", "sites", on_delete: :cascade
+  add_foreign_key "shopping_bag_operations", "products", on_delete: :restrict
+  add_foreign_key "shopping_bag_operations", "shopping_bags", on_delete: :cascade
+  add_foreign_key "shopping_bag_operations", "sites", on_delete: :cascade
+  add_foreign_key "shopping_bag_operations", "variants", on_delete: :restrict
+  add_foreign_key "shopping_bags", "sites", on_delete: :cascade
   add_foreign_key "sites", "addresses", column: "subscriber_address_id", on_delete: :restrict
   add_foreign_key "states", "countries", on_delete: :cascade
   add_foreign_key "tax_categories", "sites", column: "site_primary_tax_category_id", on_delete: :cascade
