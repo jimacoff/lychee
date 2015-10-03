@@ -1,23 +1,23 @@
 require 'rails_helper'
 
 RSpec.describe ShoppingBagsController, type: :routing do
-  context 'get /shopping-bag' do
-    subject { { get: '/shopping-bag' } }
+  context 'get /shop/bag' do
+    subject { { get: '/shop/bag' } }
     it { is_expected.to route_to('shopping_bags#show') }
   end
 
-  context 'post /shopping-bag' do
-    subject { { post: '/shopping-bag' } }
+  context 'post /shop/bag' do
+    subject { { post: '/shop/bag' } }
     it { is_expected.to route_to('shopping_bags#add') }
   end
 
-  context 'patch /shopping-bag' do
-    subject { { patch: '/shopping-bag' } }
+  context 'patch /shop/bag' do
+    subject { { patch: '/shop/bag' } }
     it { is_expected.to route_to('shopping_bags#update') }
   end
 
-  context 'delete /shopping-bag' do
-    subject { { delete: '/shopping-bag' } }
+  context 'delete /shop/bag' do
+    subject { { delete: '/shop/bag' } }
     it { is_expected.to route_to('shopping_bags#destroy') }
   end
 end
