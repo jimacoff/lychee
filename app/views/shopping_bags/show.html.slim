@@ -1,7 +1,7 @@
-h1 Totes super production ready shopping cart page
+h1 Totes super production ready shopping bag page
 
 = form_tag({}, method: :patch) do
-  table#cart(style='min-width: 50%')
+  table#bag(style='min-width: 50%')
     tbody
       - @contents.each do |entry|
         = fields_for('operations[]', []) do |f|
@@ -29,4 +29,4 @@ h1 Totes super production ready shopping cart page
                     = instance.variation_value.description
 
             td= f.text_field(:quantity, value: entry[:quantity], size: 3)
-  button.btn(type='submit') Update Cart
+  button.btn(type='submit') Update Bag

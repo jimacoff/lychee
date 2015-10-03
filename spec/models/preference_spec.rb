@@ -70,8 +70,8 @@ RSpec.describe Preference, type: :model, site_scoped: true do
         expect(subject).to be_invalid
       end
 
-      it 'requires a fixed shopping_cart path' do
-        subject.reserved_paths['shopping_cart'] = '/x'
+      it 'requires a fixed shopping_bag path' do
+        subject.reserved_paths['shopping_bag'] = '/x'
         expect(subject).to be_invalid
       end
     end

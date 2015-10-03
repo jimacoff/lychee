@@ -1,18 +1,18 @@
 require 'rails_helper'
 
-RSpec.describe ShoppingCartOperation, type: :model, site_scoped: true do
-  let(:cart) { create(:shopping_cart) }
+RSpec.describe ShoppingBagOperation, type: :model, site_scoped: true do
+  let(:bag) { create(:shopping_bag) }
 
-  subject { build(:shopping_cart_operation) }
+  subject { build(:shopping_bag_operation) }
 
   has_context 'parent site' do
-    let(:factory) { [:shopping_cart_operation, :for_product] }
+    let(:factory) { [:shopping_bag_operation, :for_product] }
   end
 
   has_context 'metadata'
 
   has_context 'commodity reference', indexed: false do
-    let(:factory) { :shopping_cart_operation }
+    let(:factory) { :shopping_bag_operation }
   end
 
   context 'table structure' do
@@ -22,13 +22,13 @@ RSpec.describe ShoppingCartOperation, type: :model, site_scoped: true do
   end
 
   context 'relationships' do
-    it { is_expected.to belong_to(:shopping_cart) }
+    it { is_expected.to belong_to(:shopping_bag) }
     it { is_expected.to belong_to(:product) }
     it { is_expected.to belong_to(:variant) }
   end
 
   context 'validations' do
-    it { is_expected.to validate_presence_of(:shopping_cart) }
+    it { is_expected.to validate_presence_of(:shopping_bag) }
     it { is_expected.not_to validate_presence_of(:product) }
     it { is_expected.not_to validate_presence_of(:variant) }
     it { is_expected.to validate_presence_of(:item_uuid) }
@@ -38,28 +38,28 @@ RSpec.describe ShoppingCartOperation, type: :model, site_scoped: true do
 
   context '::by_uuid' do
     let!(:ops) do
-      create_list(:shopping_cart_operation, 5, :for_product,
-                  shopping_cart: cart)
+      create_list(:shopping_bag_operation, 5, :for_product,
+                  shopping_bag: bag)
     end
 
     it 'scopes the operations by uuid' do
-      scope = ShoppingCartOperation.by_uuid(ops[0..1].map(&:item_uuid))
+      scope = ShoppingBagOperation.by_uuid(ops[0..1].map(&:item_uuid))
       expect(scope).to contain_exactly(*ops[0..1])
     end
   end
 
   context '::by_commodity' do
     let!(:no_metadata_op) do
-      create(:shopping_cart_operation,
-             commodity_attr.merge(shopping_cart: cart))
+      create(:shopping_bag_operation,
+             commodity_attr.merge(shopping_bag: bag))
     end
 
     let!(:ops) do
       [{ 'a' => '1' }, { 'b' => '2' }, { 'c' => '3' }].map do |m|
-        create(:shopping_cart_operation,
-               commodity_attr.merge(shopping_cart: cart, metadata: m))
-        create(:shopping_cart_operation,
-               commodity2_attr.merge(shopping_cart: cart, metadata: m))
+        create(:shopping_bag_operation,
+               commodity_attr.merge(shopping_bag: bag, metadata: m))
+        create(:shopping_bag_operation,
+               commodity2_attr.merge(shopping_bag: bag, metadata: m))
       end
     end
 
@@ -67,13 +67,13 @@ RSpec.describe ShoppingCartOperation, type: :model, site_scoped: true do
       it "scopes the operations by #{k} and metadata" do
         op = ops.sample
         opts = { k => op[k], metadata: op.metadata }
-        expect(ShoppingCartOperation.by_commodity(opts)).to contain_exactly(op)
+        expect(ShoppingBagOperation.by_commodity(opts)).to contain_exactly(op)
       end
 
       context 'when metadata is not supplied' do
         it 'returns items with no metadata' do
           opts = { k => no_metadata_op[k], metadata: nil }
-          expect(ShoppingCartOperation.by_commodity(opts))
+          expect(ShoppingBagOperation.by_commodity(opts))
             .to contain_exactly(no_metadata_op)
         end
       end
@@ -102,7 +102,7 @@ RSpec.describe ShoppingCartOperation, type: :model, site_scoped: true do
     let(:product) { nil }
     let(:variant) { nil }
     let(:metadata) { nil }
-    let(:op) { create(:shopping_cart_operation, attrs) }
+    let(:op) { create(:shopping_bag_operation, attrs) }
 
     let(:attrs) do
       { product_id: product.try(:id), variant_id: variant.try(:id),
@@ -225,8 +225,8 @@ RSpec.describe ShoppingCartOperation, type: :model, site_scoped: true do
       let(:product) { create(:product) }
 
       let(:operation) do
-        create(:shopping_cart_operation, metadata: { 'a' => 'b' },
-                                         product: product)
+        create(:shopping_bag_operation, metadata: { 'a' => 'b' },
+                                        product: product)
       end
 
       subject { operation.item_attrs }
@@ -242,8 +242,8 @@ RSpec.describe ShoppingCartOperation, type: :model, site_scoped: true do
       let(:variant) { create(:variant) }
 
       let(:operation) do
-        create(:shopping_cart_operation, metadata: { 'a' => 'b' },
-                                         variant: variant)
+        create(:shopping_bag_operation, metadata: { 'a' => 'b' },
+                                        variant: variant)
       end
 
       subject { operation.item_attrs }

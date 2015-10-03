@@ -1,10 +1,10 @@
 require 'rails_helper'
 
-RSpec.describe ShoppingCart, type: :model, site_scoped: true do
-  subject { create(:shopping_cart) }
+RSpec.describe ShoppingBag, type: :model, site_scoped: true do
+  subject { create(:shopping_bag) }
 
   has_context 'parent site' do
-    let(:factory) { :shopping_cart }
+    let(:factory) { :shopping_bag }
   end
 
   context 'table structure' do
@@ -13,7 +13,7 @@ RSpec.describe ShoppingCart, type: :model, site_scoped: true do
 
   context 'relationships' do
     it { is_expected.to belong_to(:site) }
-    it { is_expected.to have_many(:shopping_cart_operations) }
+    it { is_expected.to have_many(:shopping_bag_operations) }
   end
 
   context 'validations' do
@@ -39,7 +39,7 @@ RSpec.describe ShoppingCart, type: :model, site_scoped: true do
 
   context '#apply' do
     def operations
-      subject.shopping_cart_operations
+      subject.shopping_bag_operations
     end
 
     def run
@@ -72,7 +72,7 @@ RSpec.describe ShoppingCart, type: :model, site_scoped: true do
       end
     end
 
-    shared_examples 'an operable cart item' do
+    shared_examples 'an operable bag item' do
       let!(:commodity) { create(kind) }
       let(:commodity_attrs) { { :"#{kind}_id" => commodity.id } }
 
@@ -80,9 +80,9 @@ RSpec.describe ShoppingCart, type: :model, site_scoped: true do
         let(:attrs) { commodity_attrs.merge(quantity: 1) }
         include_examples 'apply the operation successfully'
 
-        context 'when the commodity is already in the cart' do
+        context 'when the commodity is already in the bag' do
           let(:op_attrs) { attrs.merge(item_uuid: SecureRandom.uuid) }
-          let!(:op) { subject.shopping_cart_operations.create!(op_attrs) }
+          let!(:op) { subject.shopping_bag_operations.create!(op_attrs) }
 
           it 'applies to the existing item' do
             expect { run }.to change { operations.count }.by(1)
@@ -94,7 +94,7 @@ RSpec.describe ShoppingCart, type: :model, site_scoped: true do
           it 'only applies to the item with matching metadata' do
             wrong_attrs = op_attrs.merge(item_uuid: SecureRandom.uuid,
                                          quantity: 4, metadata: { 'a' => '1' })
-            subject.shopping_cart_operations.create!(wrong_attrs)
+            subject.shopping_bag_operations.create!(wrong_attrs)
 
             expect { run }.to change { operations.count }.by(1)
 
@@ -103,14 +103,14 @@ RSpec.describe ShoppingCart, type: :model, site_scoped: true do
           end
         end
 
-        context 'when the commodity is in the cart with mismatched metadata' do
+        context 'when the commodity is in the bag with mismatched metadata' do
           let(:attrs) do
             commodity_attrs.merge(quantity: 1, metadata: { 'a' => '1' },
                                   item_uuid: SecureRandom.uuid)
           end
 
           let(:op_attrs) { attrs.merge(metadata: { 'b' => '2' }) }
-          let!(:op) { subject.shopping_cart_operations.create!(op_attrs) }
+          let!(:op) { subject.shopping_bag_operations.create!(op_attrs) }
 
           include_examples 'force a new uuid'
         end
@@ -126,8 +126,8 @@ RSpec.describe ShoppingCart, type: :model, site_scoped: true do
         end
 
         context 'when the uuid exists' do
-          let(:op_attrs) { attrs.merge(shopping_cart: subject, quantity: 3) }
-          let!(:op) { subject.shopping_cart_operations.create!(op_attrs) }
+          let(:op_attrs) { attrs.merge(shopping_bag: subject, quantity: 3) }
+          let!(:op) { subject.shopping_bag_operations.create!(op_attrs) }
 
           include_examples 'apply the operation successfully'
 
@@ -180,19 +180,19 @@ RSpec.describe ShoppingCart, type: :model, site_scoped: true do
 
     context 'with a product' do
       let(:kind) { :product }
-      it_behaves_like 'an operable cart item'
+      it_behaves_like 'an operable bag item'
     end
 
     context 'with a variant' do
       let(:kind) { :variant }
-      it_behaves_like 'an operable cart item'
+      it_behaves_like 'an operable bag item'
     end
   end
 
   context '#contents' do
     def create_op(attrs)
       attrs[:item_uuid] ||= SecureRandom.uuid
-      subject.shopping_cart_operations.create!(attrs)
+      subject.shopping_bag_operations.create!(attrs)
     end
 
     it 'returns all items' do
@@ -259,7 +259,7 @@ RSpec.describe ShoppingCart, type: :model, site_scoped: true do
       expect(subject.contents).to be_empty
     end
 
-    it 'queries the shopping cart efficiently' do
+    it 'queries the shopping bag efficiently' do
       product = create(:product)
 
       (1..10).each do |i|
