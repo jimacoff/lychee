@@ -105,6 +105,5 @@ RSpec.describe Image, type: :model, site_scoped: true do
         puts subject.srcset_path
       end
     end
-
   end
 end
