@@ -3,8 +3,8 @@ require 'dasherized_routes'
 Rails.application.routes.draw do
   self.class.include DasherizedRoutes
 
-  resource :shopping_cart, only: %i(show update destroy) do
-    post '' => 'shopping_carts#add'
+  resource :shopping_bag, only: %i(show update destroy) do
+    post '' => 'shopping_bags#add'
   end
 
   resources :pages

@@ -1,4 +1,4 @@
-class ShoppingCart < ActiveRecord::Base
+class ShoppingBag < ActiveRecord::Base
   include ParentSite
   include Workflow
 
@@ -18,7 +18,7 @@ class ShoppingCart < ActiveRecord::Base
     state :abandoned
   end
 
-  has_many :shopping_cart_operations
+  has_many :shopping_bag_operations
 
   valhammer
 
@@ -27,7 +27,7 @@ class ShoppingCart < ActiveRecord::Base
   end
 
   def contents
-    shopping_cart_operations.includes(:product, :variant).reduce({}) do |a, e|
+    shopping_bag_operations.includes(:product, :variant).reduce({}) do |a, e|
       next a.except(e.item_uuid) if e.quantity.zero?
 
       a.merge(e.item_uuid => e.item_attrs)
@@ -37,7 +37,7 @@ class ShoppingCart < ActiveRecord::Base
   private
 
   def apply_item_add(opts)
-    prev = shopping_cart_operations.by_commodity(opts).last
+    prev = shopping_bag_operations.by_commodity(opts).last
 
     overrides = { item_uuid: (prev.try(:item_uuid) || SecureRandom.uuid) }
     overrides[:quantity] = Integer(opts[:quantity]) + prev.quantity if prev
@@ -46,7 +46,7 @@ class ShoppingCart < ActiveRecord::Base
   end
 
   def apply_item_update(opts)
-    prev = shopping_cart_operations.by_uuid(opts[:item_uuid]).last
+    prev = shopping_bag_operations.by_uuid(opts[:item_uuid]).last
 
     return nil unless prev.try(:matches_commodity?, opts)
 
@@ -55,6 +55,6 @@ class ShoppingCart < ActiveRecord::Base
 
   def apply_operation(prev, attrs)
     return prev if prev && attrs.all? { |k, v| prev[k].to_s == v.to_s }
-    shopping_cart_operations.create!(attrs)
+    shopping_bag_operations.create!(attrs)
   end
 end

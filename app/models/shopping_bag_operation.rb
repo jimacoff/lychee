@@ -1,9 +1,9 @@
-class ShoppingCartOperation < ActiveRecord::Base
+class ShoppingBagOperation < ActiveRecord::Base
   include ParentSite
   include CommodityReference
   include Metadata
 
-  belongs_to :shopping_cart
+  belongs_to :shopping_bag
 
   valhammer
 

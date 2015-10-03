@@ -1,11 +1,11 @@
 require 'rails_helper'
 
-RSpec.describe ShoppingCartsController, type: :controller, site_scoped: true do
+RSpec.describe ShoppingBagsController, type: :controller, site_scoped: true do
   let(:cart) { nil }
-  before { session[:shopping_cart_id] = cart.try(:id) }
+  before { session[:shopping_bag_id] = cart.try(:id) }
 
   def operations
-    cart.shopping_cart_operations(true)
+    cart.shopping_bag_operations(true)
   end
 
   let(:uuid) { SecureRandom.uuid }
@@ -21,7 +21,7 @@ RSpec.describe ShoppingCartsController, type: :controller, site_scoped: true do
           let(:updates) { [] }
 
           it 'creates no shopping cart' do
-            expect { run }.not_to change(ShoppingCart, :count)
+            expect { run }.not_to change(ShoppingBag, :count)
           end
         end
 
@@ -29,26 +29,26 @@ RSpec.describe ShoppingCartsController, type: :controller, site_scoped: true do
           let(:updates) { [commodity_attrs.merge(quantity: 1)] }
 
           it 'creates a shopping cart' do
-            expect { run }.to change(ShoppingCart, :count).by(1)
+            expect { run }.to change(ShoppingBag, :count).by(1)
           end
 
           it 'assigns the shopping cart to the session' do
             run
-            expect(session[:shopping_cart_id]).to eq(ShoppingCart.last.id)
+            expect(session[:shopping_bag_id]).to eq(ShoppingBag.last.id)
           end
 
           it 'creates an operation' do
-            expect { run }.to change(ShoppingCartOperation, :count).by(1)
+            expect { run }.to change(ShoppingBagOperation, :count).by(1)
           end
 
           it 'redirects to the shopping cart' do
             run
-            expect(response).to redirect_to(shopping_cart_path)
+            expect(response).to redirect_to(shopping_bag_path)
           end
 
           it 'updates the cart contents' do
             run
-            c = ShoppingCart.last.contents
+            c = ShoppingBag.last.contents
             expect(c.keys.length).to eq(1)
             expect(c.values.first).to include(commodity_item_attrs)
               .and include(quantity: 1)
@@ -57,7 +57,7 @@ RSpec.describe ShoppingCartsController, type: :controller, site_scoped: true do
       end
 
       context 'when a shopping cart exists' do
-        let(:cart) { create(:shopping_cart) }
+        let(:cart) { create(:shopping_bag) }
 
         context 'with no operations' do
           let(:updates) { [] }
@@ -76,7 +76,7 @@ RSpec.describe ShoppingCartsController, type: :controller, site_scoped: true do
 
           it 'updates the cart contents' do
             run
-            c = ShoppingCart.last.contents
+            c = ShoppingBag.last.contents
             expect(c.keys.length).to eq(1)
             expect(c.values.first).to include(commodity_item_attrs)
               .and include(quantity: 1)
@@ -90,7 +90,7 @@ RSpec.describe ShoppingCartsController, type: :controller, site_scoped: true do
 
           before do
             attrs = updates.first.merge(quantity: 3)
-            cart.shopping_cart_operations.create!(attrs)
+            cart.shopping_bag_operations.create!(attrs)
           end
 
           it 'adds an operation' do
@@ -162,13 +162,13 @@ RSpec.describe ShoppingCartsController, type: :controller, site_scoped: true do
   end
 
   context 'get :show' do
-    let(:cart) { create(:shopping_cart) }
+    let(:cart) { create(:shopping_bag) }
 
     before { get :show }
     subject { response }
 
     it { is_expected.to have_http_status(:ok) }
-    it { is_expected.to render_template('shopping_carts/show') }
+    it { is_expected.to render_template('shopping_bags/show') }
 
     it 'assigns the cart' do
       expect(assigns[:cart]).to eq(cart)
@@ -178,7 +178,7 @@ RSpec.describe ShoppingCartsController, type: :controller, site_scoped: true do
       let(:products) { create_list(:product, 3) }
 
       let(:cart) do
-        create(:shopping_cart).tap do |cart|
+        create(:shopping_bag).tap do |cart|
           products.each { |p| cart.apply(product_id: p.id, quantity: 1) }
         end
       end
@@ -201,19 +201,19 @@ RSpec.describe ShoppingCartsController, type: :controller, site_scoped: true do
         let(:cart) { nil }
 
         it 'adds the item to a new cart' do
-          expect { run }.to change(ShoppingCart, :count).by(1)
+          expect { run }.to change(ShoppingBag, :count).by(1)
           expect(assigns[:cart].contents.values)
             .to contain_exactly(include(commodity_item_attrs))
         end
 
         it 'redirects to the cart' do
           run
-          expect(response).to redirect_to(shopping_cart_path)
+          expect(response).to redirect_to(shopping_bag_path)
         end
       end
 
       context 'with an existing cart' do
-        let!(:cart) { create(:shopping_cart) }
+        let!(:cart) { create(:shopping_bag) }
 
         it 'adds the item to the cart' do
           run
@@ -223,14 +223,14 @@ RSpec.describe ShoppingCartsController, type: :controller, site_scoped: true do
 
         it 'redirects to the cart' do
           run
-          expect(response).to redirect_to(shopping_cart_path)
+          expect(response).to redirect_to(shopping_bag_path)
         end
 
         context 'when the cart is deleted' do
           it 'creates a new cart' do
             cart.destroy
-            expect { run }.to change(ShoppingCart, :count).by(1)
-            expect(session[:shopping_cart_id]).to eq(ShoppingCart.last.id)
+            expect { run }.to change(ShoppingBag, :count).by(1)
+            expect(session[:shopping_bag_id]).to eq(ShoppingBag.last.id)
           end
         end
       end

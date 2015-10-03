@@ -1,10 +1,10 @@
 require 'rails_helper'
 
-RSpec.describe ShoppingCart, type: :model, site_scoped: true do
-  subject { create(:shopping_cart) }
+RSpec.describe ShoppingBag, type: :model, site_scoped: true do
+  subject { create(:shopping_bag) }
 
   has_context 'parent site' do
-    let(:factory) { :shopping_cart }
+    let(:factory) { :shopping_bag }
   end
 
   context 'table structure' do
@@ -13,7 +13,7 @@ RSpec.describe ShoppingCart, type: :model, site_scoped: true do
 
   context 'relationships' do
     it { is_expected.to belong_to(:site) }
-    it { is_expected.to have_many(:shopping_cart_operations) }
+    it { is_expected.to have_many(:shopping_bag_operations) }
   end
 
   context 'validations' do
@@ -39,7 +39,7 @@ RSpec.describe ShoppingCart, type: :model, site_scoped: true do
 
   context '#apply' do
     def operations
-      subject.shopping_cart_operations
+      subject.shopping_bag_operations
     end
 
     def run
@@ -82,7 +82,7 @@ RSpec.describe ShoppingCart, type: :model, site_scoped: true do
 
         context 'when the commodity is already in the cart' do
           let(:op_attrs) { attrs.merge(item_uuid: SecureRandom.uuid) }
-          let!(:op) { subject.shopping_cart_operations.create!(op_attrs) }
+          let!(:op) { subject.shopping_bag_operations.create!(op_attrs) }
 
           it 'applies to the existing item' do
             expect { run }.to change { operations.count }.by(1)
@@ -94,7 +94,7 @@ RSpec.describe ShoppingCart, type: :model, site_scoped: true do
           it 'only applies to the item with matching metadata' do
             wrong_attrs = op_attrs.merge(item_uuid: SecureRandom.uuid,
                                          quantity: 4, metadata: { 'a' => '1' })
-            subject.shopping_cart_operations.create!(wrong_attrs)
+            subject.shopping_bag_operations.create!(wrong_attrs)
 
             expect { run }.to change { operations.count }.by(1)
 
@@ -110,7 +110,7 @@ RSpec.describe ShoppingCart, type: :model, site_scoped: true do
           end
 
           let(:op_attrs) { attrs.merge(metadata: { 'b' => '2' }) }
-          let!(:op) { subject.shopping_cart_operations.create!(op_attrs) }
+          let!(:op) { subject.shopping_bag_operations.create!(op_attrs) }
 
           include_examples 'force a new uuid'
         end
@@ -126,8 +126,8 @@ RSpec.describe ShoppingCart, type: :model, site_scoped: true do
         end
 
         context 'when the uuid exists' do
-          let(:op_attrs) { attrs.merge(shopping_cart: subject, quantity: 3) }
-          let!(:op) { subject.shopping_cart_operations.create!(op_attrs) }
+          let(:op_attrs) { attrs.merge(shopping_bag: subject, quantity: 3) }
+          let!(:op) { subject.shopping_bag_operations.create!(op_attrs) }
 
           include_examples 'apply the operation successfully'
 
@@ -192,7 +192,7 @@ RSpec.describe ShoppingCart, type: :model, site_scoped: true do
   context '#contents' do
     def create_op(attrs)
       attrs[:item_uuid] ||= SecureRandom.uuid
-      subject.shopping_cart_operations.create!(attrs)
+      subject.shopping_bag_operations.create!(attrs)
     end
 
     it 'returns all items' do

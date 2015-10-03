@@ -1,15 +1,15 @@
-class ShoppingCartsController < ApplicationController
+class ShoppingBagsController < ApplicationController
   def add
     @product = Product.find(params[:product_id])
     attrs = { quantity: 1, metadata: params[:metadata] }
 
     params[:variations] ? add_variant(attrs) : add_product(attrs)
-    redirect_to :shopping_cart
+    redirect_to :shopping_bag
   end
 
   def update
     operations.each { |op| cart.apply(op) }
-    redirect_to :shopping_cart
+    redirect_to :shopping_bag
   rescue ActionController::ParameterMissing
     render nothing: true
   end
@@ -31,9 +31,9 @@ class ShoppingCartsController < ApplicationController
   end
 
   def cart
-    id = session[:shopping_cart_id]
-    @cart = ShoppingCart.find_by_id(id) if id
-    @cart ||= ShoppingCart.create!.tap { |c| session[:shopping_cart_id] = c.id }
+    id = session[:shopping_bag_id]
+    @cart = ShoppingBag.find_by_id(id) if id
+    @cart ||= ShoppingBag.create!.tap { |c| session[:shopping_bag_id] = c.id }
   end
 
   def operations

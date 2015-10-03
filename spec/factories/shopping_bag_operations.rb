@@ -1,6 +1,6 @@
 FactoryGirl.define do
-  factory :shopping_cart_operation do
-    shopping_cart
+  factory :shopping_bag_operation do
+    shopping_bag
 
     item_uuid { SecureRandom.uuid }
     quantity 1
