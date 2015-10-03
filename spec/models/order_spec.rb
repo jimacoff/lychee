@@ -301,4 +301,84 @@ RSpec.describe Order, type: :model, site_scoped: true do
       it { is_expected.to change(order, :weight).from(0).to eq(items_weight) }
     end
   end
+
+  describe 'workflow' do
+    subject { create(:order) }
+
+    it_behaves_like 'workflow object', transitions: [], state: :new
+
+    # From :new
+    it_behaves_like 'workflow object', transitions: %i(submit),
+                                       state: :collecting
+
+    # From :collecting
+    it_behaves_like 'workflow object', transitions: %i(submit calculate),
+                                       state: :pending
+    it_behaves_like 'workflow object', transitions: %i(submit cancel),
+                                       state: :cancelled
+    it_behaves_like 'workflow object', transitions: %i(submit abandon),
+                                       state: :abandoned
+
+    # From :pending
+    it_behaves_like 'workflow object',
+                    transitions: %i(submit calculate confirm),
+                    state: :confirmed
+    it_behaves_like 'workflow object',
+                    transitions: %i(submit calculate cancel),
+                    state: :cancelled
+    it_behaves_like 'workflow object',
+                    transitions: %i(submit calculate abandon),
+                    state: :abandoned
+
+    # From :confirmed
+    it_behaves_like 'workflow object',
+                    transitions: %i(submit calculate confirm pay),
+                    state: :paid
+    it_behaves_like 'workflow object',
+                    transitions: %i(submit calculate confirm cancel),
+                    state: :cancelled
+    it_behaves_like 'workflow object',
+                    transitions: %i(submit calculate confirm abandon),
+                    state: :abandoned
+
+    context 'when paid' do
+      before do
+        %i(submit calculate confirm pay).each { |s| subject.send(:"#{s}!") }
+      end
+
+      # From :paid
+      it_behaves_like 'workflow object', transitions: %i(accept),
+                                         state: :accepted
+      it_behaves_like 'workflow object', transitions: %i(hold),
+                                         state: :on_hold
+
+      # From :accepted
+      it_behaves_like 'workflow object', transitions: %i(accept hold),
+                                         state: :on_hold
+      it_behaves_like 'workflow object', transitions: %i(accept ship),
+                                         state: :shipped
+
+      # From :on_hold
+      it_behaves_like 'workflow object', transitions: %i(hold accept),
+                                         state: :accepted
+      it_behaves_like 'workflow object', transitions: %i(hold reject),
+                                         state: :rejected
+
+      # From :shipped
+      it_behaves_like 'workflow object', transitions: %i(accept ship adjust),
+                                         state: :adjusted
+      it_behaves_like 'workflow object', transitions: %i(accept ship refund),
+                                         state: :refunded
+
+      # From :adjusted
+      it_behaves_like 'workflow object',
+                      transitions: %i(accept ship adjust refund),
+                      state: :refunded
+
+      # From :rejected
+      it_behaves_like 'workflow object',
+                      transitions: %i(hold reject refund),
+                      state: :refunded
+    end
+  end
 end
