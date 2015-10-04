@@ -15,6 +15,8 @@ RSpec.shared_examples 'jobs::publishing::categories' do
 
   def category_json(c)
     category = {
+      template: 'category',
+      format: 'html',
       id: c.id,
       name: c.name,
       description: c.description,

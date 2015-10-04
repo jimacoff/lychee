@@ -21,6 +21,8 @@ module Publishing
     end
 
     def category(json, c)
+      json.template 'category'
+      json.format 'html'
       json.call(c, :id, :name, :description, :path)
       json.updated_at c.updated_at.iso8601
       category_optional_fields(json, c)
