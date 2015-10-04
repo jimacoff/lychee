@@ -16,7 +16,6 @@ RSpec.describe Order, type: :model, site_scoped: true do
 
   context 'table structure' do
     it { is_expected.to have_db_column(:weight).of_type(:integer) }
-    it { is_expected.to have_db_column(:status).of_type(:string) }
   end
 
   context 'relationships' do
@@ -31,8 +30,6 @@ RSpec.describe Order, type: :model, site_scoped: true do
 
   context 'validations' do
     it { is_expected.to validate_presence_of :weight }
-    it { is_expected.to validate_presence_of :status }
-    it { is_expected.to validate_length_of(:status).is_at_most(255) }
 
     shared_examples 'a state that requires customer details' do
       it { is_expected.to validate_presence_of :customer_address }
