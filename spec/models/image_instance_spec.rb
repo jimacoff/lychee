@@ -11,6 +11,7 @@ RSpec.describe ImageInstance, type: :model, site_scoped: true do
     it { is_expected.to have_db_column(:imageable_type).of_type(:string) }
     it { is_expected.to have_db_column(:name).of_type(:string) }
     it { is_expected.to have_db_column(:description).of_type(:string) }
+    it { is_expected.to have_db_column(:order).of_type(:integer) }
 
     it 'should have non nullable column imageable_id of type bigint' do
       expect(subject).to have_db_column(:imageable_id)
@@ -29,6 +30,7 @@ RSpec.describe ImageInstance, type: :model, site_scoped: true do
   context 'validations' do
     it { is_expected.to validate_presence_of :image }
     it { is_expected.to validate_presence_of :imageable }
+    it { is_expected.to validate_presence_of :order }
   end
 
   context 'polymorphic relationships' do

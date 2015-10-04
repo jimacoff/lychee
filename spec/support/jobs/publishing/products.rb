@@ -1,6 +1,9 @@
 RSpec.shared_examples 'jobs::publishing::products' do
+  # rubocop:disable Metrics/MethodLength
   def product_json(p)
     {
+      template: 'product',
+      format: 'html',
       id: p.id,
       name: p.name,
       short_description: p.short_description,
@@ -12,7 +15,6 @@ RSpec.shared_examples 'jobs::publishing::products' do
     }
   end
 
-  # rubocop:disable Metrics/MethodLength
   def variation_json(v)
     {
       id: v.id,

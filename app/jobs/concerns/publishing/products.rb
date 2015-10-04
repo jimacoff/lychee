@@ -21,6 +21,8 @@ module Publishing
     end
 
     def product(json, p)
+      json.template 'product'
+      json.format 'html'
       json.call(p, :id, :name, :short_description, :path,
                 :price_cents, :currency, :weight)
       json.updated_at p.updated_at.iso8601
@@ -36,7 +38,7 @@ module Publishing
 
     def product_images(json, image_instances)
       json.images do
-        json.array! image_instances do |ii|
+        json.array! image_instances.sort_by(&:order) do |ii|
           image_instance(json, ii)
         end
       end

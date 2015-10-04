@@ -78,7 +78,7 @@ RSpec.describe ImageFile, type: :model, site_scoped: true do
       expect(subject.srcset_path).to eq(
         "#{subject.site.preferences.reserved_paths['images']}" \
         "/#{subject.image.internal_name}/#{subject.width}.#{subject.height}" \
-        ".#{subject.image.extension} #{subject.width}")
+        ".#{subject.image.extension} #{subject.width}w")
     end
 
     context 'with x_dimension' do

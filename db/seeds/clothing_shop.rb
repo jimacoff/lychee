@@ -64,8 +64,9 @@ ActiveRecord::Base.transaction do
       product = Product.create!(name: name, description: desc,
                                 short_description: short_description,
                                 price: Faker::Number.number(6).to_i)
-      categories.each do |c|
-        product.category_members.create!(category: c, description: desc)
+      categories.each_with_index do |c, ci|
+        product.category_members.create!(category: c, description: desc,
+                                         order: ci)
       end
 
       size_variation = product.variations.create!(order: 1, trait: size_trait)

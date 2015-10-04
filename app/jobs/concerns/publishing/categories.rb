@@ -21,6 +21,8 @@ module Publishing
     end
 
     def category(json, c)
+      json.template 'category'
+      json.format 'html'
       json.call(c, :id, :name, :description, :path)
       json.updated_at c.updated_at.iso8601
       category_optional_fields(json, c)
@@ -43,7 +45,7 @@ module Publishing
 
     def category_members(json, c)
       json.products do
-        json.array! c.category_members do |cm|
+        json.array! c.category_members.sort_by(&:order) do |cm|
           category_member(json, cm) if cm.product.enabled?
         end
       end
@@ -51,8 +53,8 @@ module Publishing
 
     def category_member(json, cm)
       p = cm.product
-      json.id cm.id
-      json.call(p, :name, :slug, :currency, :weight)
+      json.call(cm, :id, :order)
+      json.call(p, :name, :path, :currency, :weight)
       json.product_id p.id
       json.price_cents p.price.cents
       json.description(cm.description || p.description)
@@ -62,7 +64,10 @@ module Publishing
     end
 
     def category_member_image(json, cm)
-      image_instance(json, cm.image_instance) if cm.image_instance.present?
+      return unless cm.image_instance.present?
+      json.image do
+        image_instance(json, cm.image_instance)
+      end
     end
 
     def write_category(c, frontmatter)
