@@ -8,6 +8,7 @@ RSpec.describe CategoryMember, type: :model, site_scoped: true do
 
   context 'table structure' do
     it { is_expected.to have_db_column(:description).of_type(:string) }
+    it { is_expected.to have_db_column(:order).of_type(:integer) }
     it { is_expected.not_to have_db_column(:variant_id) }
   end
 
@@ -20,6 +21,7 @@ RSpec.describe CategoryMember, type: :model, site_scoped: true do
 
   context 'validations' do
     it { is_expected.to validate_presence_of(:category) }
+    it { is_expected.to validate_presence_of(:order) }
     it { is_expected.not_to validate_presence_of(:description) }
   end
 end

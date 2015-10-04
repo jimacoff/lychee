@@ -3,5 +3,6 @@ FactoryGirl.define do
     association :product, factory: :standalone_product
     category
     description { Faker::Lorem.sentence }
+    sequence :order
   end
 end

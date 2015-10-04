@@ -9,7 +9,8 @@ RSpec.shared_examples 'jobs::publishing::categories' do
       currency: cm.product.currency,
       weight: cm.product.weight,
       product_id: cm.product.id,
-      price_cents: cm.product.price_cents
+      price_cents: cm.product.price_cents,
+      order: cm.order
     }
   end
 

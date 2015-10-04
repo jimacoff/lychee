@@ -45,7 +45,7 @@ module Publishing
 
     def category_members(json, c)
       json.products do
-        json.array! c.category_members do |cm|
+        json.array! c.category_members.sort_by(&:order) do |cm|
           category_member(json, cm) if cm.product.enabled?
         end
       end
@@ -53,7 +53,7 @@ module Publishing
 
     def category_member(json, cm)
       p = cm.product
-      json.id cm.id
+      json.call(cm, :id, :order)
       json.call(p, :name, :path, :currency, :weight)
       json.product_id p.id
       json.price_cents p.price.cents
