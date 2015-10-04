@@ -52,7 +52,7 @@ module Publishing
     def category_member(json, cm)
       p = cm.product
       json.id cm.id
-      json.call(p, :name, :slug, :currency, :weight)
+      json.call(p, :name, :path, :currency, :weight)
       json.product_id p.id
       json.price_cents p.price.cents
       json.description(cm.description || p.description)
@@ -62,7 +62,8 @@ module Publishing
     end
 
     def category_member_image(json, cm)
-      image_instance(json, cm.image_instance) if cm.image_instance.present?
+      return unless cm.image_instance.present?
+      json.image image_instance(json, cm.image_instance)
     end
 
     def write_category(c, frontmatter)

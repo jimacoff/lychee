@@ -5,7 +5,7 @@ RSpec.shared_examples 'jobs::publishing::categories' do
       id: cm.id,
       name: cm.product.name,
       description: cm.description || cm.product.description,
-      slug: cm.product.slug,
+      path: cm.product.path,
       currency: cm.product.currency,
       weight: cm.product.weight,
       product_id: cm.product.id,
@@ -159,7 +159,7 @@ RSpec.shared_examples 'jobs::publishing::categories' do
         end
 
         it 'has image json' do
-          expect(subject[:products]).to all(have_key(:data))
+          expect(subject[:products]).to all(have_key(:image))
         end
       end
 
