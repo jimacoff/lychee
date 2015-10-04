@@ -65,7 +65,9 @@ module Publishing
 
     def category_member_image(json, cm)
       return unless cm.image_instance.present?
-      json.image image_instance(json, cm.image_instance)
+      json.image do
+        image_instance(json, cm.image_instance)
+      end
     end
 
     def write_category(c, frontmatter)
