@@ -6,14 +6,17 @@ class PublishSiteJob < ActiveJob::Base
   START_JSON_DELIMITER = '---json'.freeze
   END_JSON_DELIMITER = '---'.freeze
 
+  include Publishing::Structure
   include Publishing::Images
   include Publishing::Categories
   include Publishing::Products
 
-  def perform(site)
-    Site.current = site
+  def perform
+    site_structure
     categories
     products
+
+    true
   end
 
   private

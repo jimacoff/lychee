@@ -13,7 +13,8 @@ RSpec.describe PublishSiteJob, type: :job do
 
   before(:each) { Site.current = site }
 
-  include_examples 'jobs::publishing::images'
-  include_examples 'jobs::publishing::categories'
-  include_examples 'jobs::publishing::products'
+  it_behaves_like 'jobs::publishing::structure'
+  it_behaves_like 'jobs::publishing::images'
+  it_behaves_like 'jobs::publishing::categories'
+  it_behaves_like 'jobs::publishing::products'
 end
