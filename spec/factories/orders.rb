@@ -1,6 +1,6 @@
 FactoryGirl.define do
   factory :order do
-    status 'created'
+    metadata(user_agent: 'Firefox')
 
     association :customer_address, factory: :address
     association :delivery_address, factory: :address

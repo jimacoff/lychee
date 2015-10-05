@@ -1,6 +1,10 @@
 module OrderWorkflow
   extend ActiveSupport::Concern
 
+  def can_omit_customer_details?
+    new? || collecting? || cancelled? || abandoned?
+  end
+
   included do
     include Workflow
 

@@ -9,6 +9,7 @@ guard :rspec, cmd: 'bundle exec rspec' do
   watch('config/routes.rb')                           { "spec/routing" }
   watch('app/controllers/application_controller.rb')  { "spec/controllers" }
   watch(%r{^app/jobs/concerns/publishing/(.+)\.rb$})  { |m| "spec/jobs/publish_site_job_spec.rb" }
+  watch(%r{^app/models/concerns/order_workflow.rb})   { |m| "spec/models/order_spec.rb" }
 
   watch(%r{^spec/.+_spec\.rb$})
   watch(%r{^spec/support/jobs/publishing/(.+)\.rb$})  { |m| "spec/jobs/publish_site_job_spec.rb" }

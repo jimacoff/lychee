@@ -220,20 +220,19 @@ ActiveRecord::Schema.define(version: 20151004061826) do
   add_index "order_taxes", ["tax_rate_id"], name: "index_order_taxes_on_tax_rate_id", using: :btree
 
   create_table "orders", id: :bigserial, force: :cascade do |t|
-    t.integer  "total_cents",                         default: 0,     null: false
-    t.string   "currency",                            default: "USD", null: false
-    t.string   "status",                  limit: 255,                 null: false
-    t.hstore   "metadata"
-    t.text     "tags",                                default: [],                 array: true
-    t.integer  "site_id",                 limit: 8,                   null: false
-    t.datetime "created_at",                                          null: false
-    t.datetime "updated_at",                                          null: false
-    t.integer  "subtotal_cents",                      default: 0,     null: false
-    t.integer  "weight",                              default: 0,     null: false
-    t.integer  "total_commodities_cents",             default: 0,     null: false
-    t.integer  "total_shipping_cents",                default: 0,     null: false
-    t.integer  "total_tax_cents",                     default: 0,     null: false
-    t.string   "workflow_state"
+    t.integer  "total_cents",                       default: 0,     null: false
+    t.string   "currency",                          default: "USD", null: false
+    t.hstore   "metadata",                                          null: false
+    t.text     "tags",                              default: [],                 array: true
+    t.integer  "site_id",                 limit: 8,                 null: false
+    t.datetime "created_at",                                        null: false
+    t.datetime "updated_at",                                        null: false
+    t.integer  "subtotal_cents",                    default: 0,     null: false
+    t.integer  "weight",                            default: 0,     null: false
+    t.integer  "total_commodities_cents",           default: 0,     null: false
+    t.integer  "total_shipping_cents",              default: 0,     null: false
+    t.integer  "total_tax_cents",                   default: 0,     null: false
+    t.string   "workflow_state",                                    null: false
     t.integer  "customer_address_id",     limit: 8
     t.integer  "delivery_address_id",     limit: 8
   end

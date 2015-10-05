@@ -16,7 +16,6 @@ RSpec.describe Order, type: :model, site_scoped: true do
 
   context 'table structure' do
     it { is_expected.to have_db_column(:weight).of_type(:integer) }
-    it { is_expected.to have_db_column(:status).of_type(:string) }
   end
 
   context 'relationships' do
@@ -31,13 +30,31 @@ RSpec.describe Order, type: :model, site_scoped: true do
 
   context 'validations' do
     it { is_expected.to validate_presence_of :weight }
-    it { is_expected.to validate_presence_of :status }
-    it { is_expected.to validate_length_of(:status).is_at_most(255) }
-    it { is_expected.to validate_presence_of :customer_address }
-    it { is_expected.to validate_presence_of :delivery_address }
 
-    context 'instance validations' do
-      subject { create :order }
+    shared_examples 'a state that requires customer details' do
+      it { is_expected.to validate_presence_of :customer_address }
+      it { is_expected.to validate_presence_of :delivery_address }
+    end
+
+    shared_examples 'a state that does not require customer details' do
+      it { is_expected.not_to validate_presence_of :customer_address }
+      it { is_expected.not_to validate_presence_of :delivery_address }
+    end
+
+    no_customer_info_states = %i(new collecting cancelled abandoned)
+
+    no_customer_info_states.each do |state|
+      context "when #{state}" do
+        subject { create(:order, workflow_state: state) }
+        it_behaves_like 'a state that does not require customer details'
+      end
+    end
+
+    (Order.workflow_spec.states.keys - no_customer_info_states).each do |state|
+      context "when #{state}" do
+        subject { create(:order, workflow_state: state) }
+        it_behaves_like 'a state that requires customer details'
+      end
     end
   end
 
@@ -379,6 +396,89 @@ RSpec.describe Order, type: :model, site_scoped: true do
       it_behaves_like 'workflow object',
                       transitions: %i(hold reject refund),
                       state: :refunded
+    end
+  end
+
+  describe '#place_order' do
+    let(:bag) { create(:shopping_bag) }
+    let(:attrs) { { metadata: { Faker::Lorem.word => Faker::Lorem.word } } }
+
+    def items
+      Order.last.commodity_line_items
+    end
+
+    def run
+      Order.create_from_bag(bag, attrs)
+    end
+
+    it 'creates the order' do
+      expect { run }.to change(Order, :count).by(1)
+    end
+
+    it 'returns the order' do
+      expect(run).to be_an_instance_of(Order)
+    end
+
+    it 'stores the metadata with the order' do
+      expect(run).to have_attributes(attrs)
+    end
+
+    it 'has the order in `collecting` state' do
+      expect(run).to be_collecting
+    end
+
+    shared_examples 'ordering a line item' do
+      it 'contains the line item' do
+        run
+        expect(items).to contain_exactly(an_instance_of(CommodityLineItem))
+        expect(items.first).to have_attributes(line_item_attrs)
+      end
+    end
+
+    context 'with a product' do
+      let(:product) { create(:product) }
+      let(:line_item_attrs) { { product: product, quantity: 1 } }
+
+      before { bag.apply(product_id: product.id, quantity: 1) }
+
+      include_context 'ordering a line item'
+    end
+
+    context 'with a product with metadata' do
+      let(:product) { create(:product) }
+
+      let(:line_item_attrs) do
+        { product: product, quantity: 1, metadata: { 'a' => 'z' } }
+      end
+
+      before do
+        bag.apply(product_id: product.id, quantity: 1, metadata: { 'a' => 'z' })
+      end
+
+      include_context 'ordering a line item'
+    end
+
+    context 'with a variant' do
+      let(:variant) { create(:variant) }
+      let(:line_item_attrs) { { variant: variant, quantity: 1 } }
+
+      before { bag.apply(variant_id: variant.id, quantity: 1) }
+
+      include_context 'ordering a line item'
+    end
+
+    context 'with a variant with metadata' do
+      let(:variant) { create(:variant) }
+
+      let(:line_item_attrs) do
+        { variant: variant, quantity: 1, metadata: { 'a' => 'z' } }
+      end
+
+      before do
+        bag.apply(variant_id: variant.id, quantity: 1, metadata: { 'a' => 'z' })
+      end
+
+      include_context 'ordering a line item'
     end
   end
 end
