@@ -9,6 +9,11 @@ module DasherizedRoutes
     super(*args, options, &block)
   end
 
+  def namespace(*args, &block)
+    options = dasherize_route(args)
+    super(*args, options, &block)
+  end
+
   private
 
   def dasherize_route(args)

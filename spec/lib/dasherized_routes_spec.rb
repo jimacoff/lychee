@@ -11,6 +11,10 @@ RSpec.describe DasherizedRoutes do
       def resources(*args)
         args
       end
+
+      def namespace(*args)
+        args
+      end
     end
   end
 
@@ -48,6 +52,23 @@ RSpec.describe DasherizedRoutes do
     it 'passes other options through' do
       route = subject.resources(:test_objects, only: %i(get))
       expect(route).to eq([:test_objects, path: 'test-objects', only: %i(get)])
+    end
+  end
+
+  context '#namespace' do
+    it 'adds the path to the route' do
+      route = subject.namespace(:test_route)
+      expect(route).to eq([:test_route, path: 'test-route'])
+    end
+
+    it 'respects an explicit path in the route' do
+      route = subject.namespace(:test_route, path: 'xyz')
+      expect(route).to eq([:test_route, path: 'xyz'])
+    end
+
+    it 'passes other options through' do
+      route = subject.namespace(:test_route, only: %i(get))
+      expect(route).to eq([:test_route, path: 'test-route', only: %i(get)])
     end
   end
 end
