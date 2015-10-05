@@ -85,7 +85,7 @@ RSpec.describe ShoppingBagsController, type: :controller, site_scoped: true do
 
         context 'with an "update bag" operation' do
           let(:updates) do
-            [commodity_attrs.merge(item_uuid: uuid, quantity: 1)]
+            [commodity_attrs.merge(item_uuid: uuid, quantity: 1, metadata: {})]
           end
 
           before do
@@ -102,13 +102,14 @@ RSpec.describe ShoppingBagsController, type: :controller, site_scoped: true do
             c = bag.reload.contents
             expect(c.keys).to contain_exactly(uuid)
             expect(c.values.first)
-              .to include(commodity_item_attrs)
+              .to include(commodity_item_attrs.except(:metadata))
               .and include(quantity: 1, item_uuid: uuid)
           end
 
           context 'updating the quantity to 0' do
             let(:updates) do
-              [commodity_attrs.merge(item_uuid: uuid, quantity: 0)]
+              [commodity_attrs.merge(item_uuid: uuid, quantity: 0,
+                                     metadata: {})]
             end
 
             it 'removes the item from the bag' do
@@ -239,7 +240,10 @@ RSpec.describe ShoppingBagsController, type: :controller, site_scoped: true do
     context 'for a product' do
       let(:product) { create(:product) }
       let(:commodity_opts) { { product_id: product.id } }
-      let(:commodity_item_attrs) { { product: product, quantity: 1 } }
+
+      let(:commodity_item_attrs) do
+        { product: product, quantity: 1, metadata: {} }
+      end
 
       include_context 'add to bag'
 
@@ -311,7 +315,9 @@ RSpec.describe ShoppingBagsController, type: :controller, site_scoped: true do
         }
       end
 
-      let(:commodity_item_attrs) { { variant: variant, quantity: 1 } }
+      let(:commodity_item_attrs) do
+        { variant: variant, quantity: 1, metadata: {} }
+      end
 
       include_context 'add to bag'
 

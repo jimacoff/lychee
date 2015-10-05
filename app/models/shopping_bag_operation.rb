@@ -7,6 +7,8 @@ class ShoppingBagOperation < ActiveRecord::Base
 
   valhammer
 
+  validates :metadata, presence: { allow_blank: true }
+
   default_scope { order('id') }
 
   def self.by_uuid(uuid)
