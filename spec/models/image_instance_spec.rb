@@ -6,6 +6,7 @@ RSpec.describe ImageInstance, type: :model, site_scoped: true do
   end
   has_context 'versioned'
   has_context 'metadata'
+  has_context 'taggable'
 
   context 'table structure' do
     it { is_expected.to have_db_column(:imageable_type).of_type(:string) }
