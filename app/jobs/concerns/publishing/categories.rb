@@ -52,15 +52,18 @@ module Publishing
     end
 
     def category_member(json, cm)
+      product = cm.product
       json.call(cm, :id, :order)
+      json.description(cm.description || product.description)
+      category_member_product(json, product)
       category_member_image(json, cm)
+    end
 
+    def category_member_product(json, p)
       json.product do
-        p = cm.product
         json.call(p, :name, :path, :currency, :weight)
         json.product_id p.id
         json.price_cents p.price.cents
-        json.description(cm.description || p.description)
         optional_fields(json, p, [:tags, :metadata])
       end
     end

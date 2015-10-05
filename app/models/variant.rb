@@ -34,7 +34,7 @@ class Variant < ActiveRecord::Base
     change_varied_price(value)
   end
 
-  %i(specifications description gtin sku weight).each do |attr|
+  %i(specifications gtin sku weight).each do |attr|
     define_method(attr) do
       self[attr] || product && product.read_attribute(attr)
     end

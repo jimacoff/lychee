@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20151004061826) do
+ActiveRecord::Schema.define(version: 20151005100748) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -263,27 +263,28 @@ ActiveRecord::Schema.define(version: 20151004061826) do
   add_index "prioritized_countries", ["site_id"], name: "index_prioritized_countries_on_site_id", using: :btree
 
   create_table "products", id: :bigserial, force: :cascade do |t|
-    t.string   "name",                                        null: false
-    t.text     "description",                                 null: false
-    t.string   "generated_slug",                              null: false
+    t.string   "name",                                      null: false
+    t.string   "generated_slug",                            null: false
     t.string   "specified_slug"
     t.string   "gtin"
     t.string   "sku"
-    t.integer  "price_cents",                                 null: false
-    t.string   "currency",                    default: "USD", null: false
-    t.integer  "weight",                      default: 0,     null: false
+    t.integer  "price_cents",                               null: false
+    t.string   "currency",                  default: "USD", null: false
+    t.integer  "weight",                    default: 0,     null: false
     t.boolean  "active"
     t.datetime "not_before"
     t.datetime "not_after"
     t.json     "specifications"
     t.hstore   "metadata"
-    t.text     "tags",                        default: [],                 array: true
+    t.text     "tags",                      default: [],                 array: true
     t.datetime "created_at"
     t.datetime "updated_at"
-    t.integer  "site_id",           limit: 8,                 null: false
-    t.integer  "tax_override_id",   limit: 8
-    t.boolean  "enabled",                     default: true,  null: false
-    t.string   "short_description",                           null: false
+    t.integer  "site_id",         limit: 8,                 null: false
+    t.integer  "tax_override_id", limit: 8
+    t.boolean  "enabled",                   default: true,  null: false
+    t.string   "description",                               null: false
+    t.text     "markup",                                    null: false
+    t.integer  "markup_format",             default: 0
   end
 
   add_index "products", ["site_id", "generated_slug"], name: "index_products_on_site_id_and_generated_slug", unique: true, using: :btree
@@ -443,7 +444,6 @@ ActiveRecord::Schema.define(version: 20151004061826) do
 
   create_table "variants", id: :bigserial, force: :cascade do |t|
     t.integer  "product_id",         limit: 8,                 null: false
-    t.text     "description"
     t.string   "gtin"
     t.string   "sku"
     t.integer  "varied_price_cents"

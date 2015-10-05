@@ -5,9 +5,9 @@ RSpec.shared_examples 'jobs::publishing::categories' do
     {
       id: cm.id,
       order: cm.order,
+      description: cm.description || p.description,
       product: {
         name: p.name,
-        description: cm.description || p.description,
         path: p.path,
         currency: p.currency,
         weight: p.weight,
@@ -134,7 +134,7 @@ RSpec.shared_examples 'jobs::publishing::categories' do
       end
 
       it 'has the local description' do
-        expect(subject[:category_members][0][:product][:description])
+        expect(subject[:category_members][0][:description])
           .to eq(category_members.first.description)
       end
 
@@ -150,7 +150,7 @@ RSpec.shared_examples 'jobs::publishing::categories' do
       context 'without local description' do
         before { category_members.each { |cm| cm.update(description: nil) } }
         it 'has products description' do
-          expect(subject[:category_members][0][:product][:description])
+          expect(subject[:category_members][0][:description])
             .to eq(category_members.first.product.description)
         end
 

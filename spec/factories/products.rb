@@ -4,9 +4,9 @@ FactoryGirl.define do
       "#{Faker::Commerce.product_name}#{n}"
     end
 
-    short_description { Faker::Lorem.sentence }
-    description { Faker::Lorem.paragraph }
+    description { Faker::Lorem.sentence }
     active true
+    markup { "<p>#{Faker::Lorem.paragraph}</p>" }
 
     after(:build) do |p|
       p.price = Faker::Number.number(4).to_i
