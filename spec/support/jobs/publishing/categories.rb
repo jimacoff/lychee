@@ -1,17 +1,20 @@
 RSpec.shared_examples 'jobs::publishing::categories' do
   # rubocop:disable Metrics/AbcSize, Metrics/MethodLength
   def category_member_json(cm)
+    p = cm.product
     {
       id: cm.id,
-      name: cm.product.name,
-      description: cm.description || cm.product.description,
-      path: cm.product.path,
-      currency: cm.product.currency,
-      weight: cm.product.weight,
-      product_id: cm.product.id,
-      price_cents: cm.product.price_cents,
-      order: cm.order
-    }
+      order: cm.order,
+      product: {
+        name: p.name,
+        description: cm.description || p.description,
+        path: p.path,
+        currency: p.currency,
+        weight: p.weight,
+        product_id: p.id,
+        price_cents: p.price_cents
+      }
+    }.compact
   end
 
   def category_json(c)
@@ -23,7 +26,7 @@ RSpec.shared_examples 'jobs::publishing::categories' do
       description: c.description,
       path: c.path,
       updated_at: c.updated_at.iso8601,
-      products: c.category_members.map { |e| category_member_json(e) },
+      category_members: c.category_members.map { |e| category_member_json(e) },
       parent: c.parent_category.try(:id)
     }.compact
 
@@ -127,11 +130,11 @@ RSpec.shared_examples 'jobs::publishing::categories' do
       end
 
       it 'has all category_members where product is active' do
-        expect(subject[:products].size).to eq(count)
+        expect(subject[:category_members].size).to eq(count)
       end
 
       it 'has the local description' do
-        expect(subject[:products][0][:description])
+        expect(subject[:category_members][0][:product][:description])
           .to eq(category_members.first.description)
       end
 
@@ -140,14 +143,14 @@ RSpec.shared_examples 'jobs::publishing::categories' do
       context 'disabled products' do
         before { category_members.sample.product.update(enabled: false) }
         it 'has only category_members where product is active' do
-          expect(subject[:products].size).to eq(count - 1)
+          expect(subject[:category_members].size).to eq(count - 1)
         end
       end
 
       context 'without local description' do
         before { category_members.each { |cm| cm.update(description: nil) } }
         it 'has products description' do
-          expect(subject[:products][0][:description])
+          expect(subject[:category_members][0][:product][:description])
             .to eq(category_members.first.product.description)
         end
 
@@ -162,7 +165,7 @@ RSpec.shared_examples 'jobs::publishing::categories' do
         end
 
         it 'has image json' do
-          expect(subject[:products]).to all(have_key(:image_instance))
+          expect(subject[:category_members]).to all(have_key(:image_instance))
         end
       end
 
@@ -173,7 +176,7 @@ RSpec.shared_examples 'jobs::publishing::categories' do
         end
         before do
           category_members.each { |cm| cm.product.update!(metadata: metadata) }
-          json[:products].each { |p| p[:metadata] = metadata }
+          json[:category_members].each { |p| p[:product][:metadata] = metadata }
         end
 
         it { is_expected.to match(json) }
@@ -186,7 +189,7 @@ RSpec.shared_examples 'jobs::publishing::categories' do
         end
         before do
           category_members.each { |cm| cm.product.update!(tags: tags) }
-          json[:products].each { |p| p[:tags] = tags }
+          json[:category_members].each { |p| p[:product][:tags] = tags }
         end
 
         it { is_expected.to match(json) }
