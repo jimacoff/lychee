@@ -31,6 +31,13 @@ class Order < ActiveRecord::Base
   # TODO: Store environment details about order, country, IP, browser etc
   # as many details as possible for use with risk APIs
 
+  def self.create_from_bag(bag, attrs)
+    create!(attrs).tap do |o|
+      o.create_line_items_from_bag(bag)
+      o.submit!
+    end
+  end
+
   def calculate_weight
     change_weight(0) && return unless commodity_line_items.present?
     change_weight(commodity_line_items.map(&:total_weight).sum)
@@ -56,6 +63,13 @@ class Order < ActiveRecord::Base
     calculate_total_tax
     finalise_total
     calculate_tax_rates
+  end
+
+  def create_line_items_from_bag(bag)
+    bag.contents.values.each do |entry|
+      attrs = entry.slice(:product, :variant, :quantity, :metadata)
+      commodity_line_items.create!(attrs)
+    end
   end
 
   private

@@ -34,13 +34,6 @@ class ShoppingBag < ActiveRecord::Base
     end
   end
 
-  def place_order(attrs)
-    Order.create!(attrs).tap do |o|
-      create_order_line_items(o)
-      o.submit!
-    end
-  end
-
   private
 
   def apply_item_add(opts)
@@ -63,12 +56,5 @@ class ShoppingBag < ActiveRecord::Base
   def apply_operation(prev, attrs)
     return prev if prev && attrs.all? { |k, v| prev[k].to_s == v.to_s }
     shopping_bag_operations.create!(attrs)
-  end
-
-  def create_order_line_items(order)
-    contents.values.each do |entry|
-      attrs = entry.slice(:product, :variant, :quantity, :metadata)
-      order.commodity_line_items.create!(attrs)
-    end
   end
 end
