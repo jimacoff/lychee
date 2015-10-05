@@ -83,7 +83,7 @@ RSpec.shared_examples 'jobs::publishing::products' do
       before do
         create_list(:product, enabled_product_count)
         create(:product, enabled: false)
-        PublishSiteJob.perform_now(site)
+        PublishSiteJob.perform_now
       end
 
       it 'generates one file per active product' do
@@ -177,7 +177,7 @@ RSpec.shared_examples 'jobs::publishing::products' do
       end
 
       it 'has all child images' do
-        expect(subject[:images].size).to eq(image_count)
+        expect(subject[:image_instances].size).to eq(image_count)
       end
     end
 
@@ -218,7 +218,7 @@ RSpec.shared_examples 'jobs::publishing::products' do
 
         it 'has all child images' do
           expect(subject[:variations])
-            .to all include(values: all(have_key(:data)))
+            .to all include(values: all(have_key(:image_instance)))
         end
       end
     end

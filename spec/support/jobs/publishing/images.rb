@@ -13,6 +13,33 @@ RSpec.shared_examples 'jobs::publishing::images' do
     image[:srcset_path] = image_file.srcset_path if srcset_path
     image
   end
+
+  # rubocop:disable Metrics/AbcSize
+  def image_json(img)
+    {
+      id: img.id,
+      internal_name: img.internal_name,
+      extension: img.extension,
+      original: image_file_json(img.image_files.original_image),
+      paths: {
+        default: img.default_path,
+        srcset: img.srcset_path
+      },
+      default: image_file_json(img.image_files.default_image),
+      srcset: image.image_files.srcset.map { |e| image_file_json(e, true) }
+    }.compact
+  end
+  # rubocop:enable Metrics/AbcSize
+
+  def image_instance_json(image_instance)
+    {
+      id: image_instance.id,
+      name: image_instance.name,
+      description: image_instance.description,
+      order: image_instance.order,
+      image: image_json(image_instance.image)
+    }
+  end
   # rubocop:enable Metrics/MethodLength
 
   context 'image_instance' do
@@ -26,27 +53,7 @@ RSpec.shared_examples 'jobs::publishing::images' do
     let(:image) { create(:image) }
     let(:image_instance) { create :image_instance, image: image, site: site }
 
-    let(:json) do
-      i = image_instance.image
-      {
-        id: image_instance.id,
-        name: image_instance.name,
-        description: image_instance.description,
-        order: image_instance.order,
-        paths: {
-          default: i.default_path,
-          srcset: i.srcset_path
-        },
-        data: {
-          id: i.id,
-          internal_name: i.internal_name,
-          extension: i.extension,
-          original: image_file_json(i.image_files.original_image),
-          default: image_file_json(i.image_files.default_image),
-          srcset: image.image_files.srcset.map { |e| image_file_json(e, true) }
-        }
-      }
-    end
+    let(:json) { image_instance_json(image_instance) }
     let(:metadata) { { key: Faker::Lorem.word } }
 
     context 'with minimal data' do
@@ -65,7 +72,7 @@ RSpec.shared_examples 'jobs::publishing::images' do
     context 'images' do
       context 'with metadata' do
         let(:image) { create(:image, metadata: metadata) }
-        before { json[:data][:metadata] = metadata }
+        before { json[:image][:metadata] = metadata }
 
         it { is_expected.to match(json) }
       end
@@ -73,7 +80,7 @@ RSpec.shared_examples 'jobs::publishing::images' do
       context 'with tags' do
         let(:tags) { Faker::Lorem.words(2) }
         let(:image) { create(:image, tags: tags) }
-        before { json[:data][:tags] = tags }
+        before { json[:image][:tags] = tags }
 
         it { is_expected.to match(json) }
       end
@@ -112,14 +119,14 @@ RSpec.shared_examples 'jobs::publishing::images' do
       context 'original' do
         include_examples 'image_file behaviour' do
           let(:target_instance) { image.image_files.original_image }
-          let(:target_json) { json[:data][:original] }
+          let(:target_json) { json[:image][:original] }
         end
       end
 
       context 'default_image' do
         include_examples 'image_file behaviour' do
           let(:target_instance) { image.image_files.default_image }
-          let(:target_json) { json[:data][:default] }
+          let(:target_json) { json[:image][:default] }
         end
       end
 
@@ -127,7 +134,7 @@ RSpec.shared_examples 'jobs::publishing::images' do
         include_examples 'image_file behaviour' do
           let(:srcset_instance) { rand(0..2) }
           let(:target_instance) { image.image_files.srcset[srcset_instance] }
-          let(:target_json) { json[:data][:srcset][srcset_instance] }
+          let(:target_json) { json[:image][:srcset][srcset_instance] }
         end
       end
     end

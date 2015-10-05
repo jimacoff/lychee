@@ -44,7 +44,7 @@ module Publishing
     end
 
     def category_members(json, c)
-      json.products do
+      json.category_members do
         json.array! c.category_members.sort_by(&:order) do |cm|
           category_member(json, cm) if cm.product.enabled?
         end
@@ -52,20 +52,23 @@ module Publishing
     end
 
     def category_member(json, cm)
-      p = cm.product
       json.call(cm, :id, :order)
-      json.call(p, :name, :path, :currency, :weight)
-      json.product_id p.id
-      json.price_cents p.price.cents
-      json.description(cm.description || p.description)
-
       category_member_image(json, cm)
-      optional_fields(json, p, [:tags, :metadata])
+
+      json.product do
+        p = cm.product
+        json.call(p, :name, :path, :currency, :weight)
+        json.product_id p.id
+        json.price_cents p.price.cents
+        json.description(cm.description || p.description)
+        optional_fields(json, p, [:tags, :metadata])
+      end
     end
 
     def category_member_image(json, cm)
       return unless cm.image_instance.present?
-      json.image do
+
+      json.image_instance do
         image_instance(json, cm.image_instance)
       end
     end

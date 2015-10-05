@@ -37,7 +37,7 @@ module Publishing
     end
 
     def product_images(json, image_instances)
-      json.images do
+      json.image_instances do
         json.array! image_instances.sort_by(&:order) do |ii|
           image_instance(json, ii)
         end
@@ -76,7 +76,9 @@ module Publishing
       json.id vv.id
       json.name vv.name
       json.description vv.description
-      image_instance(json, vv.image_instance) if vv.image_instance.present?
+
+      return unless vv.image_instance.present?
+      json.image_instance image_instance(json, vv.image_instance)
     end
 
     def product_categories(json, categories)

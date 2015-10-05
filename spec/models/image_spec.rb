@@ -102,7 +102,6 @@ RSpec.describe Image, type: :model, site_scoped: true do
         image_file.save
 
         expect(subject.srcset_path).to eq(expected_srcset_path)
-        puts subject.srcset_path
       end
     end
   end

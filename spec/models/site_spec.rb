@@ -17,6 +17,7 @@ RSpec.describe Site, type: :model do
     it { is_expected.to have_many :tax_categories }
     it { is_expected.to have_one :primary_tax_category }
 
+    it { is_expected.to have_many :images }
     it { is_expected.to have_many :products }
     it { is_expected.to have_many :variants }
     it { is_expected.to have_many :categories }
