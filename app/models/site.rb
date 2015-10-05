@@ -10,6 +10,7 @@ class Site < ActiveRecord::Base
   has_one :primary_tax_category, class_name: 'TaxCategory',
                                  foreign_key: 'site_primary_tax_category_id'
 
+  has_many :images
   has_many :products
   has_many :variants
   has_many :categories
