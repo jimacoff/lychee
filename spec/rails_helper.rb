@@ -25,6 +25,17 @@ module SpecSite
   end
 end
 
+module ForceRefresh
+  def force_refresh
+    old_path = current_path
+
+    visit '/test-store/blank'
+    expect(page).to have_text('This page intentionally left blank.')
+
+    visit old_path
+  end
+end
+
 RSpec.configure do |config|
   config.fixture_path = "#{::Rails.root}/spec/fixtures"
   config.use_transactional_fixtures = false
@@ -36,6 +47,7 @@ RSpec.configure do |config|
 
   # Supply a site scope when requested
   config.include SpecSite, site_scoped: true
+  config.include ForceRefresh, type: :feature
   config.around(:example, :site_scoped) { |e| with_spec_site { e.run } }
 
   config.before(:suite) { DatabaseCleaner.clean_with(:truncation) }
