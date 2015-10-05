@@ -16,11 +16,11 @@ RSpec.describe Product, type: :model, site_scoped: true do
   has_context 'content' do
     let(:factory) { :standalone_product }
   end
+  has_context 'markup'
 
   context 'table structure' do
     it { is_expected.to have_db_column(:name).of_type(:string) }
-    it { is_expected.to have_db_column(:short_description).of_type(:string) }
-    it { is_expected.to have_db_column(:description).of_type(:text) }
+    it { is_expected.to have_db_column(:description).of_type(:string) }
     it { is_expected.to have_db_column(:generated_slug).of_type(:string) }
     it { is_expected.to have_db_column(:specified_slug).of_type(:string) }
     it { is_expected.to have_db_column(:gtin).of_type(:string) }
@@ -61,7 +61,6 @@ RSpec.describe Product, type: :model, site_scoped: true do
 
   context 'validations' do
     it { is_expected.to validate_presence_of :name }
-    it { is_expected.to validate_presence_of :short_description }
     it { is_expected.to validate_presence_of :description }
     it { is_expected.to validate_numericality_of(:weight).allow_nil }
 

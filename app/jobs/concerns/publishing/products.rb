@@ -22,8 +22,8 @@ module Publishing
 
     def product(json, p)
       json.template 'product'
-      json.format 'html'
-      json.call(p, :id, :name, :short_description, :path,
+      json.format p.markup_format
+      json.call(p, :id, :name, :description, :path,
                 :price_cents, :currency, :weight)
       json.updated_at p.updated_at.iso8601
       product_optional_fields(json, p)
@@ -99,7 +99,7 @@ module Publishing
         f.puts PublishSiteJob::START_JSON_DELIMITER
         f.puts frontmatter
         f.puts PublishSiteJob::END_JSON_DELIMITER
-        f.puts "\n#{p.description}"
+        f.puts "\n#{p.markup}"
       end
     end
   end

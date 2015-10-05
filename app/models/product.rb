@@ -5,6 +5,7 @@ class Product < ActiveRecord::Base
   include Enablement
   include Specification
   include Content
+  include Markup
 
   has_many :variants
   has_many :variations

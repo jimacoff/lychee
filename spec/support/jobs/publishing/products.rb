@@ -3,10 +3,10 @@ RSpec.shared_examples 'jobs::publishing::products' do
   def product_json(p)
     {
       template: 'product',
-      format: 'html',
+      format: p.markup_format,
       id: p.id,
       name: p.name,
-      short_description: p.short_description,
+      description: p.description,
       path: p.path,
       updated_at: p.updated_at.iso8601,
       price_cents: p.price_cents,
@@ -110,7 +110,7 @@ RSpec.shared_examples 'jobs::publishing::products' do
 
         context 'content' do
           subject { description }
-          it { is_expected.to match(product.description) }
+          it { is_expected.to match(product.markup) }
         end
       end
     end

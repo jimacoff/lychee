@@ -44,8 +44,8 @@ ActiveRecord::Base.transaction do
     # 3 Casual Shirts for each gender
     (1..3).each do |i|
       name = "Casual #{Faker::Lorem.word} shirt #{i}"
-      short_description = "A casual shirt made from 100% #{Faker::Lorem.word}"
-      desc = <<-EOF.strip_heredoc
+      description = "A casual shirt made from 100% #{Faker::Lorem.word}"
+      markup = <<-EOF.strip_heredoc
         <h2>#{Faker::Lorem.word}</h2>
         <ol>
           <li>Thing</li>
@@ -61,11 +61,11 @@ ActiveRecord::Base.transaction do
         #{Faker::Lorem.paragraph}
       EOF
 
-      product = Product.create!(name: name, description: desc,
-                                short_description: short_description,
+      product = Product.create!(name: name, markup: markup,
+                                description: description,
                                 price: Faker::Number.number(6).to_i)
       categories.each_with_index do |c, ci|
-        product.category_members.create!(category: c, description: desc,
+        product.category_members.create!(category: c, description: description,
                                          order: ci)
       end
 

@@ -20,7 +20,7 @@ RSpec.describe Variant, type: :model, site_scoped: true do
   end
 
   context 'table structure' do
-    it { is_expected.to have_db_column(:description).of_type(:text) }
+    it { is_expected.not_to have_db_column(:description).of_type(:text) }
     it { is_expected.to have_db_column(:gtin).of_type(:string) }
     it { is_expected.to have_db_column(:sku).of_type(:string) }
     it { is_expected.to have_db_column(:weight).of_type(:integer) }
@@ -88,8 +88,7 @@ RSpec.describe Variant, type: :model, site_scoped: true do
                                           'values' => [{ 'name' => 'val1',
                                                          'value' => 'val' }]
                                         }] }
-    localized_attributes = { description: Faker::Lorem.sentence,
-                             gtin: Faker::Number.number(10),
+    localized_attributes = { gtin: Faker::Number.number(10),
                              sku: Faker::Number.number(10),
                              weight: Faker::Number.number(4).to_i,
                              specifications: specifications }
