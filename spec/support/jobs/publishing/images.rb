@@ -69,6 +69,16 @@ RSpec.shared_examples 'jobs::publishing::images' do
       it { is_expected.to match(json) }
     end
 
+    context 'with tags' do
+      let(:tags) { Faker::Lorem.words(2) }
+      let(:image_instance) do
+        create :image_instance, image: image, tags: tags, site: site
+      end
+      before { json[:tags] = tags }
+
+      it { is_expected.to match(json) }
+    end
+
     context 'images' do
       context 'with metadata' do
         let(:image) { create(:image, metadata: metadata) }
