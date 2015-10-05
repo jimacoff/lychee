@@ -49,7 +49,7 @@ RSpec.shared_examples 'jobs::publishing::categories' do
       before do
         create_list(:category, enabled_category_count)
         create(:category, enabled: false)
-        PublishSiteJob.perform_now(site)
+        PublishSiteJob.perform_now
       end
 
       it 'generates one file per active primary category' do
@@ -162,7 +162,7 @@ RSpec.shared_examples 'jobs::publishing::categories' do
         end
 
         it 'has image json' do
-          expect(subject[:products]).to all(have_key(:image))
+          expect(subject[:products]).to all(have_key(:image_instance))
         end
       end
 

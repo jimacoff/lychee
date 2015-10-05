@@ -2,14 +2,10 @@ module Publishing
   module Images
     def image_instance(json, ii)
       json.call(ii, :id, :name, :description, :order)
-      json.paths do
-        json.default ii.image.default_path
-        json.srcset ii.image.srcset_path
-      end
-      json.data do
+      image_instance_optional_fields(json, ii)
+      json.image do
         image(json, ii.image)
       end
-      image_instance_optional_fields(json, ii)
     end
 
     def image_instance_optional_fields(json, ii)
@@ -18,6 +14,7 @@ module Publishing
 
     def image(json, img)
       json.call(img, :id, :internal_name, :extension)
+      image_paths(json, img)
       image_optional_fields(json, img)
       json.default do
         image_file(json, img.image_files.default_image)
@@ -26,6 +23,13 @@ module Publishing
         image_file(json, img.image_files.original_image)
       end
       image_srcset(json, img)
+    end
+
+    def image_paths(json, img)
+      json.paths do
+        json.default img.default_path
+        json.srcset img.srcset_path
+      end
     end
 
     def image_optional_fields(json, img)
