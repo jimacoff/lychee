@@ -76,7 +76,7 @@ RSpec.describe ShoppingBagOperation, type: :model, site_scoped: true do
 
       context 'when metadata is not supplied' do
         it 'returns items with no metadata' do
-          opts = { k => no_metadata_op[k], metadata: nil }
+          opts = { k => no_metadata_op[k], metadata: {} }
           expect(ShoppingBagOperation.by_commodity(opts))
             .to contain_exactly(no_metadata_op)
         end
@@ -105,7 +105,7 @@ RSpec.describe ShoppingBagOperation, type: :model, site_scoped: true do
   context '#matches_commodity?' do
     let(:product) { nil }
     let(:variant) { nil }
-    let(:metadata) { nil }
+    let(:metadata) { {} }
     let(:op) { create(:shopping_bag_operation, attrs) }
 
     let(:attrs) do
@@ -151,7 +151,7 @@ RSpec.describe ShoppingBagOperation, type: :model, site_scoped: true do
         end
 
         it 'indicates mismatched metadata (blank vs value)' do
-          opts = attrs.merge(metadata: nil)
+          opts = attrs.merge(metadata: {})
           expect(op.matches_commodity?(opts)).to be_falsey
         end
 
@@ -206,7 +206,7 @@ RSpec.describe ShoppingBagOperation, type: :model, site_scoped: true do
         end
 
         it 'indicates mismatched metadata (blank vs value)' do
-          opts = attrs.merge(metadata: nil)
+          opts = attrs.merge(metadata: {})
           expect(op.matches_commodity?(opts)).to be_falsey
         end
 

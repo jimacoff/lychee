@@ -4,6 +4,7 @@ FactoryGirl.define do
 
     item_uuid { SecureRandom.uuid }
     quantity 1
+    metadata({})
 
     trait :for_product do
       product
