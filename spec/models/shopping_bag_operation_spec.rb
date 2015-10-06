@@ -33,7 +33,11 @@ RSpec.describe ShoppingBagOperation, type: :model, site_scoped: true do
     it { is_expected.not_to validate_presence_of(:variant) }
     it { is_expected.to validate_presence_of(:item_uuid) }
     it { is_expected.to validate_presence_of(:quantity) }
-    it { is_expected.not_to validate_presence_of(:metadata) }
+    it 'requires metadata not to be nil' do
+      expect(subject).to allow_value('a' => '1').for(:metadata)
+      expect(subject).to allow_value({}).for(:metadata)
+      expect(subject).not_to allow_value(nil).for(:metadata)
+    end
   end
 
   context '::by_uuid' do

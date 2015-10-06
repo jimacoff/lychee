@@ -6,8 +6,7 @@ class ShoppingBagOperation < ActiveRecord::Base
   belongs_to :shopping_bag
 
   valhammer
-
-  validates :metadata, presence: { allow_blank: true }
+  validate :metadata_cannot_be_nil
 
   default_scope { order('id') }
 
@@ -29,5 +28,11 @@ class ShoppingBagOperation < ActiveRecord::Base
   def item_attrs
     { product: product, variant: variant, item_uuid: item_uuid,
       quantity: quantity, metadata: metadata }.compact
+  end
+
+  private
+
+  def metadata_cannot_be_nil
+    errors.add(:metadata, 'cannot be nil') if metadata.nil?
   end
 end
