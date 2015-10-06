@@ -14,21 +14,19 @@ h1 Totes super production ready shopping bag page
                 = f.hidden_field(:variant_id, value: variant.id)
               - else
                 = f.hidden_field(:product_id, value: product.id)
-              - (metadata || {}).each do |k, v|
+              - metadata.each do |k, v|
                 = f.hidden_field("metadata[#{k}]", value: v)
               = product.name
             td
-              - (metadata || {}).each do |k, v|
+              - metadata.each do |k, v|
                 div
                   strong=> k
                   = v
               - if variant
                 - variant.variation_instances.each do |instance|
                   div
-                    strong
-                      = instance.variation.trait.name
-                      ' :
-                    = instance.variation_value.name
+                    strong=> instance.variation.trait.display_name
+                    = instance.variation_value.description
 
             td= f.text_field(:quantity, value: entry[:quantity], size: 3)
   button.btn(type='submit') Update Bag
