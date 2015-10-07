@@ -33,7 +33,11 @@ RSpec.describe ShoppingBagOperation, type: :model, site_scoped: true do
     it { is_expected.not_to validate_presence_of(:variant) }
     it { is_expected.to validate_presence_of(:item_uuid) }
     it { is_expected.to validate_presence_of(:quantity) }
-    it { is_expected.not_to validate_presence_of(:metadata) }
+    it 'requires metadata not to be nil' do
+      expect(subject).to allow_value('a' => '1').for(:metadata)
+      expect(subject).to allow_value({}).for(:metadata)
+      expect(subject).not_to allow_value(nil).for(:metadata)
+    end
   end
 
   context '::by_uuid' do
@@ -72,7 +76,7 @@ RSpec.describe ShoppingBagOperation, type: :model, site_scoped: true do
 
       context 'when metadata is not supplied' do
         it 'returns items with no metadata' do
-          opts = { k => no_metadata_op[k], metadata: nil }
+          opts = { k => no_metadata_op[k], metadata: {} }
           expect(ShoppingBagOperation.by_commodity(opts))
             .to contain_exactly(no_metadata_op)
         end
@@ -101,7 +105,7 @@ RSpec.describe ShoppingBagOperation, type: :model, site_scoped: true do
   context '#matches_commodity?' do
     let(:product) { nil }
     let(:variant) { nil }
-    let(:metadata) { nil }
+    let(:metadata) { {} }
     let(:op) { create(:shopping_bag_operation, attrs) }
 
     let(:attrs) do
@@ -147,7 +151,7 @@ RSpec.describe ShoppingBagOperation, type: :model, site_scoped: true do
         end
 
         it 'indicates mismatched metadata (blank vs value)' do
-          opts = attrs.merge(metadata: nil)
+          opts = attrs.merge(metadata: {})
           expect(op.matches_commodity?(opts)).to be_falsey
         end
 
@@ -202,7 +206,7 @@ RSpec.describe ShoppingBagOperation, type: :model, site_scoped: true do
         end
 
         it 'indicates mismatched metadata (blank vs value)' do
-          opts = attrs.merge(metadata: nil)
+          opts = attrs.merge(metadata: {})
           expect(op.matches_commodity?(opts)).to be_falsey
         end
 

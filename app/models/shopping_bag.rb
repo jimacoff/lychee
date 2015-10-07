@@ -23,6 +23,9 @@ class ShoppingBag < ActiveRecord::Base
   valhammer
 
   def apply(opts)
+    opts = opts.dup
+    opts[:metadata] ||= {}
+
     (opts[:item_uuid] && apply_item_update(opts)) || apply_item_add(opts)
   end
 

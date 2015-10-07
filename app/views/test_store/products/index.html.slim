@@ -1,0 +1,18 @@
+- @products.each_with_index do |product, index|
+  - unless index.zero?
+    hr
+  = form_tag('/shop/bag', method: :post, class: 'form-horizontal') do
+    p= product.name
+    = hidden_field_tag(:product_id, product.id)
+    = hidden_field_tag(:quantity, 1)
+
+    - if product.variations.present?
+      - product.variations.each do |variation|
+        fieldset.form-group
+          span.heading= variation.trait.name
+          - variation.variation_values.each do |value|
+            .radio: label
+              input>(type='radio' name="variations[#{variation.id}]" value=value.id)
+              = value.name
+
+    = button_tag('Add to Bag', type: 'submit')

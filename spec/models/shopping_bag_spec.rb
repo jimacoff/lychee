@@ -74,7 +74,7 @@ RSpec.describe ShoppingBag, type: :model, site_scoped: true do
 
     shared_examples 'an operable bag item' do
       let!(:commodity) { create(kind) }
-      let(:commodity_attrs) { { :"#{kind}_id" => commodity.id } }
+      let(:commodity_attrs) { { "#{kind}_id": commodity.id, metadata: {} } }
 
       context 'with no uuid provided' do
         let(:attrs) { commodity_attrs.merge(quantity: 1) }
@@ -192,6 +192,7 @@ RSpec.describe ShoppingBag, type: :model, site_scoped: true do
   context '#contents' do
     def create_op(attrs)
       attrs[:item_uuid] ||= SecureRandom.uuid
+      attrs[:metadata] ||= {}
       subject.shopping_bag_operations.create!(attrs)
     end
 
@@ -210,13 +211,15 @@ RSpec.describe ShoppingBag, type: :model, site_scoped: true do
 
       ActiveRecord::Base.connection.execute('SELECT 1234')
 
+      base = { quantity: 1, metadata: {} }
+
       expect(subject.contents).to eq(
-        uuids[0] => { product: products[0], quantity: 1, item_uuid: uuids[0] },
-        uuids[1] => { product: products[1], quantity: 1, item_uuid: uuids[1] },
-        uuids[2] => { product: products[2], quantity: 1, item_uuid: uuids[2] },
-        uuids[3] => { variant: variants[0], quantity: 1, item_uuid: uuids[3] },
-        uuids[4] => { variant: variants[1], quantity: 1, item_uuid: uuids[4] },
-        uuids[5] => { variant: variants[2], quantity: 1, item_uuid: uuids[5] }
+        uuids[0] => base.merge(product: products[0], item_uuid: uuids[0]),
+        uuids[1] => base.merge(product: products[1], item_uuid: uuids[1]),
+        uuids[2] => base.merge(product: products[2], item_uuid: uuids[2]),
+        uuids[3] => base.merge(variant: variants[0], item_uuid: uuids[3]),
+        uuids[4] => base.merge(variant: variants[1], item_uuid: uuids[4]),
+        uuids[5] => base.merge(variant: variants[2], item_uuid: uuids[5])
       )
     end
 
@@ -232,8 +235,10 @@ RSpec.describe ShoppingBag, type: :model, site_scoped: true do
       create_op(product_id: product2.id, quantity: 20, item_uuid: uuid2)
 
       expect(subject.contents).to eq(
-        uuid1 => { product: product1, quantity: 4, item_uuid: uuid1 },
-        uuid2 => { product: product2, quantity: 20, item_uuid: uuid2 }
+        uuid1 => { product: product1, quantity: 4,
+                   item_uuid: uuid1, metadata: {} },
+        uuid2 => { product: product2, quantity: 20,
+                   item_uuid: uuid2, metadata: {} }
       )
     end
 
