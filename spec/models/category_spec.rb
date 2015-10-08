@@ -42,4 +42,75 @@ RSpec.describe Category, type: :model, site_scoped: true do
       expect(subject.subcategories.first.parent_category).to eq(subject)
     end
   end
+
+  describe '#create_default_path' do
+    subject { create :category }
+
+    shared_examples 'category path behaviours' do
+      it 'creates a valid path' do
+        expect(subject.path).to be_valid
+      end
+
+      it 'creates a path which routes to us' do
+        expect(subject.path.routable).to eq(subject)
+      end
+    end
+
+    context 'When category has parent with path' do
+      let(:parent_category) { create :category, :routable }
+      before do
+        parent_category.subcategories << subject
+        subject.create_default_path
+      end
+
+      include_examples 'category path behaviours'
+
+      it 'sets path uri to include parent category path' do
+        expect(subject.uri_path).to eq(
+          "#{parent_category.uri_path}" \
+          "/#{subject.name.to_url}")
+      end
+    end
+
+    context 'When category has parent with no path' do
+      let(:parent_category) { create :category }
+      before do
+        parent_category.subcategories << subject
+        subject.create_default_path
+      end
+
+      include_examples 'category path behaviours'
+
+      it 'sets path uri to include parent category path' do
+        expect(subject.uri_path).to eq(
+          "#{subject.site.preferences.reserved_paths['categories']}" \
+          "/#{subject.name.to_url}")
+      end
+    end
+
+    context 'When site has reserved category assets path' do
+      before { subject.create_default_path }
+
+      include_examples 'category path behaviours'
+
+      it 'sets path uri to include site category assets path' do
+        expect(subject.uri_path).to eq(
+          "#{subject.site.preferences.reserved_paths['categories']}" \
+          "/#{subject.name.to_url}")
+      end
+    end
+
+    context 'When site has no reserved category assets path' do
+      before do
+        subject.site.preferences.reserved_paths.delete('categories')
+        subject.create_default_path
+      end
+
+      include_examples 'category path behaviours'
+
+      it 'sets path uri to include site category assets path' do
+        expect(subject.uri_path).to eq("/#{subject.name.to_url}")
+      end
+    end
+  end
 end
