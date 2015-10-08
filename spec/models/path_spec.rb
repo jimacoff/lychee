@@ -32,4 +32,125 @@ RSpec.describe Path, type: :model, site_scoped: true do
       it { is_expected.to be_a_closure_tree.ordered }
     end
   end
+
+  describe '::find_path' do
+    context 'path exists' do
+      let(:segment1) { Faker::Lorem.word }
+      let(:segment2) { Faker::Lorem.word }
+      let!(:path_instance) { Path.find_or_create_by_path([segment1, segment2]) }
+      subject { Path.find_path(path) }
+
+      context 'passing a / seperated string' do
+        let(:path) { "/#{segment1}/#{segment2}" }
+        it { is_expected.to eq(path_instance) }
+      end
+
+      context 'passing an array of strings in hierarchy' do
+        let(:path) { [segment1, segment2] }
+        it { is_expected.to eq(path_instance) }
+      end
+    end
+
+    context 'path does not exist' do
+      let(:segment1) { Faker::Lorem.word }
+      let(:segment2) { Faker::Lorem.word }
+      subject { Path.find_path(path) }
+
+      context 'passing a / seperated string' do
+        let(:path) { "/#{segment1}/#{segment2}" }
+        it { is_expected.to be_nil }
+      end
+
+      context 'passing an array of strings in hierarchy' do
+        let(:path) { [segment1, segment2] }
+        it { is_expected.to be_nil }
+      end
+    end
+  end
+
+  describe '::exists?' do
+    context 'path exists' do
+      let(:segment1) { Faker::Lorem.word }
+      let(:segment2) { Faker::Lorem.word }
+      let!(:path_instance) { Path.find_or_create_by_path([segment1, segment2]) }
+      subject { Path.exists?(path) }
+
+      context 'passing a / seperated string' do
+        let(:path) { "/#{segment1}/#{segment2}" }
+        it { is_expected.to be_truthy }
+      end
+
+      context 'passing an array of strings in hierarchy' do
+        let(:path) { [segment1, segment2] }
+        it { is_expected.to be_truthy }
+      end
+    end
+
+    context 'path does not exist' do
+      let(:segment1) { Faker::Lorem.word }
+      let(:segment2) { Faker::Lorem.word }
+      subject { Path.exists?(path) }
+
+      context 'passing a / seperated string' do
+        let(:path) { "/#{segment1}/#{segment2}" }
+        it { is_expected.to be_falsey }
+      end
+
+      context 'passing an array of strings in hierarchy' do
+        let(:path) { [segment1, segment2] }
+        it { is_expected.to be_falsey }
+      end
+    end
+  end
+
+  describe '::routes?' do
+    context 'path exists' do
+      let(:segment1) { Faker::Lorem.word }
+      let(:segment2) { Faker::Lorem.word }
+      let!(:path_instance) { Path.find_or_create_by_path([segment1, segment2]) }
+      subject { Path.routes?(path) }
+
+      context 'has routable' do
+        before { path_instance.update(routable: create(:standalone_product)) }
+
+        context 'passing a / seperated string' do
+          let(:path) { "/#{segment1}/#{segment2}" }
+          it { is_expected.to be_truthy }
+        end
+
+        context 'passing an array of strings in hierarchy' do
+          let(:path) { [segment1, segment2] }
+          it { is_expected.to be_truthy }
+        end
+      end
+
+      context 'does not have routable' do
+        context 'passing a / seperated string' do
+          let(:path) { "/#{segment1}/#{segment2}" }
+          it { is_expected.to be_falsey }
+        end
+
+        context 'passing an array of strings in hierarchy' do
+          let(:path) { [segment1, segment2] }
+          it { is_expected.to be_falsey }
+        end
+      end
+    end
+
+    context 'path does not exist' do
+      let(:segment1) { Faker::Lorem.word }
+      let(:segment2) { Faker::Lorem.word }
+      subject { Path.routes?(path) }
+
+      context 'passing a / seperated string' do
+        let(:path) { "/#{segment1}/#{segment2}" }
+        it { is_expected.to be_falsey }
+      end
+
+      context 'passing an array of strings in hierarchy' do
+        let(:path) { [segment1, segment2] }
+        it { is_expected.to be_falsey }
+      end
+    end
+  end
 end
