@@ -27,7 +27,7 @@ FactoryGirl.define do
 
     trait :routable do
       after(:create) do |p|
-        p.path = create :path, routable: p
+        p.create_default_path
       end
     end
 

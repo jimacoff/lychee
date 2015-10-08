@@ -17,9 +17,6 @@ RSpec.describe Product, type: :model, site_scoped: true do
     let(:factory) { :standalone_product }
   end
   has_context 'markup'
-  has_context 'routable' do
-    let(:factory) { :standalone_product }
-  end
 
   context 'table structure' do
     it { is_expected.to have_db_column(:name).of_type(:string) }
@@ -181,6 +178,45 @@ RSpec.describe Product, type: :model, site_scoped: true do
     context 'with no matching variant' do
       it 'returns nil' do
         expect(product.variant(opts1)).to be_nil
+      end
+    end
+  end
+
+  describe '#create_default_path' do
+    subject { create :product }
+
+    shared_examples 'product path behaviours' do
+      it 'creates a valid path' do
+        expect(subject.path).to be_valid
+      end
+
+      it 'creates a path which routes to us' do
+        expect(subject.path.routable).to eq(subject)
+      end
+    end
+
+    context 'When site has reserved product assets path' do
+      before { subject.create_default_path }
+
+      include_examples 'product path behaviours'
+
+      it 'sets path uri to include site product assets path' do
+        expect(subject.uri_path).to eq(
+          "#{subject.site.preferences.reserved_paths['products']}" \
+          "/#{subject.name.to_url}")
+      end
+    end
+
+    context 'When site has no reserved product assets path' do
+      before do
+        subject.site.preferences.reserved_paths.delete('products')
+        subject.create_default_path
+      end
+
+      include_examples 'product path behaviours'
+
+      it 'sets path uri to include site product assets path' do
+        expect(subject.uri_path).to eq("/#{subject.name.to_url}")
       end
     end
   end

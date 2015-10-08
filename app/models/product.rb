@@ -51,6 +51,10 @@ class Product < ActiveRecord::Base
       .find_by(variation_instances: { id: nil })
   end
 
+  def create_default_path
+    create_path(parent: default_path_parent, segment: name.to_url)
+  end
+
   private
 
   def variant_selection_join(opts)
@@ -69,5 +73,14 @@ class Product < ActiveRecord::Base
       conds.or(vi[:variation_id].eq(id)
                .and(vi[:variation_value_id].not_eq(value_id)))
     end
+  end
+
+  def default_path_parent
+    return nil unless site_assets_product_path
+    Path.find_or_create_by_path(site_assets_product_path)
+  end
+
+  def site_assets_product_path
+    site.preferences.reserved_path('products')
   end
 end
