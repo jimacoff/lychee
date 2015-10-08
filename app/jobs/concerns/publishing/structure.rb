@@ -51,7 +51,7 @@ module Publishing
     def structure_products(json, products)
       json.products do
         json.array! products.each do |p|
-          next unless p.enabled?
+          next unless p.routable?
 
           product(json, p)
         end

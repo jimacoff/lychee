@@ -91,7 +91,7 @@ RSpec.shared_examples 'jobs::publishing::structure' do
     context 'products' do
       let(:count) { 5 }
       before do
-        create_list :standalone_product, count
+        create_list :standalone_product, count, :routable
         Site.current.products.last.update!(enabled: false)
       end
 

@@ -2,10 +2,10 @@ class Product < ActiveRecord::Base
   include ParentSite
 
   include Monies
-  include Enablement
   include Specification
   include Content
   include Markup
+  include Routable
 
   has_many :variants
   has_many :variations
@@ -42,10 +42,6 @@ class Product < ActiveRecord::Base
   def inventory_not_required
     return unless inventory.present? && variants.present?
     errors.add(:inventory, 'must not be provided if product defines variants')
-  end
-
-  def path
-    "#{site.preferences.reserved_paths['products']}/#{slug}"
   end
 
   def variant(opts)

@@ -8,7 +8,7 @@ RSpec.shared_examples 'jobs::publishing::categories' do
       description: cm.description || p.description,
       product: {
         name: p.name,
-        path: p.path,
+        uri_path: p.uri_path,
         currency: p.currency,
         weight: p.weight,
         product_id: p.id,

@@ -25,6 +25,12 @@ FactoryGirl.define do
       end
     end
 
+    trait :routable do
+      after(:create) do |p|
+        p.path = create :path, routable: p
+      end
+    end
+
     trait :with_variants do
       after(:create) do |p|
         # Subscriber wide product traits

@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20151005102935) do
+ActiveRecord::Schema.define(version: 20151008000944) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -240,6 +240,30 @@ ActiveRecord::Schema.define(version: 20151005102935) do
 
   add_index "orders", ["site_id"], name: "index_orders_on_site_id", using: :btree
 
+  create_table "path_hierarchies", id: false, force: :cascade do |t|
+    t.integer "ancestor_id",   limit: 8, null: false
+    t.integer "descendant_id", limit: 8, null: false
+    t.integer "generations",   limit: 8, null: false
+  end
+
+  add_index "path_hierarchies", ["ancestor_id", "descendant_id", "generations"], name: "path_anc_desc_idx", unique: true, using: :btree
+  add_index "path_hierarchies", ["descendant_id"], name: "path_desc_idx", using: :btree
+
+  create_table "paths", id: :bigserial, force: :cascade do |t|
+    t.integer  "site_id",       limit: 8, null: false
+    t.integer  "routable_id",   limit: 8
+    t.string   "routable_type"
+    t.string   "segment",                 null: false
+    t.integer  "parent_id"
+    t.datetime "created_at",              null: false
+    t.datetime "updated_at",              null: false
+  end
+
+  add_index "paths", ["routable_type", "routable_id"], name: "index_paths_on_routable_type_and_routable_id", using: :btree
+  add_index "paths", ["routable_type"], name: "index_paths_on_routable_type", using: :btree
+  add_index "paths", ["site_id", "segment"], name: "index_paths_on_site_id_and_segment", unique: true, using: :btree
+  add_index "paths", ["site_id"], name: "index_paths_on_site_id", using: :btree
+
   create_table "preferences", id: :bigserial, force: :cascade do |t|
     t.integer  "site_id",                    limit: 8,                 null: false
     t.integer  "tax_basis",                            default: 0,     null: false
@@ -265,8 +289,6 @@ ActiveRecord::Schema.define(version: 20151005102935) do
 
   create_table "products", id: :bigserial, force: :cascade do |t|
     t.string   "name",                                      null: false
-    t.string   "generated_slug",                            null: false
-    t.string   "specified_slug"
     t.string   "gtin"
     t.string   "sku"
     t.integer  "price_cents",                               null: false
@@ -288,9 +310,7 @@ ActiveRecord::Schema.define(version: 20151005102935) do
     t.integer  "markup_format",             default: 0
   end
 
-  add_index "products", ["site_id", "generated_slug"], name: "index_products_on_site_id_and_generated_slug", unique: true, using: :btree
   add_index "products", ["site_id", "name"], name: "index_products_on_site_id_and_name", unique: true, using: :btree
-  add_index "products", ["site_id", "specified_slug"], name: "index_products_on_site_id_and_specified_slug", unique: true, using: :btree
   add_index "products", ["site_id"], name: "index_products_on_site_id", using: :btree
   add_index "products", ["tax_override_id"], name: "index_products_on_tax_override_id", using: :btree
 
@@ -570,6 +590,7 @@ ActiveRecord::Schema.define(version: 20151005102935) do
   add_foreign_key "orders", "addresses", column: "customer_address_id", on_delete: :restrict
   add_foreign_key "orders", "addresses", column: "delivery_address_id", on_delete: :restrict
   add_foreign_key "orders", "sites", on_delete: :cascade
+  add_foreign_key "paths", "sites", on_delete: :cascade
   add_foreign_key "preferences", "sites", on_delete: :cascade
   add_foreign_key "prioritized_countries", "countries"
   add_foreign_key "prioritized_countries", "sites"

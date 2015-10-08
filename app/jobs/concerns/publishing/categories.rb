@@ -61,7 +61,7 @@ module Publishing
 
     def category_member_product(json, p)
       json.product do
-        json.call(p, :name, :path, :currency, :weight)
+        json.call(p, :name, :uri_path, :currency, :weight)
         json.product_id p.id
         json.price_cents p.price.cents
         optional_fields(json, p, [:tags, :metadata])

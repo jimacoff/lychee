@@ -1,13 +1,10 @@
 RSpec.shared_examples 'content' do
   has_context 'metadata'
-  has_context 'slug' do
-    subject { create factory }
-  end
   has_context 'taggable'
+  has_context 'routable'
 
-  describe '#path' do
-    it 'has been overridden' do
-      expect { subject.path }.not_to raise_exception
-    end
+  context 'relationships' do
+    it { is_expected.to have_many(:image_instances) }
+    it { is_expected.to have_many(:images) }
   end
 end
