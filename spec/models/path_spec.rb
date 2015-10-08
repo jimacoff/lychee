@@ -111,7 +111,7 @@ RSpec.describe Path, type: :model, site_scoped: true do
       subject { Path.routes?(path) }
 
       context 'has routable' do
-        before { path_instance.update(routable: create(:standalone_product)) }
+        before { create(:standalone_product, path: path_instance) }
 
         context 'passing a / seperated string' do
           let(:path) { "/#{segment1}/#{segment2}" }

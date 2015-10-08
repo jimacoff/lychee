@@ -18,6 +18,6 @@ module Routable
   end
 
   def create_default_path
-    throw 'not implemented'
+    fail 'not implemented'
   end
 end
