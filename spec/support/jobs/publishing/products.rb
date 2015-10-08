@@ -77,23 +77,19 @@ RSpec.shared_examples 'jobs::publishing::products' do
     let(:json) { product_json(product) }
 
     context 'file set' do
-      let(:enabled_product_count) { 5 }
       let(:file_path) { File.join(products_path, "#{product.id}.html") }
       let(:file_content) do
         File.read(file_path)
       end
-      before do
-        create_list(:product, enabled_product_count, :routable)
-        create(:product)
-        PublishSiteJob.perform_now
-      end
 
       context 'routable product' do
         context 'file data' do
-          let(:product) { Site.current.products.enabled.sample }
+          let!(:product) { create(:product, :routable) }
           let(:regex) { /---json\n(.*)---\n\n(.*)\n/m }
           let(:frontmatter) { file_content.match(regex)[1] }
           let(:description) { file_content.match(regex)[2] }
+
+          before { PublishSiteJob.perform_now }
 
           context 'frontmatter' do
             subject { JSON.parse(frontmatter, symbolize_names: true) }
@@ -107,12 +103,23 @@ RSpec.shared_examples 'jobs::publishing::products' do
         end
       end
 
-      it 'generates one file per routable product' do
-        expect(site.products.count)
-          .to eq(enabled_product_count + 1)
+      context 'nonroutable products' do
+        let(:routable_product_count) { 5 }
 
-        expect(Dir.glob("#{products_path}/**/*").length)
-          .to eq(enabled_product_count)
+        before do
+          create_list(:product, routable_product_count, :routable)
+          create(:product, :routable, enabled: false)
+          create(:product)
+          PublishSiteJob.perform_now
+        end
+
+        it 'generates one file per routable product' do
+          expect(site.products.count)
+            .to eq(routable_product_count + 2)
+
+          expect(Dir.glob("#{products_path}/**/*").length)
+            .to eq(routable_product_count)
+        end
       end
     end
 

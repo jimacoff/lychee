@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20151008000944) do
+ActiveRecord::Schema.define(version: 20151008021439) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -51,8 +51,6 @@ ActiveRecord::Schema.define(version: 20151008000944) do
     t.integer  "parent_category_id", limit: 8
     t.string   "name",                                        null: false
     t.text     "description",                                 null: false
-    t.string   "generated_slug",                              null: false
-    t.string   "specified_slug"
     t.hstore   "metadata"
     t.text     "tags",                         default: [],                array: true
     t.datetime "created_at",                                  null: false
@@ -62,9 +60,7 @@ ActiveRecord::Schema.define(version: 20151008000944) do
   end
 
   add_index "categories", ["parent_category_id"], name: "index_categories_on_parent_category_id", using: :btree
-  add_index "categories", ["site_id", "generated_slug"], name: "index_categories_on_site_id_and_generated_slug", unique: true, using: :btree
   add_index "categories", ["site_id", "name"], name: "index_categories_on_site_id_and_name", unique: true, using: :btree
-  add_index "categories", ["site_id", "specified_slug"], name: "index_categories_on_site_id_and_specified_slug", unique: true, using: :btree
   add_index "categories", ["site_id"], name: "index_categories_on_site_id", using: :btree
 
   create_table "category_members", id: :bigserial, force: :cascade do |t|

@@ -16,12 +16,8 @@ RSpec.describe Category, type: :model, site_scoped: true do
   context 'table structure' do
     it { is_expected.to have_db_column(:name).of_type(:string) }
     it { is_expected.to have_db_column(:description).of_type(:text) }
-    it { is_expected.to have_db_column(:generated_slug).of_type(:string) }
-    it { is_expected.to have_db_column(:specified_slug).of_type(:string) }
 
     it { is_expected.to have_db_index([:site_id, :name]).unique }
-    it { is_expected.to have_db_index([:site_id, :generated_slug]).unique }
-    it { is_expected.to have_db_index([:site_id, :specified_slug]).unique }
   end
 
   context 'relationships' do
@@ -44,51 +40,6 @@ RSpec.describe Category, type: :model, site_scoped: true do
     end
     it 'subcategories correctly identify parent' do
       expect(subject.subcategories.first.parent_category).to eq(subject)
-    end
-  end
-
-  describe '#path' do
-    subject { create(:category) }
-
-    context 'using a generated_slug' do
-      it 'equals reserved_paths category preferences / generated_slug' do
-        expect(subject.path)
-          .to eq("#{subject.site.preferences.reserved_paths['categories']}" \
-                 "/#{subject.generated_slug}")
-      end
-    end
-
-    context 'using a specified_slug' do
-      it 'equals reserved_paths category preferences / specified_slug' do
-        subject.specified_slug = "#{Faker::Lorem.word}-#{Faker::Lorem.word}"
-        expect(subject.path)
-          .to eq("#{subject.site.preferences.reserved_paths['categories']}" \
-                 "/#{subject.specified_slug}")
-      end
-    end
-
-    context 'with one or more parent categories builds path as a tree' do
-      let(:parent_category) { create(:category, :with_subcategories) }
-      subject { parent_category.subcategories.first }
-
-      context 'using a generated_slug' do
-        it 'equals reserved_paths category preferences / generated_slug' do
-          expect(subject.path)
-            .to eq("#{subject.site.preferences.reserved_paths['categories']}" \
-                   "/#{parent_category.generated_slug}" \
-                   "/#{subject.generated_slug}")
-        end
-      end
-
-      context 'using a specified_slug' do
-        it 'equals reserved_paths category preferences / specified_slug' do
-          subject.specified_slug = "#{Faker::Lorem.word}-#{Faker::Lorem.word}"
-          expect(subject.path)
-            .to eq("#{subject.site.preferences.reserved_paths['categories']}" \
-                   "/#{parent_category.generated_slug}" \
-                   "/#{subject.specified_slug}")
-        end
-      end
     end
   end
 end

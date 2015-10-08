@@ -15,15 +15,4 @@ class Category < ActiveRecord::Base
 
   scope :primary, -> { where(parent_category: nil) }
   scope :enabled, -> { where(enabled: true) }
-
-  def render
-  end
-
-  def path
-    if parent_category
-      "#{parent_category.path}/#{slug}"
-    else
-      "#{site.preferences.reserved_paths['categories']}/#{slug}"
-    end
-  end
 end

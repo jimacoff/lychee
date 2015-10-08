@@ -10,5 +10,11 @@ FactoryGirl.define do
         cat.subcategories.push create_list(:category, 4, parent_category: cat)
       end
     end
+
+    trait :routable do
+      after(:create) do |c|
+        c.path = create :path, routable: c
+      end
+    end
   end
 end

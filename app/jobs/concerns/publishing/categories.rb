@@ -6,7 +6,7 @@ module Publishing
       FileUtils.mkdir_p(categories_path)
 
       Site.current.primary_categories.each do |c|
-        next unless c.enabled?
+        next unless c.routable?
 
         frontmatter = Jbuilder.encode do |json|
           category(json, c)
@@ -23,7 +23,7 @@ module Publishing
     def category(json, c)
       json.template 'category'
       json.format 'html'
-      json.call(c, :id, :name, :description, :path)
+      json.call(c, :id, :name, :description, :uri_path)
       json.updated_at c.updated_at.iso8601
       category_optional_fields(json, c)
       category_members(json, c)
@@ -38,7 +38,7 @@ module Publishing
     def subcategories(json, subcategories)
       json.subcategories do
         json.array! subcategories do |sc|
-          category(json, sc) if sc.enabled?
+          category(json, sc) if sc.routable?
         end
       end
     end
@@ -46,7 +46,7 @@ module Publishing
     def category_members(json, c)
       json.category_members do
         json.array! c.category_members.sort_by(&:order) do |cm|
-          category_member(json, cm) if cm.product.enabled?
+          category_member(json, cm) if cm.product.routable?
         end
       end
     end
