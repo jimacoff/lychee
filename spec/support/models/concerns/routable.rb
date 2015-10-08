@@ -49,4 +49,12 @@ RSpec.shared_examples 'routable' do
       end
     end
   end
+
+  describe '#create_default_path' do
+    subject { create factory }
+    it 'does not throw' do
+      expect { subject.create_default_path }
+        .not_to raise_error
+    end
+  end
 end

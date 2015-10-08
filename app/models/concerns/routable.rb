@@ -16,4 +16,8 @@ module Routable
   def routable?
     enabled? && path.present?
   end
+
+  def create_default_path
+    throw 'not implemented'
+  end
 end

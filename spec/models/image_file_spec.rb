@@ -112,7 +112,7 @@ RSpec.describe ImageFile, type: :model, site_scoped: true do
         end
       end
 
-      context 'When site has reserved image assets path' do
+      context 'When site has no reserved image assets path' do
         before do
           subject.site.preferences.reserved_paths.delete('images')
           subject.create_default_path
