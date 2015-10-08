@@ -57,7 +57,7 @@ RSpec.describe ImageInstance, type: :model, site_scoped: true do
   end
 
   describe '#name' do
-    let(:name) { Faker::Lorem.word }
+    let(:name) { "#{Faker::Lorem.word}#{rand(0..1000)}" }
     subject { create :image_instance }
 
     it 'supplies local name if defined' do
