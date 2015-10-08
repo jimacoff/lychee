@@ -85,4 +85,20 @@ RSpec.describe ImageInstance, type: :model, site_scoped: true do
       expect(subject.description).to eq(subject.image.description)
     end
   end
+
+  describe '#routable?' do
+    subject { image_instance.routable? }
+
+    context 'default image routable' do
+      let(:image) { create :image, :routable }
+      let(:image_instance) { create :image_instance, image: image }
+      it { is_expected.to be_truthy }
+    end
+
+    context 'default image not routable' do
+      let(:image) { create :image }
+      let(:image_instance) { create :image_instance, image: image }
+      it { is_expected.to be_falsey }
+    end
+  end
 end

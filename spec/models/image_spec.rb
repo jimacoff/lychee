@@ -7,6 +7,9 @@ RSpec.describe Image, type: :model, site_scoped: true do
   has_context 'versioned'
   has_context 'metadata'
   has_context 'taggable'
+  has_context 'enablement' do
+    let(:factory) { :image }
+  end
 
   context 'table structure' do
     it { is_expected.to have_db_column(:name).of_type(:string) }
@@ -45,7 +48,7 @@ RSpec.describe Image, type: :model, site_scoped: true do
     end
 
     context 'image_files association extensions' do
-      subject { create :image }
+      subject { create :image, :routable }
 
       describe '#default_image' do
         let(:image_file) { subject.image_files.last }
@@ -79,19 +82,20 @@ RSpec.describe Image, type: :model, site_scoped: true do
     end
 
     describe '#default_path' do
-      subject { create :image }
+      subject { create :image, :routable }
       let(:image_file) { subject.image_files.last }
 
       it 'provides the default image file path' do
         image_file.default_image = true
         image_file.save
 
-        expect(subject.default_path).to eq(image_file.path)
+        expect(subject.default_path).to be_present
+        expect(subject.default_path).to eq(image_file.uri_path)
       end
     end
 
     describe '#srcset_path' do
-      subject { create :image }
+      subject { create :image, :routable }
       let(:image_file) { subject.image_files.first }
       let(:expected_srcset_path) do
         subject.image_files.srcset.map(&:srcset_path).join(', ')
@@ -101,8 +105,38 @@ RSpec.describe Image, type: :model, site_scoped: true do
         image_file.original_image = true
         image_file.save
 
+        expect(subject.srcset_path).to be_present
         expect(subject.srcset_path).to eq(expected_srcset_path)
       end
+    end
+  end
+
+  describe '#routable?' do
+    subject { image.routable? }
+
+    context 'default image routable' do
+      let(:image) { create :image, :routable }
+      it { is_expected.to be_truthy }
+    end
+
+    context 'default image not routable' do
+      let(:image) { create :image }
+      it { is_expected.to be_falsey }
+    end
+  end
+
+  describe '#enabled?' do
+    subject { image.enabled? }
+
+    # other states covered by enabled context included above
+    context 'default image enable' do
+      let(:image) { create :image }
+      it { is_expected.to be_truthy }
+    end
+
+    context 'default image not routable' do
+      let(:image) { create :image, enabled: false }
+      it { is_expected.to be_falsey }
     end
   end
 end

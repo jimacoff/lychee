@@ -6,6 +6,9 @@ RSpec.describe ImageFile, type: :model, site_scoped: true do
   end
   has_context 'versioned'
   has_context 'metadata'
+  has_context 'routable' do
+    let(:factory) { :image_file }
+  end
 
   context 'table structure' do
     it { is_expected.not_to have_db_column(:filename).of_type(:string) }
@@ -60,34 +63,68 @@ RSpec.describe ImageFile, type: :model, site_scoped: true do
     end
   end
 
-  describe '#path' do
-    subject { create :image_file }
-
-    it 'constructs a valid path' do
-      expect(subject.path).to eq(
-        "#{subject.site.preferences.reserved_paths['images']}" \
-        "/#{subject.image.internal_name}/#{subject.width}.#{subject.height}" \
-        ".#{subject.image.extension}")
-    end
-  end
-
   describe '#srcset_path' do
-    subject { create :image_file }
+    context 'routable image file' do
+      subject { create :image_file, :routable }
 
-    it 'constructs a valid path' do
-      expect(subject.srcset_path).to eq(
-        "#{subject.site.preferences.reserved_paths['images']}" \
-        "/#{subject.image.internal_name}/#{subject.width}.#{subject.height}" \
-        ".#{subject.image.extension} #{subject.width}w")
-    end
-
-    context 'with x_dimension' do
       it 'constructs a valid path' do
-        subject.x_dimension = '2x'
         expect(subject.srcset_path).to eq(
           "#{subject.site.preferences.reserved_paths['images']}" \
           "/#{subject.image.internal_name}/#{subject.width}.#{subject.height}" \
-          ".#{subject.image.extension} #{subject.x_dimension}")
+          ".#{subject.image.extension} #{subject.width}w")
+      end
+
+      context 'with x_dimension' do
+        it 'constructs a valid path' do
+          subject.x_dimension = '2x'
+          expect(subject.srcset_path).to eq(
+            "#{subject.site.preferences.reserved_paths['images']}" \
+            "/#{subject.image.internal_name}/" \
+            "#{subject.width}.#{subject.height}" \
+            ".#{subject.image.extension} #{subject.x_dimension}")
+        end
+      end
+    end
+
+    describe '#create_default_path' do
+      subject { create :image_file }
+
+      shared_examples 'image path behaviours' do
+        it 'creates a valid path' do
+          expect(subject.path).to be_valid
+        end
+
+        it 'creates a path which routes to us' do
+          expect(subject.path.routable).to eq(subject)
+        end
+      end
+
+      context 'When site has reserved image assets path' do
+        before { subject.create_default_path }
+
+        include_examples 'image path behaviours'
+
+        it 'sets path uri to include site image assets path' do
+          expect(subject.uri_path).to eq(
+            "#{subject.site.preferences.reserved_paths['images']}" \
+            "/#{subject.image.internal_name}/" \
+            "#{subject.width}.#{subject.height}.#{subject.image.extension}")
+        end
+      end
+
+      context 'When site has reserved image assets path' do
+        before do
+          subject.site.preferences.reserved_paths.delete('images')
+          subject.create_default_path
+        end
+
+        include_examples 'image path behaviours'
+
+        it 'sets path uri to include site image assets path' do
+          expect(subject.uri_path).to eq(
+            "/#{subject.image.internal_name}/" \
+            "#{subject.width}.#{subject.height}.#{subject.image.extension}")
+        end
       end
     end
   end

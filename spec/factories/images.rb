@@ -16,5 +16,11 @@ FactoryGirl.define do
         image.image_files.last.update(default_image: true)
       end
     end
+
+    trait :routable do
+      after(:create) do |image|
+        image.image_files.map(&:create_default_path)
+      end
+    end
   end
 end

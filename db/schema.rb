@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20151008021439) do
+ActiveRecord::Schema.define(version: 20151008094329) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -100,6 +100,7 @@ ActiveRecord::Schema.define(version: 20151008021439) do
     t.hstore   "metadata"
     t.datetime "created_at",                               null: false
     t.datetime "updated_at",                               null: false
+    t.boolean  "enabled",                  default: true,  null: false
   end
 
   add_index "image_files", ["image_id"], name: "index_image_files_on_image_id", using: :btree
@@ -125,15 +126,16 @@ ActiveRecord::Schema.define(version: 20151008021439) do
   add_index "image_instances", ["site_id"], name: "index_image_instances_on_site_id", using: :btree
 
   create_table "images", id: :bigserial, force: :cascade do |t|
-    t.integer  "site_id",       limit: 8,              null: false
-    t.string   "description",                          null: false
+    t.integer  "site_id",       limit: 8,                null: false
+    t.string   "description",                            null: false
     t.hstore   "metadata"
-    t.text     "tags",                    default: [],              array: true
-    t.datetime "created_at",                           null: false
-    t.datetime "updated_at",                           null: false
-    t.string   "name",                                 null: false
-    t.string   "extension",                            null: false
-    t.string   "internal_name",                        null: false
+    t.text     "tags",                    default: [],                array: true
+    t.datetime "created_at",                             null: false
+    t.datetime "updated_at",                             null: false
+    t.string   "name",                                   null: false
+    t.string   "extension",                              null: false
+    t.string   "internal_name",                          null: false
+    t.boolean  "enabled",                 default: true, null: false
   end
 
   add_index "images", ["site_id", "internal_name"], name: "index_images_on_site_id_and_internal_name", unique: true, using: :btree

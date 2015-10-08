@@ -14,5 +14,11 @@ FactoryGirl.define do
     trait :default_image do
       default_image true
     end
+
+    trait :routable do
+      after(:create) do |image_file|
+        image_file.create_default_path
+      end
+    end
   end
 end

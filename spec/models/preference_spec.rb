@@ -76,4 +76,24 @@ RSpec.describe Preference, type: :model, site_scoped: true do
       end
     end
   end
+
+  describe '#reserved_path(key)' do
+    subject { create :preference }
+
+    context 'with a valid key' do
+      let(:reserved_path) { subject.reserved_paths.first }
+      let(:key) { reserved_path[0] }
+      let(:expected_path) { reserved_path[1].scan(%r{[^/]+}) }
+      it 'provides a hierarchical path representation as array' do
+        expect(subject.reserved_path(key)).to eq(expected_path)
+      end
+    end
+
+    context 'with a valid key' do
+      let(:key) { Faker::Lorem.word }
+      it 'is nil' do
+        expect(subject.reserved_path(key)).to be_nil
+      end
+    end
+  end
 end

@@ -1,17 +1,18 @@
 RSpec.shared_examples 'routable' do
+  has_context 'enablement'
+
   context 'relationships' do
     it { is_expected.to have_one :path }
   end
 
   describe '#uri_path' do
-    let(:parent) { create :path }
-    let(:expected_uri_path) { "/#{parent.segment}/#{routable.path.segment}" }
+    let(:expected_uri_path) do
+      "/#{routable.path.self_and_ancestors.reverse.map(&:segment).join('/')}"
+    end
     subject { routable.uri_path }
 
     context 'with path' do
       let(:routable) { create factory, :routable }
-      before { parent.add_child(routable.path) }
-
       it { is_expected.to eq(expected_uri_path) }
     end
 

@@ -2,6 +2,7 @@ class Image < ActiveRecord::Base
   include ParentSite
   include Metadata
   include Taggable
+  include Enablement
 
   has_many :image_files do
     def default_image
@@ -34,10 +35,18 @@ class Image < ActiveRecord::Base
   end
 
   def default_path
-    image_files.default_image.path
+    image_files.default_image.uri_path
   end
 
   def srcset_path
     image_files.srcset.map(&:srcset_path).join(', ')
+  end
+
+  def routable?
+    image_files.default_image.routable?
+  end
+
+  def enabled?
+    enabled && image_files.default_image.enabled?
   end
 end

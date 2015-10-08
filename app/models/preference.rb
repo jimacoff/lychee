@@ -20,6 +20,14 @@ class Preference < ActiveRecord::Base
            :unique_reserved_paths,
            :fixed_reserved_paths
 
+  def reserved_path(key)
+    return nil unless reserved_paths.key?(key)
+
+    reserved_paths[key].scan(%r{[^/]+})
+  end
+
+  private
+
   def subtotal_must_include_taxes_when_prices_tax_inclusive
     return unless prices_include_tax && !order_subtotal_include_tax
 
