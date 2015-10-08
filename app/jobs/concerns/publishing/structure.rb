@@ -41,7 +41,7 @@ module Publishing
     def structure_categories(json, categories)
       json.categories do
         json.array! categories.each do |c|
-          next unless c.enabled?
+          next unless c.routable?
 
           category(json, c)
         end
@@ -61,6 +61,7 @@ module Publishing
     def structure_images(json, images)
       json.images do
         json.array! images.each do |i|
+          next unless i.routable?
           image(json, i)
         end
       end

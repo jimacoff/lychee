@@ -77,35 +77,55 @@ RSpec.shared_examples 'jobs::publishing::structure' do
     end
 
     context 'categories' do
-      let(:count) { 5 }
+      let(:routable_count) { 4 }
       before do
-        create_list :category, count
-        Site.current.primary_categories.last.update!(enabled: false)
+        create_list :category, routable_count, :routable
+        create :category, :routable, enabled: false
+        create :category
+      end
+
+      it 'create all categories' do
+        expect(Category.count).to eq(routable_count + 2)
       end
 
       it 'has all active primary categories' do
-        expect(subject[:categories].size).to eq(count - 1)
+        expect(subject[:categories].size).to eq(routable_count)
       end
     end
 
     context 'products' do
-      let(:count) { 5 }
+      let(:routable_count) { 4 }
       before do
-        create_list :standalone_product, count, :routable
-        Site.current.products.last.update!(enabled: false)
+        create_list :standalone_product, routable_count, :routable
+        create :standalone_product, :routable, enabled: false
+        create :standalone_product
+      end
+
+      it 'create all products' do
+        expect(Product.count).to eq(routable_count + 2)
       end
 
       it 'has all active products' do
-        expect(subject[:products].size).to eq(count - 1)
+        expect(subject[:products].size).to eq(routable_count)
       end
     end
 
     context 'images' do
-      let(:count) { 5 }
-      before { create_list :image, count }
+      let(:routable_count) { 4 }
+      before do
+        create_list :image, routable_count, :routable
+        create :image
+        create :image, enabled: false
+        disabled_image_file = create :image
+        disabled_image_file.image_files.default_image.update(enabled: false)
+      end
+
+      it 'create all images' do
+        expect(Image.count).to eq(routable_count + 3)
+      end
 
       it 'has all images' do
-        expect(subject[:images].size).to eq(count)
+        expect(subject[:images].size).to eq(routable_count)
       end
     end
   end
