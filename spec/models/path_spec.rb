@@ -18,6 +18,9 @@ RSpec.describe Path, type: :model, site_scoped: true do
     end
     it { is_expected.to have_db_column(:routable_type).of_type(:string) }
     it { is_expected.to have_db_index([:routable_type, :routable_id]) }
+    it do
+      is_expected.to have_db_index([:site_id, :parent_id, :segment])
+    end
   end
 
   context 'relationships' do
