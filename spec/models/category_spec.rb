@@ -83,7 +83,7 @@ RSpec.describe Category, type: :model, site_scoped: true do
 
       it 'sets path uri to include parent category path' do
         expect(subject.uri_path).to eq(
-          "#{subject.site.preferences.reserved_paths['categories']}" \
+          "#{subject.site.preferences.reserved_uri_paths['categories']}" \
           "/#{subject.name.to_url}")
       end
     end
@@ -95,14 +95,14 @@ RSpec.describe Category, type: :model, site_scoped: true do
 
       it 'sets path uri to include site category assets path' do
         expect(subject.uri_path).to eq(
-          "#{subject.site.preferences.reserved_paths['categories']}" \
+          "#{subject.site.preferences.reserved_uri_paths['categories']}" \
           "/#{subject.name.to_url}")
       end
     end
 
     context 'When site has no reserved category assets path' do
       before do
-        subject.site.preferences.reserved_paths.delete('categories')
+        subject.site.preferences.reserved_uri_paths.delete('categories')
         subject.create_default_path
       end
 
@@ -116,14 +116,14 @@ RSpec.describe Category, type: :model, site_scoped: true do
 
   describe '#default_parent_path' do
     let(:category_reserved_path) do
-      category.site.preferences.reserved_path('categories')
+      category.site.preferences.reserved_uri_path('categories')
     end
     let(:category) { create :category }
     subject { category.default_parent_path }
 
     context 'no parent category and no site default' do
       before do
-        category.site.preferences.reserved_paths.delete('categories')
+        category.site.preferences.reserved_uri_paths.delete('categories')
       end
       it { is_expected.to be_nil }
     end
@@ -135,7 +135,7 @@ RSpec.describe Category, type: :model, site_scoped: true do
         before { category.parent_category = parent_category }
         context 'with no site default' do
           before do
-            category.site.preferences.reserved_paths.delete('categories')
+            category.site.preferences.reserved_uri_paths.delete('categories')
           end
           it { is_expected.to be_nil }
         end
@@ -152,7 +152,7 @@ RSpec.describe Category, type: :model, site_scoped: true do
         end
         context 'with no site default' do
           before do
-            category.site.preferences.reserved_paths.delete('categories')
+            category.site.preferences.reserved_uri_paths.delete('categories')
           end
           it { is_expected.to eq(parent_category.path) }
         end

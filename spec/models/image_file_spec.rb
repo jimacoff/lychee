@@ -69,7 +69,7 @@ RSpec.describe ImageFile, type: :model, site_scoped: true do
 
       it 'constructs a valid path' do
         expect(subject.srcset_path).to eq(
-          "#{subject.site.preferences.reserved_paths['images']}" \
+          "#{subject.site.preferences.reserved_uri_paths['images']}" \
           "/#{subject.image.internal_name}/#{subject.width}.#{subject.height}" \
           ".#{subject.image.extension} #{subject.width}w")
       end
@@ -78,7 +78,7 @@ RSpec.describe ImageFile, type: :model, site_scoped: true do
         it 'constructs a valid path' do
           subject.x_dimension = '2x'
           expect(subject.srcset_path).to eq(
-            "#{subject.site.preferences.reserved_paths['images']}" \
+            "#{subject.site.preferences.reserved_uri_paths['images']}" \
             "/#{subject.image.internal_name}/" \
             "#{subject.width}.#{subject.height}" \
             ".#{subject.image.extension} #{subject.x_dimension}")
@@ -107,7 +107,7 @@ RSpec.describe ImageFile, type: :model, site_scoped: true do
 
       it 'sets path uri to include site image assets path' do
         expect(subject.uri_path).to eq(
-          "#{subject.site.preferences.reserved_paths['images']}" \
+          "#{subject.site.preferences.reserved_uri_paths['images']}" \
           "/#{subject.image.internal_name}/" \
           "#{subject.width}.#{subject.height}.#{subject.image.extension}")
       end
@@ -115,7 +115,7 @@ RSpec.describe ImageFile, type: :model, site_scoped: true do
 
     context 'When site has no reserved image assets path' do
       before do
-        subject.site.preferences.reserved_paths.delete('images')
+        subject.site.preferences.reserved_uri_paths.delete('images')
         subject.create_default_path
       end
 
@@ -131,7 +131,7 @@ RSpec.describe ImageFile, type: :model, site_scoped: true do
 
   describe '#default_parent_path' do
     let(:image_reserved_path) do
-      image_file.site.preferences.reserved_path('images')
+      image_file.site.preferences.reserved_uri_path('images')
     end
     let(:image_file) { create :image_file }
     subject { image_file.default_parent_path }
@@ -142,14 +142,14 @@ RSpec.describe ImageFile, type: :model, site_scoped: true do
       end
 
       before do
-        image_file.site.preferences.reserved_paths.delete('images')
+        image_file.site.preferences.reserved_uri_paths.delete('images')
       end
       it { is_expected.to eq(Path.find_by_path(expected_image_path)) }
     end
 
     context 'no site default' do
       let(:expected_image_path) do
-        image_reserved_path << image_file.image.internal_name
+        "#{image_reserved_path}/#{image_file.image.internal_name}"
       end
       it { is_expected.to eq(Path.find_by_path(expected_image_path)) }
     end

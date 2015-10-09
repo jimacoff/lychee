@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20151009010651) do
+ActiveRecord::Schema.define(version: 20151009063348) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -271,7 +271,7 @@ ActiveRecord::Schema.define(version: 20151009010651) do
     t.datetime "created_at",                                           null: false
     t.datetime "updated_at",                                           null: false
     t.boolean  "order_subtotal_include_tax",           default: true,  null: false
-    t.hstore   "reserved_paths",                                       null: false
+    t.hstore   "reserved_uri_paths",                                   null: false
   end
 
   add_index "preferences", ["site_id"], name: "index_preferences_on_site_id", using: :btree

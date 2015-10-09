@@ -40,6 +40,6 @@ class ImageFile < ActiveRecord::Base
   private
 
   def site_images_path
-    site.preferences.reserved_path('images')
+    site.preferences.reserved_uri_path('images')
   end
 end

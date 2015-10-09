@@ -30,7 +30,7 @@ class Category < ActiveRecord::Base
   private
 
   def site_categories_path
-    site.preferences.reserved_path('categories')
+    site.preferences.reserved_uri_path('categories')
   end
 
   def parent_category_path?

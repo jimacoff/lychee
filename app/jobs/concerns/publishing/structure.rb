@@ -33,7 +33,7 @@ module Publishing
     def preferences(json, p)
       json.preferences do
         json.call(p, :tax_basis, :prices_include_tax,
-                  :order_subtotal_include_tax, :reserved_paths)
+                  :order_subtotal_include_tax, :reserved_uri_paths)
         optional_fields(json, p, [:metadata])
       end
     end

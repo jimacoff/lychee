@@ -79,6 +79,6 @@ class Product < ActiveRecord::Base
   end
 
   def site_products_path
-    site.preferences.reserved_path('products')
+    site.preferences.reserved_uri_path('products')
   end
 end

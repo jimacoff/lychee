@@ -24,7 +24,7 @@ RSpec.shared_examples 'jobs::publishing::structure' do
             :order_subtotal_include_tax]
 
     json = keys.reduce({}) { |a, e| a.merge(e => preferences.send(e)) }
-    json[:reserved_paths] = preferences.reserved_paths.symbolize_keys
+    json[:reserved_uri_paths] = preferences.reserved_uri_paths.symbolize_keys
     json
   end
 

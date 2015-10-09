@@ -202,14 +202,14 @@ RSpec.describe Product, type: :model, site_scoped: true do
 
       it 'sets path uri to include site product assets path' do
         expect(subject.uri_path).to eq(
-          "#{subject.site.preferences.reserved_paths['products']}" \
+          "#{subject.site.preferences.reserved_uri_paths['products']}" \
           "/#{subject.name.to_url}")
       end
     end
 
     context 'When site has no reserved product assets path' do
       before do
-        subject.site.preferences.reserved_paths.delete('products')
+        subject.site.preferences.reserved_uri_paths.delete('products')
         subject.create_default_path
       end
 
@@ -223,14 +223,14 @@ RSpec.describe Product, type: :model, site_scoped: true do
 
   describe '#default_parent_path' do
     let(:product_reserved_path) do
-      product.site.preferences.reserved_path('products')
+      product.site.preferences.reserved_uri_path('products')
     end
     let(:product) { create :product }
     subject { product.default_parent_path }
 
     context 'no site default' do
       before do
-        product.site.preferences.reserved_paths.delete('products')
+        product.site.preferences.reserved_uri_paths.delete('products')
       end
       it { is_expected.to be_nil }
     end
