@@ -9,7 +9,7 @@ module Publishing
     end
 
     def image(json, img)
-      json.call(img, :id, :internal_name, :extension)
+      json.call(img, :id, :internal_name, :extension, :description)
       image_paths(json, img)
       optional_fields(json, img, [:metadata, :tags])
       json.default do
