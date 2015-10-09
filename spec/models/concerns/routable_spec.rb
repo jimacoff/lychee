@@ -17,4 +17,11 @@ RSpec.describe Routable do
         .to raise_error.with_message('not implemented')
     end
   end
+
+  describe '#default_parent_path' do
+    it 'throws when not implemented' do
+      expect { subject.default_parent_path }
+        .to raise_error.with_message('not implemented')
+    end
+  end
 end

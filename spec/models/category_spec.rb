@@ -113,4 +113,54 @@ RSpec.describe Category, type: :model, site_scoped: true do
       end
     end
   end
+
+  describe '#default_parent_path' do
+    let(:category_reserved_path) do
+      category.site.preferences.reserved_path('categories')
+    end
+    let(:category) { create :category }
+    subject { category.default_parent_path }
+
+    context 'no parent category and no site default' do
+      before do
+        category.site.preferences.reserved_paths.delete('categories')
+      end
+      it { is_expected.to be_nil }
+    end
+
+    context 'with parent category' do
+      let(:parent_category) { create :category }
+
+      context 'non routable parent' do
+        before { category.parent_category = parent_category }
+        context 'with no site default' do
+          before do
+            category.site.preferences.reserved_paths.delete('categories')
+          end
+          it { is_expected.to be_nil }
+        end
+
+        context 'with site default' do
+          it { is_expected.to eq(Path.find_by_path(category_reserved_path)) }
+        end
+      end
+
+      context 'routable parent' do
+        before do
+          parent_category.create_default_path
+          category.parent_category = parent_category
+        end
+        context 'with no site default' do
+          before do
+            category.site.preferences.reserved_paths.delete('categories')
+          end
+          it { is_expected.to eq(parent_category.path) }
+        end
+
+        context 'with site default' do
+          it { is_expected.to eq(parent_category.path) }
+        end
+      end
+    end
+  end
 end

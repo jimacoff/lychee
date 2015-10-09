@@ -20,4 +20,8 @@ module Routable
   def create_default_path
     fail 'not implemented'
   end
+
+  def default_parent_path
+    fail 'not implemented'
+  end
 end

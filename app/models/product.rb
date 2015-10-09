@@ -1,11 +1,9 @@
 class Product < ActiveRecord::Base
   include ParentSite
-
   include Monies
   include Specification
   include Content
   include Markup
-  include Routable
 
   has_many :variants
   has_many :variations
@@ -52,7 +50,12 @@ class Product < ActiveRecord::Base
   end
 
   def create_default_path
-    create_path(parent: default_path_parent, segment: name.to_url)
+    create_path(parent: default_parent_path, segment: name.to_url)
+  end
+
+  def default_parent_path
+    return nil unless site_products_path
+    Path.find_or_create_by_path(site_products_path)
   end
 
   private
@@ -75,12 +78,7 @@ class Product < ActiveRecord::Base
     end
   end
 
-  def default_path_parent
-    return nil unless site_assets_product_path
-    Path.find_or_create_by_path(site_assets_product_path)
-  end
-
-  def site_assets_product_path
+  def site_products_path
     site.preferences.reserved_path('products')
   end
 end

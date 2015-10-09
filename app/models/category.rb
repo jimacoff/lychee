@@ -17,22 +17,23 @@ class Category < ActiveRecord::Base
   scope :enabled, -> { where(enabled: true) }
 
   def create_default_path
-    create_path(parent: default_path_parent, segment: name.to_url)
+    create_path(parent: default_parent_path, segment: name.to_url)
+  end
+
+  def default_parent_path
+    return nil unless site_categories_path || parent_category_path?
+    return parent_category.path if parent_category_path?
+
+    Path.find_or_create_by_path(site_categories_path)
   end
 
   private
 
-  def default_path_parent
-    return nil unless site_assets_category_path || parent_category.present?
-
-    if parent_category.present? && parent_category.path.present?
-      parent_category.path
-    else
-      Path.find_or_create_by_path(site_assets_category_path)
-    end
+  def site_categories_path
+    site.preferences.reserved_path('categories')
   end
 
-  def site_assets_category_path
-    site.preferences.reserved_path('categories')
+  def parent_category_path?
+    parent_category.present? && parent_category.path.present?
   end
 end

@@ -39,7 +39,7 @@ RSpec.shared_examples 'jobs::publishing::categories' do
   end
   # rubocop:enable Metrics/AbcSize, Metrics/MethodLength
 
-  context 'categories', focus: true do
+  context 'categories' do
     let(:builder) do
       Jbuilder.encode do |json|
         described_class.new.category(json, category)

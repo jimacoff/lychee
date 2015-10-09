@@ -25,21 +25,21 @@ class ImageFile < ActiveRecord::Base
   end
 
   def create_default_path
-    create_path(parent: default_path_parent, segment: filename)
+    create_path(parent: default_parent_path, segment: filename)
   end
 
-  private
-
-  def default_path_parent
-    if site_assets_image_path
-      image_assets_path = Path.find_or_create_by_path(site_assets_image_path)
+  def default_parent_path
+    if site_images_path
+      image_assets_path = Path.find_or_create_by_path(site_images_path)
       image_assets_path.find_or_create_by_path(image.internal_name)
     else
       Path.find_or_create_by_path(image.internal_name)
     end
   end
 
-  def site_assets_image_path
+  private
+
+  def site_images_path
     site.preferences.reserved_path('images')
   end
 end
