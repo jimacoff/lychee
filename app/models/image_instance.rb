@@ -9,6 +9,9 @@ class ImageInstance < ActiveRecord::Base
   has_paper_trail
   valhammer
 
+  delegate :routable?, to: :image
+  delegate :enabled?, to: :image
+
   def name
     self[:name] || image.name
   end

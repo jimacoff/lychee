@@ -16,14 +16,24 @@ class Category < ActiveRecord::Base
   scope :primary, -> { where(parent_category: nil) }
   scope :enabled, -> { where(enabled: true) }
 
-  def render
+  def create_default_path
+    create_path(parent: default_parent_path, segment: name.to_url)
   end
 
-  def path
-    if parent_category
-      "#{parent_category.path}/#{slug}"
-    else
-      "#{site.preferences.reserved_paths['categories']}/#{slug}"
-    end
+  def default_parent_path
+    return nil unless site_categories_path || parent_category_path?
+    return parent_category.path if parent_category_path?
+
+    Path.find_or_create_by_path(site_categories_path)
+  end
+
+  private
+
+  def site_categories_path
+    site.preferences.reserved_uri_path('categories')
+  end
+
+  def parent_category_path?
+    parent_category.present? && parent_category.path.present?
   end
 end

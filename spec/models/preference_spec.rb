@@ -15,7 +15,7 @@ RSpec.describe Preference, type: :model, site_scoped: true do
       is_expected.to have_db_column(:order_subtotal_include_tax)
         .of_type(:boolean)
     end
-    it { is_expected.to have_db_column(:reserved_paths).of_type(:hstore) }
+    it { is_expected.to have_db_column(:reserved_uri_paths).of_type(:hstore) }
 
     it 'should have non nullable column site_id of type bigint' do
       expect(subject).to have_db_column(:site_id)
@@ -53,26 +53,47 @@ RSpec.describe Preference, type: :model, site_scoped: true do
         expect(subject).to be_valid
       end
 
-      Preference::REQUIRED_RESERVED_PATHS.each do |path|
+      Preference::REQUIRED_RESERVED_URI_PATHS.each do |path|
         it "is invalid without #{path} reserved path" do
-          subject.reserved_paths.delete(path)
+          subject.reserved_uri_paths.delete(path)
           expect(subject).to be_invalid
         end
       end
 
       it 'is invalid with duplicate reserved paths' do
-        subject.reserved_paths['blog'] = subject.reserved_paths['blog_tags']
+        subject.reserved_uri_paths['blog'] =
+          subject.reserved_uri_paths['blog_tags']
         expect(subject).to be_invalid
       end
 
       it 'is invalid with reserved paths that are not marked required' do
-        subject.reserved_paths['x'] = "/#{Faker::Internet.slug}"
+        subject.reserved_uri_paths['x'] = "/#{Faker::Internet.slug}"
         expect(subject).to be_invalid
       end
 
       it 'requires a fixed shopping_bag path' do
-        subject.reserved_paths['shopping_bag'] = '/x'
+        subject.reserved_uri_paths['shopping_bag'] = '/x'
         expect(subject).to be_invalid
+      end
+    end
+  end
+
+  describe '#reserved_uri_path(key)' do
+    subject { create :preference }
+
+    context 'with a valid key' do
+      let(:reserved_path) { subject.reserved_uri_paths.first }
+      let(:key) { reserved_path[0] }
+      let(:expected_path) { reserved_path[1] }
+      it 'provides a hierarchical path representation as array' do
+        expect(subject.reserved_uri_path(key)).to eq(expected_path)
+      end
+    end
+
+    context 'with an invalid key' do
+      let(:key) { Faker::Lorem.word }
+      it 'is nil' do
+        expect(subject.reserved_uri_path(key)).to be_nil
       end
     end
   end

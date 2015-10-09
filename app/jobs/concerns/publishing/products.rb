@@ -6,7 +6,7 @@ module Publishing
       FileUtils.mkdir_p(products_path)
 
       Site.current.products.each do |p|
-        next unless p.enabled?
+        next unless p.routable?
 
         frontmatter = Jbuilder.encode do |json|
           product(json, p)
@@ -23,7 +23,7 @@ module Publishing
     def product(json, p)
       json.template 'product'
       json.format p.markup_format
-      json.call(p, :id, :name, :description, :path,
+      json.call(p, :id, :name, :description, :uri_path,
                 :price_cents, :currency, :weight)
       json.updated_at p.updated_at.iso8601
       product_optional_fields(json, p)
@@ -39,6 +39,8 @@ module Publishing
     def product_images(json, image_instances)
       json.image_instances do
         json.array! image_instances.sort_by(&:order) do |ii|
+          next unless ii.routable?
+
           image_instance(json, ii)
         end
       end

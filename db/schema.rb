@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20151005102935) do
+ActiveRecord::Schema.define(version: 20151009102015) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -51,8 +51,6 @@ ActiveRecord::Schema.define(version: 20151005102935) do
     t.integer  "parent_category_id", limit: 8
     t.string   "name",                                        null: false
     t.text     "description",                                 null: false
-    t.string   "generated_slug",                              null: false
-    t.string   "specified_slug"
     t.hstore   "metadata"
     t.text     "tags",                         default: [],                array: true
     t.datetime "created_at",                                  null: false
@@ -62,9 +60,7 @@ ActiveRecord::Schema.define(version: 20151005102935) do
   end
 
   add_index "categories", ["parent_category_id"], name: "index_categories_on_parent_category_id", using: :btree
-  add_index "categories", ["site_id", "generated_slug"], name: "index_categories_on_site_id_and_generated_slug", unique: true, using: :btree
   add_index "categories", ["site_id", "name"], name: "index_categories_on_site_id_and_name", unique: true, using: :btree
-  add_index "categories", ["site_id", "specified_slug"], name: "index_categories_on_site_id_and_specified_slug", unique: true, using: :btree
   add_index "categories", ["site_id"], name: "index_categories_on_site_id", using: :btree
 
   create_table "category_members", id: :bigserial, force: :cascade do |t|
@@ -104,6 +100,7 @@ ActiveRecord::Schema.define(version: 20151005102935) do
     t.hstore   "metadata"
     t.datetime "created_at",                               null: false
     t.datetime "updated_at",                               null: false
+    t.boolean  "enabled",                  default: true,  null: false
   end
 
   add_index "image_files", ["image_id"], name: "index_image_files_on_image_id", using: :btree
@@ -129,15 +126,16 @@ ActiveRecord::Schema.define(version: 20151005102935) do
   add_index "image_instances", ["site_id"], name: "index_image_instances_on_site_id", using: :btree
 
   create_table "images", id: :bigserial, force: :cascade do |t|
-    t.integer  "site_id",       limit: 8,              null: false
-    t.string   "description",                          null: false
+    t.integer  "site_id",       limit: 8,                null: false
+    t.string   "description",                            null: false
     t.hstore   "metadata"
-    t.text     "tags",                    default: [],              array: true
-    t.datetime "created_at",                           null: false
-    t.datetime "updated_at",                           null: false
-    t.string   "name",                                 null: false
-    t.string   "extension",                            null: false
-    t.string   "internal_name",                        null: false
+    t.text     "tags",                    default: [],                array: true
+    t.datetime "created_at",                             null: false
+    t.datetime "updated_at",                             null: false
+    t.string   "name",                                   null: false
+    t.string   "extension",                              null: false
+    t.string   "internal_name",                          null: false
+    t.boolean  "enabled",                 default: true, null: false
   end
 
   add_index "images", ["site_id", "internal_name"], name: "index_images_on_site_id_and_internal_name", unique: true, using: :btree
@@ -240,6 +238,31 @@ ActiveRecord::Schema.define(version: 20151005102935) do
 
   add_index "orders", ["site_id"], name: "index_orders_on_site_id", using: :btree
 
+  create_table "path_hierarchies", id: false, force: :cascade do |t|
+    t.integer "ancestor_id",   limit: 8, null: false
+    t.integer "descendant_id", limit: 8, null: false
+    t.integer "generations",   limit: 8, null: false
+  end
+
+  add_index "path_hierarchies", ["ancestor_id", "descendant_id", "generations"], name: "path_anc_desc_idx", unique: true, using: :btree
+  add_index "path_hierarchies", ["descendant_id"], name: "path_desc_idx", using: :btree
+
+  create_table "paths", id: :bigserial, force: :cascade do |t|
+    t.integer  "site_id",       limit: 8, null: false
+    t.integer  "routable_id",   limit: 8
+    t.string   "routable_type"
+    t.string   "segment",                 null: false
+    t.integer  "parent_id"
+    t.datetime "created_at",              null: false
+    t.datetime "updated_at",              null: false
+  end
+
+  add_index "paths", ["routable_type", "routable_id"], name: "index_paths_on_routable_type_and_routable_id", using: :btree
+  add_index "paths", ["routable_type"], name: "index_paths_on_routable_type", using: :btree
+  add_index "paths", ["site_id", "parent_id", "segment"], name: "index_paths_on_site_id_and_parent_id_and_segment", unique: true, where: "(parent_id IS NOT NULL)", using: :btree
+  add_index "paths", ["site_id", "segment"], name: "index_paths_on_site_id_and_segment", unique: true, where: "(parent_id IS NULL)", using: :btree
+  add_index "paths", ["site_id"], name: "index_paths_on_site_id", using: :btree
+
   create_table "preferences", id: :bigserial, force: :cascade do |t|
     t.integer  "site_id",                    limit: 8,                 null: false
     t.integer  "tax_basis",                            default: 0,     null: false
@@ -248,7 +271,7 @@ ActiveRecord::Schema.define(version: 20151005102935) do
     t.datetime "created_at",                                           null: false
     t.datetime "updated_at",                                           null: false
     t.boolean  "order_subtotal_include_tax",           default: true,  null: false
-    t.hstore   "reserved_paths",                                       null: false
+    t.hstore   "reserved_uri_paths",                                   null: false
   end
 
   add_index "preferences", ["site_id"], name: "index_preferences_on_site_id", using: :btree
@@ -265,8 +288,6 @@ ActiveRecord::Schema.define(version: 20151005102935) do
 
   create_table "products", id: :bigserial, force: :cascade do |t|
     t.string   "name",                                      null: false
-    t.string   "generated_slug",                            null: false
-    t.string   "specified_slug"
     t.string   "gtin"
     t.string   "sku"
     t.integer  "price_cents",                               null: false
@@ -288,9 +309,7 @@ ActiveRecord::Schema.define(version: 20151005102935) do
     t.integer  "markup_format",             default: 0
   end
 
-  add_index "products", ["site_id", "generated_slug"], name: "index_products_on_site_id_and_generated_slug", unique: true, using: :btree
   add_index "products", ["site_id", "name"], name: "index_products_on_site_id_and_name", unique: true, using: :btree
-  add_index "products", ["site_id", "specified_slug"], name: "index_products_on_site_id_and_specified_slug", unique: true, using: :btree
   add_index "products", ["site_id"], name: "index_products_on_site_id", using: :btree
   add_index "products", ["tax_override_id"], name: "index_products_on_tax_override_id", using: :btree
 
@@ -570,6 +589,9 @@ ActiveRecord::Schema.define(version: 20151005102935) do
   add_foreign_key "orders", "addresses", column: "customer_address_id", on_delete: :restrict
   add_foreign_key "orders", "addresses", column: "delivery_address_id", on_delete: :restrict
   add_foreign_key "orders", "sites", on_delete: :cascade
+  add_foreign_key "path_hierarchies", "paths", column: "ancestor_id", on_delete: :restrict
+  add_foreign_key "path_hierarchies", "paths", column: "descendant_id", on_delete: :restrict
+  add_foreign_key "paths", "sites", on_delete: :cascade
   add_foreign_key "preferences", "sites", on_delete: :cascade
   add_foreign_key "prioritized_countries", "countries"
   add_foreign_key "prioritized_countries", "sites"

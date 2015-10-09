@@ -17,6 +17,8 @@ gem 'json-schema', '~> 2.5'
 gem 'jbuilder', '~> 2.3'
 gem 'recursive-open-struct', '~> 0.6'
 
+gem 'closure_tree', '~> 5.2'
+
 # Security
 # Use ActiveModel has_secure_password
 gem 'bcrypt', '~> 3.1'
@@ -51,5 +53,4 @@ group :development, :test do
   gem 'capybara'
   gem 'poltergeist'
   gem 'phantomjs', require: 'phantomjs/poltergeist'
-  gem 'database_cleaner'
 end

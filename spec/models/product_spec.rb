@@ -21,8 +21,6 @@ RSpec.describe Product, type: :model, site_scoped: true do
   context 'table structure' do
     it { is_expected.to have_db_column(:name).of_type(:string) }
     it { is_expected.to have_db_column(:description).of_type(:string) }
-    it { is_expected.to have_db_column(:generated_slug).of_type(:string) }
-    it { is_expected.to have_db_column(:specified_slug).of_type(:string) }
     it { is_expected.to have_db_column(:gtin).of_type(:string) }
     it { is_expected.to have_db_column(:sku).of_type(:string) }
     it { is_expected.to have_db_column(:price_cents).of_type(:integer) }
@@ -42,8 +40,6 @@ RSpec.describe Product, type: :model, site_scoped: true do
     it { is_expected.to have_db_index(:tax_override_id) }
 
     it { is_expected.to have_db_index([:site_id, :name]).unique }
-    it { is_expected.to have_db_index([:site_id, :generated_slug]).unique }
-    it { is_expected.to have_db_index([:site_id, :specified_slug]).unique }
   end
 
   context 'relationships' do
@@ -116,27 +112,6 @@ RSpec.describe Product, type: :model, site_scoped: true do
     end
   end
 
-  describe '#path' do
-    subject { create(:standalone_product) }
-
-    context 'using a generated_slug' do
-      it 'equals reserved_paths product preferences / generated_slug' do
-        expect(subject.path)
-          .to eq("#{subject.site.preferences.reserved_paths['products']}" \
-                 "/#{subject.generated_slug}")
-      end
-    end
-
-    context 'using a specified_slug' do
-      it 'equals reserved_paths product preferences / specified_slug' do
-        subject.specified_slug = "#{Faker::Lorem.word}-#{Faker::Lorem.word}"
-        expect(subject.path)
-          .to eq("#{subject.site.preferences.reserved_paths['products']}" \
-                 "/#{subject.specified_slug}")
-      end
-    end
-  end
-
   describe '#variant' do
     let!(:product) { create(:product) }
 
@@ -204,6 +179,64 @@ RSpec.describe Product, type: :model, site_scoped: true do
       it 'returns nil' do
         expect(product.variant(opts1)).to be_nil
       end
+    end
+  end
+
+  describe '#create_default_path' do
+    subject { create :product }
+
+    shared_examples 'product path behaviours' do
+      it 'creates a valid path' do
+        expect(subject.path).to be_valid
+      end
+
+      it 'creates a path which routes to us' do
+        expect(subject.path.routable).to eq(subject)
+      end
+    end
+
+    context 'When site has reserved product assets path' do
+      before { subject.create_default_path }
+
+      include_examples 'product path behaviours'
+
+      it 'sets path uri to include site product assets path' do
+        expect(subject.uri_path).to eq(
+          "#{subject.site.preferences.reserved_uri_paths['products']}" \
+          "/#{subject.name.to_url}")
+      end
+    end
+
+    context 'When site has no reserved product assets path' do
+      before do
+        subject.site.preferences.reserved_uri_paths.delete('products')
+        subject.create_default_path
+      end
+
+      include_examples 'product path behaviours'
+
+      it 'sets path uri to include site product assets path' do
+        expect(subject.uri_path).to eq("/#{subject.name.to_url}")
+      end
+    end
+  end
+
+  describe '#default_parent_path' do
+    let(:product_reserved_path) do
+      product.site.preferences.reserved_uri_path('products')
+    end
+    let(:product) { create :product }
+    subject { product.default_parent_path }
+
+    context 'no site default' do
+      before do
+        product.site.preferences.reserved_uri_paths.delete('products')
+      end
+      it { is_expected.to be_nil }
+    end
+
+    context 'with site default' do
+      it { is_expected.to eq(Path.find_by_path(product_reserved_path)) }
     end
   end
 end

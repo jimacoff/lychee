@@ -33,7 +33,7 @@ module Publishing
     def preferences(json, p)
       json.preferences do
         json.call(p, :tax_basis, :prices_include_tax,
-                  :order_subtotal_include_tax, :reserved_paths)
+                  :order_subtotal_include_tax, :reserved_uri_paths)
         optional_fields(json, p, [:metadata])
       end
     end
@@ -41,7 +41,7 @@ module Publishing
     def structure_categories(json, categories)
       json.categories do
         json.array! categories.each do |c|
-          next unless c.enabled?
+          next unless c.routable?
 
           category(json, c)
         end
@@ -51,7 +51,7 @@ module Publishing
     def structure_products(json, products)
       json.products do
         json.array! products.each do |p|
-          next unless p.enabled?
+          next unless p.routable?
 
           product(json, p)
         end
@@ -61,6 +61,7 @@ module Publishing
     def structure_images(json, images)
       json.images do
         json.array! images.each do |i|
+          next unless i.routable?
           image(json, i)
         end
       end

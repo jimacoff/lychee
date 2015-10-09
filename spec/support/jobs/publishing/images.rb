@@ -6,7 +6,7 @@ RSpec.shared_examples 'jobs::publishing::images' do
       filename: image_file.filename,
       width: image_file.width,
       height: image_file.height,
-      path: image_file.path,
+      uri_path: image_file.uri_path,
       x_dimension: image_file.x_dimension,
       metadata: image_file.metadata.try(:symbolize_keys)
     }.compact
@@ -50,8 +50,10 @@ RSpec.shared_examples 'jobs::publishing::images' do
     end
     subject { JSON.parse(builder, symbolize_names: true) }
 
-    let(:image) { create(:image) }
-    let(:image_instance) { create :image_instance, image: image, site: site }
+    let(:image) { create(:image, :routable) }
+    let(:image_instance) do
+      create :image_instance, image: image, site: site
+    end
 
     let(:json) { image_instance_json(image_instance) }
     let(:metadata) { { key: Faker::Lorem.word } }
@@ -81,7 +83,7 @@ RSpec.shared_examples 'jobs::publishing::images' do
 
     context 'images' do
       context 'with metadata' do
-        let(:image) { create(:image, metadata: metadata) }
+        let(:image) { create(:image, :routable, metadata: metadata) }
         before { json[:image][:metadata] = metadata }
 
         it { is_expected.to match(json) }
@@ -89,7 +91,7 @@ RSpec.shared_examples 'jobs::publishing::images' do
 
       context 'with tags' do
         let(:tags) { Faker::Lorem.words(2) }
-        let(:image) { create(:image, tags: tags) }
+        let(:image) { create(:image, :routable, tags: tags) }
         before { json[:image][:tags] = tags }
 
         it { is_expected.to match(json) }

@@ -18,5 +18,11 @@ FactoryGirl.define do
     trait :for_variation_instance do
       association :imageable, factory: :variation_instance
     end
+
+    trait :routable do
+      after(:create) do |ii|
+        ii.image.image_files.map(&:create_default_path)
+      end
+    end
   end
 end
