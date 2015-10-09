@@ -92,7 +92,7 @@ RSpec.shared_examples 'line item' do
                         rate: 0.5
     end
     let(:delivery_address) { create :address, country: tr1.country }
-    let(:order) { create :order, delivery_address: delivery_address }
+    let(:order) { create :order, recipient: delivery_address.person }
     let(:owner_instance) { create owner_factory }
     subject { create(*factory, order: order) }
 
@@ -182,8 +182,8 @@ RSpec.shared_examples 'line item' do
           create :address, country: tr2.country
         end
         let(:order) do
-          create :order, delivery_address: delivery_address,
-                         customer_address: customer_address
+          create :order, recipient: delivery_address.person,
+                         customer: customer_address.person
         end
 
         before { Site.current.subscriber_address.update!(country: tr3.country) }

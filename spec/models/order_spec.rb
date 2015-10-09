@@ -19,8 +19,8 @@ RSpec.describe Order, type: :model, site_scoped: true do
   end
 
   context 'relationships' do
-    it { is_expected.to belong_to :customer_address }
-    it { is_expected.to belong_to :delivery_address }
+    it { is_expected.to belong_to :customer }
+    it { is_expected.to belong_to :recipient }
 
     it { is_expected.to have_many :commodity_line_items }
     it { is_expected.to have_many :shipping_line_items }
@@ -32,13 +32,13 @@ RSpec.describe Order, type: :model, site_scoped: true do
     it { is_expected.to validate_presence_of :weight }
 
     shared_examples 'a state that requires customer details' do
-      it { is_expected.to validate_presence_of :customer_address }
-      it { is_expected.to validate_presence_of :delivery_address }
+      it { is_expected.to validate_presence_of :customer }
+      it { is_expected.to validate_presence_of :recipient }
     end
 
     shared_examples 'a state that does not require customer details' do
-      it { is_expected.not_to validate_presence_of :customer_address }
-      it { is_expected.not_to validate_presence_of :delivery_address }
+      it { is_expected.not_to validate_presence_of :customer }
+      it { is_expected.not_to validate_presence_of :recipient }
     end
 
     no_customer_info_states = %i(new collecting cancelled abandoned)

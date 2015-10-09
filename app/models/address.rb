@@ -5,6 +5,8 @@ class Address < ActiveRecord::Base
   include Metadata
   include GeographicHierarchyConversion
 
+  belongs_to :person
+
   has_paper_trail
   valhammer
 

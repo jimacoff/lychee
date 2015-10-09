@@ -8,8 +8,11 @@ class Order < ActiveRecord::Base
   include OrderWorkflow
   include OrderCalculation
 
-  belongs_to :customer_address, class_name: 'Address'
-  belongs_to :delivery_address, class_name: 'Address'
+  belongs_to :customer, class_name: 'Person'
+  belongs_to :recipient, class_name: 'Person'
+
+  has_one :customer_address, through: :customer, source: :address
+  has_one :delivery_address, through: :recipient, source: :address
 
   has_many :commodity_line_items
   has_many :shipping_line_items
@@ -26,7 +29,7 @@ class Order < ActiveRecord::Base
   has_paper_trail
   valhammer
 
-  validates :customer_address, :delivery_address,
+  validates :customer, :recipient,
             presence: { unless: :can_omit_customer_details? }
 
   # TODO: Store environment details about order, country, IP, browser etc
