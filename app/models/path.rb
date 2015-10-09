@@ -24,7 +24,7 @@ class Path < ActiveRecord::Base
 
     def find_or_create_by_path(path, attributes = {})
       return super unless path.is_a? String
-      super(string_path_to_array(path))
+      super(string_path_to_array(path), attributes)
     end
 
     def string_path_to_array(path)
