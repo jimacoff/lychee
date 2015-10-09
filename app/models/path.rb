@@ -3,7 +3,7 @@ class Path < ActiveRecord::Base
 
   belongs_to :routable, polymorphic: true
 
-  has_closure_tree name_column: 'segment', order: 'segment'
+  has_closure_tree name_column: 'segment', order: 'segment', dependent: :nullify
   has_paper_trail
   valhammer
 
