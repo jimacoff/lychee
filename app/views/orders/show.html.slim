@@ -1,0 +1,21 @@
+h1 Absolutely ready-to-ship order page
+
+table#bag(style='min-width: 50%')
+  tbody
+    - @order.commodity_line_items.each do |line_item|
+      - variant = line_item.variant
+      - product = variant.try(:product) || line_item.product
+      - metadata = line_item.metadata
+      tr
+        td= product.name
+        td
+          - metadata.each do |k, v|
+            div
+              strong=> k
+              = v
+          - if variant
+            - variant.variation_instances.each do |instance|
+              div
+                strong= instance.variation.trait.name
+                ' :
+                = instance.variation_value.name

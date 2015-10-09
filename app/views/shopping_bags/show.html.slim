@@ -25,8 +25,11 @@ h1 Totes super production ready shopping bag page
               - if variant
                 - variant.variation_instances.each do |instance|
                   div
-                    strong=> instance.variation.trait.display_name
-                    = instance.variation_value.description
+                    strong= instance.variation.trait.name
+                    ' :
+                    = instance.variation_value.name
 
             td= f.text_field(:quantity, value: entry[:quantity], size: 3)
   button.btn(type='submit') Update Bag
+= form_tag(order_path, method: :post) do
+  button.btn(type='submit') Checkout
