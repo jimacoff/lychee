@@ -39,7 +39,7 @@ RSpec.shared_examples 'jobs::publishing::categories' do
   end
   # rubocop:enable Metrics/AbcSize, Metrics/MethodLength
 
-  context 'categories' do
+  context 'categories', focus: true do
     let(:builder) do
       Jbuilder.encode do |json|
         described_class.new.category(json, category)
@@ -171,15 +171,31 @@ RSpec.shared_examples 'jobs::publishing::categories' do
           it { is_expected.to match(json) }
         end
 
-        context 'with product images' do
-          before do
-            category_members.each do |cm|
-              create :image_instance, imageable: cm, site: site
+        context 'product images' do
+          context 'routable images' do
+            before do
+              category_members.each do |cm|
+                create :image_instance, :routable, imageable: cm, site: site
+              end
+            end
+
+            it 'has image json' do
+              expect(subject[:category_members])
+                .to all(have_key(:image_instance))
             end
           end
 
-          it 'has image json' do
-            expect(subject[:category_members]).to all(have_key(:image_instance))
+          context 'nonroutable images' do
+            before do
+              category_members.each do |cm|
+                create :image_instance, imageable: cm, site: site
+              end
+            end
+
+            it 'has image json' do
+              expect(subject[:category_members].sample)
+                .not_to have_key(:image_instance)
+            end
           end
         end
 

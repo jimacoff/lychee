@@ -69,7 +69,7 @@ module Publishing
     end
 
     def category_member_image(json, cm)
-      return unless cm.image_instance.present?
+      return unless cm.image_instance.present? && cm.image_instance.routable?
 
       json.image_instance do
         image_instance(json, cm.image_instance)

@@ -182,14 +182,19 @@ RSpec.shared_examples 'jobs::publishing::products' do
       end
 
       context 'with images' do
-        let(:image_count) { 5 }
+        let(:routable_images) { 5 }
         before do
-          FactoryGirl.create_list :image_instance, 5, imageable: product,
-                                                      site: site
+          FactoryGirl.create_list :image_instance, 5, :routable,
+                                  imageable: product, site: site
+          FactoryGirl.create :image_instance, imageable: product
         end
 
-        it 'has all child images' do
-          expect(subject[:image_instances].size).to eq(image_count)
+        it 'has a non routable image' do
+          expect(ImageInstance.count).to eq(routable_images + 1)
+        end
+
+        it 'has all routable images' do
+          expect(subject[:image_instances].size).to eq(routable_images)
         end
       end
 

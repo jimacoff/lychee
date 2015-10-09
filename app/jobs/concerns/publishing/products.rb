@@ -39,6 +39,8 @@ module Publishing
     def product_images(json, image_instances)
       json.image_instances do
         json.array! image_instances.sort_by(&:order) do |ii|
+          next unless ii.routable?
+
           image_instance(json, ii)
         end
       end
