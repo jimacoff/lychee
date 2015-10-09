@@ -31,6 +31,7 @@ class Order < ActiveRecord::Base
 
   validates :customer, :recipient,
             presence: { unless: :can_omit_customer_details? }
+  validate :people_must_have_addresses
 
   # TODO: Store environment details about order, country, IP, browser etc
   # as many details as possible for use with risk APIs
@@ -47,5 +48,17 @@ class Order < ActiveRecord::Base
       attrs = entry.slice(:product, :variant, :quantity, :metadata)
       commodity_line_items.create!(attrs)
     end
+  end
+
+  def people_must_have_addresses
+    person_must_have_address(:customer, customer)
+    person_must_have_address(:recipient, recipient)
+  end
+
+  private
+
+  def person_must_have_address(sym, person)
+    return if person.nil? || person.address
+    errors.add(sym, 'must have an address')
   end
 end

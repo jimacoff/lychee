@@ -34,6 +34,13 @@ RSpec.describe Order, type: :model, site_scoped: true do
     shared_examples 'a state that requires customer details' do
       it { is_expected.to validate_presence_of :customer }
       it { is_expected.to validate_presence_of :recipient }
+
+      context 'with a person with no address' do
+        let(:person) { create(:person) }
+
+        it { is_expected.not_to allow_value(person).for(:customer) }
+        it { is_expected.not_to allow_value(person).for(:recipient) }
+      end
     end
 
     shared_examples 'a state that does not require customer details' do
