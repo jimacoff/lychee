@@ -7,17 +7,28 @@ class Path < ActiveRecord::Base
   has_paper_trail
   valhammer
 
-  def self.exists?(path)
-    find_by_path(path).present?
-  end
+  class << self
+    def exists?(path)
+      find_by_path(path).present?
+    end
 
-  def self.routes?(path)
-    p = find_by_path(path)
-    p && p.routable.present?
-  end
+    def routes?(path)
+      p = find_by_path(path)
+      p && p.routable.present?
+    end
 
-  def self.find_by_path(path, attributes = {}, parent_id = nil)
-    return super(path.scan(%r{[^/]+})) if path.is_a? String
-    super
+    def find_by_path(path, attributes = {}, parent_id = nil)
+      return super unless path.is_a? String
+      super(string_path_to_array(path), attributes, parent_id)
+    end
+
+    def find_or_create_by_path(path, attributes = {})
+      return super unless path.is_a? String
+      super(string_path_to_array(path))
+    end
+
+    def string_path_to_array(path)
+      path.scan(%r{[^/]+})
+    end
   end
 end

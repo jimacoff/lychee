@@ -2,10 +2,10 @@ class Preference < ActiveRecord::Base
   include ParentSite
   include Metadata
 
-  REQUIRED_RESERVED_PATHS = %w(blog blog_articles blog_categories blog_tags
-                               products categories images shopping_bag)
+  REQUIRED_RESERVED_URI_PATHS = %w(blog blog_articles blog_categories blog_tags
+                                   products categories images shopping_bag)
 
-  FIXED_RESERVED_PATHS = { 'shopping_bag' => '/shop/bag' }
+  FIXED_RESERVED_URI_PATHS = { 'shopping_bag' => '/shop/bag' }
 
   enum tax_basis: { delivery: 0, customer: 1, subscriber: 2 }
 
@@ -16,14 +16,12 @@ class Preference < ActiveRecord::Base
   valhammer
 
   validate :subtotal_must_include_taxes_when_prices_tax_inclusive,
-           :all_reserved_paths,
-           :unique_reserved_paths,
-           :fixed_reserved_paths
+           :all_reserved_uri_paths,
+           :unique_reserved_uri_paths,
+           :fixed_reserved_uri_paths
 
-  def reserved_path(key)
-    return nil unless reserved_paths.key?(key)
-
-    reserved_paths[key].scan(%r{[^/]+})
+  def reserved_uri_path(key)
+    reserved_uri_paths[key]
   end
 
   private
@@ -34,28 +32,30 @@ class Preference < ActiveRecord::Base
     errors.add(:order_subtotal_include_tax)
   end
 
-  def all_reserved_paths
-    return if reserved_paths &&
-              REQUIRED_RESERVED_PATHS.sort == reserved_paths.keys.sort
+  def all_reserved_uri_paths
+    return if reserved_uri_paths &&
+              REQUIRED_RESERVED_URI_PATHS.sort == reserved_uri_paths.keys.sort
 
-    errors.add(:reserved_paths,
+    errors.add(:reserved_uri_paths,
                'Must include all required reserved paths: ' \
-               "#{REQUIRED_RESERVED_PATHS.join(', ')}")
+               "#{REQUIRED_RESERVED_URI_PATHS.join(', ')}")
   end
 
-  def unique_reserved_paths
-    return if reserved_paths &&
-              reserved_paths.values.uniq.size == reserved_paths.values.size
+  def unique_reserved_uri_paths
+    return if reserved_uri_paths &&
+              reserved_uri_paths.values.uniq.size ==
+              reserved_uri_paths.values.size
 
-    errors.add(:reserved_paths, 'Reserved paths must be unique')
+    errors.add(:reserved_uri_paths, 'Reserved paths must be unique')
   end
 
-  def fixed_reserved_paths
-    return unless reserved_paths
+  def fixed_reserved_uri_paths
+    return unless reserved_uri_paths
 
-    FIXED_RESERVED_PATHS.each do |k, v|
-      next if reserved_paths[k] == v
-      errors.add(:reserved_paths, "Must used the fixed value `#{v}` for `#{k}`")
+    FIXED_RESERVED_URI_PATHS.each do |k, v|
+      next if reserved_uri_paths[k] == v
+      errors.add(:reserved_uri_paths,
+                 "Must used the fixed value `#{v}` for `#{k}`")
     end
   end
 end
