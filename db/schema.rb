@@ -259,7 +259,8 @@ ActiveRecord::Schema.define(version: 20151009010651) do
 
   add_index "paths", ["routable_type", "routable_id"], name: "index_paths_on_routable_type_and_routable_id", using: :btree
   add_index "paths", ["routable_type"], name: "index_paths_on_routable_type", using: :btree
-  add_index "paths", ["site_id", "parent_id", "segment"], name: "index_paths_on_site_id_and_parent_id_and_segment", unique: true, using: :btree
+  add_index "paths", ["site_id", "parent_id", "segment"], name: "index_paths_on_site_id_and_parent_id_and_segment", unique: true, where: "(parent_id IS NOT NULL)", using: :btree
+  add_index "paths", ["site_id", "segment"], name: "index_paths_on_site_id_and_segment", unique: true, where: "(parent_id IS NULL)", using: :btree
   add_index "paths", ["site_id"], name: "index_paths_on_site_id", using: :btree
 
   create_table "preferences", id: :bigserial, force: :cascade do |t|
