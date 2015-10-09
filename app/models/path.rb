@@ -8,16 +8,16 @@ class Path < ActiveRecord::Base
   valhammer
 
   def self.exists?(path)
-    find_path(path).present?
+    find_by_path(path).present?
   end
 
   def self.routes?(path)
-    p = find_path(path)
+    p = find_by_path(path)
     p && p.routable.present?
   end
 
-  def self.find_path(path)
-    return find_by_path(path.scan(%r{[^/]+})) if path.is_a? String
-    find_by_path(path)
+  def self.find_by_path(path, attributes = {}, parent_id = nil)
+    return super(path.scan(%r{[^/]+})) if path.is_a? String
+    super
   end
 end

@@ -41,7 +41,7 @@ RSpec.describe Path, type: :model, site_scoped: true do
       let(:segment1) { Faker::Lorem.word }
       let(:segment2) { Faker::Lorem.word }
       let!(:path_instance) { Path.find_or_create_by_path([segment1, segment2]) }
-      subject { Path.find_path(path) }
+      subject { Path.find_by_path(path) }
 
       context 'passing a / seperated string' do
         let(:path) { "/#{segment1}/#{segment2}" }
@@ -57,7 +57,7 @@ RSpec.describe Path, type: :model, site_scoped: true do
     context 'path does not exist' do
       let(:segment1) { Faker::Lorem.word }
       let(:segment2) { Faker::Lorem.word }
-      subject { Path.find_path(path) }
+      subject { Path.find_by_path(path) }
 
       context 'passing a / seperated string' do
         let(:path) { "/#{segment1}/#{segment2}" }
