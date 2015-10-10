@@ -91,19 +91,19 @@ RSpec.describe ShoppingBag, type: :model, site_scoped: true do
             expect(operations.last).to have_attributes(expected)
           end
 
-          it 'only applies to the item with matching metadata' do
-            wrong_attrs = op_attrs.merge(item_uuid: SecureRandom.uuid,
-                                         quantity: 4, metadata: { 'a' => '1' })
-            subject.shopping_bag_operations.create!(wrong_attrs)
+          it 'applies to an existing item with differing metadata' do
+            prev_attrs =
+              op_attrs.merge(quantity: 2, metadata: { 'a' => '1' })
+            subject.shopping_bag_operations.create!(prev_attrs)
 
             expect { run }.to change { operations.count }.by(1)
 
-            expected = op_attrs.merge(quantity: 2)
+            expected = op_attrs.merge(quantity: 3)
             expect(operations.last).to have_attributes(expected)
           end
         end
 
-        context 'when the commodity is in the bag with mismatched metadata' do
+        context 'when the commodity is in the bag with different metadata' do
           let(:attrs) do
             commodity_attrs.merge(quantity: 1, metadata: { 'a' => '1' },
                                   item_uuid: SecureRandom.uuid)
@@ -112,7 +112,7 @@ RSpec.describe ShoppingBag, type: :model, site_scoped: true do
           let(:op_attrs) { attrs.merge(metadata: { 'b' => '2' }) }
           let!(:op) { subject.shopping_bag_operations.create!(op_attrs) }
 
-          include_examples 'force a new uuid'
+          include_examples 'apply the operation successfully'
         end
       end
 

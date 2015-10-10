@@ -53,11 +53,6 @@ RSpec.describe ShoppingBagOperation, type: :model, site_scoped: true do
   end
 
   context '::by_commodity' do
-    let!(:no_metadata_op) do
-      create(:shopping_bag_operation,
-             commodity_attr.merge(shopping_bag: bag))
-    end
-
     let!(:ops) do
       [{ 'a' => '1' }, { 'b' => '2' }, { 'c' => '3' }].map do |m|
         create(:shopping_bag_operation,
@@ -68,17 +63,17 @@ RSpec.describe ShoppingBagOperation, type: :model, site_scoped: true do
     end
 
     shared_examples 'a queryable commodity' do |k|
-      it "scopes the operations by #{k} and metadata" do
+      it "scopes the operations by #{k}" do
         op = ops.sample
         opts = { k => op[k], metadata: op.metadata }
-        expect(ShoppingBagOperation.by_commodity(opts)).to contain_exactly(op)
+        expect(ShoppingBagOperation.by_commodity(opts)).to eq(ops)
       end
 
       context 'when metadata is not supplied' do
         it 'returns items with no metadata' do
-          opts = { k => no_metadata_op[k], metadata: {} }
-          expect(ShoppingBagOperation.by_commodity(opts))
-            .to contain_exactly(no_metadata_op)
+          op = ops.sample
+          opts = { k => op[k], metadata: {} }
+          expect(ShoppingBagOperation.by_commodity(opts)).to eq(ops)
         end
       end
     end
@@ -126,9 +121,9 @@ RSpec.describe ShoppingBagOperation, type: :model, site_scoped: true do
         expect(op.matches_commodity?(opts)).to be_falsey
       end
 
-      it 'indicates mismatched metadata (blank vs value)' do
+      it 'addition of new metadata (blank vs value)' do
         opts = attrs.merge(metadata: { 'a' => '1' })
-        expect(op.matches_commodity?(opts)).to be_falsey
+        expect(op.matches_commodity?(opts)).to be_truthy
       end
 
       it 'indicates a mismatch when variant is present' do
@@ -150,14 +145,14 @@ RSpec.describe ShoppingBagOperation, type: :model, site_scoped: true do
           expect(op.matches_commodity?(opts)).to be_falsey
         end
 
-        it 'indicates mismatched metadata (blank vs value)' do
+        it 'removal of all metadata (blank vs value)' do
           opts = attrs.merge(metadata: {})
-          expect(op.matches_commodity?(opts)).to be_falsey
+          expect(op.matches_commodity?(opts)).to be_truthy
         end
 
-        it 'indicates mismatched metadata (different values)' do
+        it 'updated metadata (different values)' do
           opts = attrs.merge(metadata: { 'a' => '1' })
-          expect(op.matches_commodity?(opts)).to be_falsey
+          expect(op.matches_commodity?(opts)).to be_truthy
         end
 
         it 'indicates a mismatch when variant is present' do
@@ -181,9 +176,9 @@ RSpec.describe ShoppingBagOperation, type: :model, site_scoped: true do
         expect(op.matches_commodity?(opts)).to be_falsey
       end
 
-      it 'indicates mismatched metadata (blank vs value)' do
+      it 'addition of new metadata (blank vs value)' do
         opts = attrs.merge(metadata: { 'a' => '1' })
-        expect(op.matches_commodity?(opts)).to be_falsey
+        expect(op.matches_commodity?(opts)).to be_truthy
       end
 
       it 'indicates a mismatch when product is present' do
@@ -205,14 +200,14 @@ RSpec.describe ShoppingBagOperation, type: :model, site_scoped: true do
           expect(op.matches_commodity?(opts)).to be_falsey
         end
 
-        it 'indicates mismatched metadata (blank vs value)' do
+        it 'removal of all metadata (blank vs value)' do
           opts = attrs.merge(metadata: {})
-          expect(op.matches_commodity?(opts)).to be_falsey
+          expect(op.matches_commodity?(opts)).to be_truthy
         end
 
-        it 'indicates mismatched metadata (different values)' do
+        it 'updated metadata (different values)' do
           opts = attrs.merge(metadata: { 'a' => '1' })
-          expect(op.matches_commodity?(opts)).to be_falsey
+          expect(op.matches_commodity?(opts)).to be_truthy
         end
 
         it 'indicates a mismatch when product is present' do
