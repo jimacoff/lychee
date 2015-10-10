@@ -74,4 +74,85 @@ RSpec.describe OrdersController, type: :controller, site_scoped: true do
       end
     end
   end
+
+  describe '#update' do
+    let(:order) { create(:order, customer: nil, recipient: nil) }
+    let(:country) { create(:country) }
+    let(:state) { create(:state, country: country) }
+
+    context 'supplying customer details' do
+      let(:customer_attrs) { attributes_for(:person) }
+
+      let(:customer_address_attrs) do
+        attributes_for(:address, country_id: country.id, state_id: state.id)
+      end
+
+      before do
+        session[:order_id] = order.try(:id)
+      end
+
+      def run
+        patch :update, order: order_attrs
+      end
+
+      shared_examples 'assigns people to order' do
+        it 'stores the customer' do
+          run
+          person = order.reload.customer
+          expect(person).not_to be_nil
+          expect(person).to have_attributes(customer_attrs)
+          expect(person.address).to have_attributes(customer_address_attrs)
+        end
+
+        it 'stores the recipient' do
+          run
+          person = order.reload.recipient
+          expect(person).not_to be_nil
+          expect(person).to have_attributes(recipient_attrs)
+          expect(person.address).to have_attributes(recipient_address_attrs)
+        end
+      end
+
+      context 'with customer details used as recipient details' do
+        let(:recipient_attrs) { customer_attrs }
+        let(:recipient_address_attrs) { customer_address_attrs }
+
+        let(:order_attrs) do
+          { customer: customer_attrs.merge(address: customer_address_attrs),
+            use_billing_details_for_shipping: '1' }
+        end
+
+        it 'creates exactly one person' do
+          expect { run }.to change(Person, :count).by(1)
+        end
+
+        include_examples 'assigns people to order'
+
+        it 'uses the same person for both entries' do
+          run
+          order.reload
+          expect(order.customer).to eq(order.recipient)
+        end
+      end
+
+      context 'with separate recipient details' do
+        let(:recipient_attrs) { attributes_for(:person) }
+
+        let(:recipient_address_attrs) do
+          attributes_for(:address, country_id: country.id, state_id: state.id)
+        end
+
+        let(:order_attrs) do
+          { customer: customer_attrs.merge(address: customer_address_attrs),
+            recipient: recipient_attrs.merge(address: recipient_address_attrs) }
+        end
+
+        include_examples 'assigns people to order'
+      end
+    end
+  end
+
+  describe '#destroy' do
+    pending 'cancels the order'
+  end
 end

@@ -8,7 +8,7 @@ Rails.application.routes.draw do
       post '' => 'shopping_bags#add'
     end
 
-    resource :order
+    resource :order, only: %i(show create update destroy)
   end
 
   resources :pages
