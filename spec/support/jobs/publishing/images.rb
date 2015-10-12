@@ -20,6 +20,7 @@ RSpec.shared_examples 'jobs::publishing::images' do
       id: img.id,
       internal_name: img.internal_name,
       extension: img.extension,
+      description: img.description,
       original: image_file_json(img.image_files.original_image),
       paths: {
         default: img.default_path,
