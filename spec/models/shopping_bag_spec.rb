@@ -188,8 +188,6 @@ RSpec.describe ShoppingBag, type: :model, site_scoped: true do
         create_op(variant_id: v.id, quantity: 1, item_uuid: u)
       end
 
-      ActiveRecord::Base.connection.execute('SELECT 1234')
-
       base = { quantity: 1, metadata: {} }
 
       expect(subject.contents).to eq(
