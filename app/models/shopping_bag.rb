@@ -40,12 +40,8 @@ class ShoppingBag < ActiveRecord::Base
   private
 
   def apply_item_add(opts)
-    prev = shopping_bag_operations.by_commodity(opts).last
-
-    overrides = { item_uuid: (prev.try(:item_uuid) || SecureRandom.uuid) }
-    overrides[:quantity] = Integer(opts[:quantity]) + prev.quantity if prev
-
-    apply_operation(prev, opts.merge(overrides))
+    internal_opts = { item_uuid: SecureRandom.uuid }
+    apply_operation(nil, opts.merge(internal_opts))
   end
 
   def apply_item_update(opts)

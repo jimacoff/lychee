@@ -80,38 +80,17 @@ RSpec.describe ShoppingBag, type: :model, site_scoped: true do
         let(:attrs) { commodity_attrs.merge(quantity: 1) }
         include_examples 'apply the operation successfully'
 
-        context 'when the commodity is already in the bag' do
-          let(:op_attrs) { attrs.merge(item_uuid: SecureRandom.uuid) }
-          let!(:op) { subject.shopping_bag_operations.create!(op_attrs) }
-
-          it 'applies to the existing item' do
-            expect { run }.to change { operations.count }.by(1)
-
-            expected = op_attrs.merge(quantity: 2)
-            expect(operations.last).to have_attributes(expected)
+        context 'when a larger quantity is supplied' do
+          let(:attrs) do
+            commodity_attrs.merge(quantity: 5)
           end
-
-          it 'applies to an existing item with differing metadata' do
-            prev_attrs =
-              op_attrs.merge(quantity: 2, metadata: { 'a' => '1' })
-            subject.shopping_bag_operations.create!(prev_attrs)
-
-            expect { run }.to change { operations.count }.by(1)
-
-            expected = op_attrs.merge(quantity: 3)
-            expect(operations.last).to have_attributes(expected)
-          end
+          include_examples 'apply the operation successfully'
         end
 
-        context 'when the commodity is in the bag with different metadata' do
+        context 'when metadata is supplied' do
           let(:attrs) do
-            commodity_attrs.merge(quantity: 1, metadata: { 'a' => '1' },
-                                  item_uuid: SecureRandom.uuid)
+            commodity_attrs.merge(quantity: 1, metadata: { 'k' => 'v' })
           end
-
-          let(:op_attrs) { attrs.merge(metadata: { 'b' => '2' }) }
-          let!(:op) { subject.shopping_bag_operations.create!(op_attrs) }
-
           include_examples 'apply the operation successfully'
         end
       end
