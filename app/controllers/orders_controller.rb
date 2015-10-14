@@ -15,6 +15,7 @@ class OrdersController < ApplicationController
     @order = Order.find(id)
     update_order_people
     @order.save!
+    @order.send("#{params[:transition]}!") if params[:transition]
     render nothing: true
   end
 
@@ -29,8 +30,7 @@ class OrdersController < ApplicationController
   end
 
   def update_order_people
-    destroy_old_recipient if @order.recipient_id != @order.customer_id
-    destroy_old_customer
+    destroy = [@order.customer, @order.recipient].compact.uniq
 
     create_customer
     if order_params[:use_billing_details_for_shipping]
@@ -38,20 +38,9 @@ class OrdersController < ApplicationController
     else
       create_recipient
     end
-  end
+    @order.save!
 
-  def destroy_old_recipient
-    recipient = @order.recipient
-    @order.update!(recipient_id: nil)
-    recipient.try(:address).try(:destroy)
-    recipient.destroy
-  end
-
-  def destroy_old_customer
-    customer = @order.customer
-    @order.update!(customer_id: nil)
-    customer.try(:address).try(:destroy)
-    customer.try(:destroy)
+    destroy.each(&:destroy!)
   end
 
   def order_metadata

@@ -80,8 +80,11 @@ RSpec.describe OrdersController, type: :controller, site_scoped: true do
     let(:country) { create(:country) }
     let(:state) { create(:state, country: country) }
 
+    before { order.submit! }
+
     context 'supplying customer details' do
       let(:customer_attrs) { attributes_for(:person) }
+      let(:transition_params) { { transition: 'calculate' } }
 
       let(:customer_address_attrs) do
         attributes_for(:address, country_id: country.id, state_id: state.id)
@@ -92,7 +95,7 @@ RSpec.describe OrdersController, type: :controller, site_scoped: true do
       end
 
       def run
-        patch :update, order: order_attrs
+        patch :update, transition_params.merge(order: order_attrs)
       end
 
       shared_examples 'updates person details in order' do
@@ -110,6 +113,12 @@ RSpec.describe OrdersController, type: :controller, site_scoped: true do
           expect(person).not_to be_nil
           expect(person).to have_attributes(recipient_attrs)
           expect(person.address).to have_attributes(recipient_address_attrs)
+        end
+      end
+
+      shared_examples 'a transition to :pending' do
+        it 'updates the workflow_state' do
+          expect { run }.to change { order.reload.workflow_state }.to('pending')
         end
       end
 
@@ -134,8 +143,13 @@ RSpec.describe OrdersController, type: :controller, site_scoped: true do
           expect(order.customer).to eq(order.recipient)
         end
 
+        it_behaves_like 'a transition to :pending'
+
         context 'when the order already has people' do
           let(:order) { create(:order) }
+          let(:transition_params) { {} }
+
+          before { order.calculate! }
 
           it 'removes the additional person' do
             expect { run }.to change(Person, :count).by(-1)
@@ -159,8 +173,13 @@ RSpec.describe OrdersController, type: :controller, site_scoped: true do
 
         include_examples 'updates person details in order'
 
+        it_behaves_like 'a transition to :pending'
+
         context 'when the order already has people' do
           let(:order) { create(:order) }
+          let(:transition_params) { {} }
+
+          before { order.calculate! }
 
           it 'does not change the total number of people' do
             expect { run }.not_to change(Person, :count)
