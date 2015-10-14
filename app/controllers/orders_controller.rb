@@ -13,14 +13,7 @@ class OrdersController < ApplicationController
 
   def update
     @order = Order.find(id)
-
-    create_customer
-    if order_params[:use_billing_details_for_shipping]
-      @order.recipient = @order.customer
-    else
-      create_recipient
-    end
-
+    update_order_people
     @order.save!
     render nothing: true
   end
@@ -33,6 +26,32 @@ class OrdersController < ApplicationController
 
   def bag
     ShoppingBag.find(session[:shopping_bag_id])
+  end
+
+  def update_order_people
+    destroy_old_recipient if @order.recipient_id != @order.customer_id
+    destroy_old_customer
+
+    create_customer
+    if order_params[:use_billing_details_for_shipping]
+      @order.recipient = @order.customer
+    else
+      create_recipient
+    end
+  end
+
+  def destroy_old_recipient
+    recipient = @order.recipient
+    @order.update!(recipient_id: nil)
+    recipient.try(:address).try(:destroy)
+    recipient.destroy
+  end
+
+  def destroy_old_customer
+    customer = @order.customer
+    @order.update!(customer_id: nil)
+    customer.try(:address).try(:destroy)
+    customer.try(:destroy)
   end
 
   def order_metadata

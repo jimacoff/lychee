@@ -95,7 +95,7 @@ RSpec.describe OrdersController, type: :controller, site_scoped: true do
         patch :update, order: order_attrs
       end
 
-      shared_examples 'assigns people to order' do
+      shared_examples 'updates person details in order' do
         it 'stores the customer' do
           run
           person = order.reload.customer
@@ -126,12 +126,22 @@ RSpec.describe OrdersController, type: :controller, site_scoped: true do
           expect { run }.to change(Person, :count).by(1)
         end
 
-        include_examples 'assigns people to order'
+        include_examples 'updates person details in order'
 
         it 'uses the same person for both entries' do
           run
           order.reload
           expect(order.customer).to eq(order.recipient)
+        end
+
+        context 'when the order already has people' do
+          let(:order) { create(:order) }
+
+          it 'removes the additional person' do
+            expect { run }.to change(Person, :count).by(-1)
+          end
+
+          include_examples 'updates person details in order'
         end
       end
 
@@ -147,7 +157,17 @@ RSpec.describe OrdersController, type: :controller, site_scoped: true do
             recipient: recipient_attrs.merge(address: recipient_address_attrs) }
         end
 
-        include_examples 'assigns people to order'
+        include_examples 'updates person details in order'
+
+        context 'when the order already has people' do
+          let(:order) { create(:order) }
+
+          it 'does not change the total number of people' do
+            expect { run }.not_to change(Person, :count)
+          end
+
+          include_examples 'updates person details in order'
+        end
       end
     end
   end
