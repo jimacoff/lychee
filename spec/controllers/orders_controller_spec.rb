@@ -56,7 +56,7 @@ RSpec.describe OrdersController, type: :controller, site_scoped: true do
   end
 
   describe '#show' do
-    let(:order) { create(:order) }
+    let(:order) { create(:order).tap(&:submit!) }
 
     before do
       session[:order_id] = order.try(:id)
@@ -67,8 +67,16 @@ RSpec.describe OrdersController, type: :controller, site_scoped: true do
       expect(assigns[:order]).to eq(order)
     end
 
-    it 'renders the template' do
-      expect(response).to render_template('orders/show')
+    it 'renders the template for a collecting order' do
+      expect(response).to render_template('orders/states/collecting')
+    end
+
+    context 'when the order is pending' do
+      let(:order) { create(:order).tap { |o| o.submit! && o.calculate! } }
+
+      it 'renders the template for a pending order' do
+        expect(response).to render_template('orders/states/pending')
+      end
     end
 
     context 'with no order' do
