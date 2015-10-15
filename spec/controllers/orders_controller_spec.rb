@@ -48,6 +48,11 @@ RSpec.describe OrdersController, type: :controller, site_scoped: true do
                     'geoip_latitude' => geoip_latitude,
                     'geoip_longitude' => geoip_longitude)
     end
+
+    it 'submits the order' do
+      run
+      expect(Order.last.workflow_state).to eq('collecting')
+    end
   end
 
   describe '#show' do
