@@ -120,6 +120,14 @@ RSpec.describe OrdersController, type: :controller, site_scoped: true do
         it 'updates the workflow_state' do
           expect { run }.to change { order.reload.workflow_state }.to('pending')
         end
+
+        context 'with an invalid transition' do
+          let(:transition_params) { { transition: 'destroy' } }
+
+          it 'rejects the change' do
+            expect { run }.to raise_error('bad transition')
+          end
+        end
       end
 
       context 'with customer details used as recipient details' do

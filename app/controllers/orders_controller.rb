@@ -14,12 +14,14 @@ class OrdersController < ApplicationController
   def update
     @order = Order.find(id)
     update_order_people
+    apply_transition if params[:transition]
     @order.save!
-    @order.send("#{params[:transition]}!") if params[:transition]
     render nothing: true
   end
 
   private
+
+  CUSTOMER_TRANSITIONS = %w(calculate)
 
   def id
     @id ||= session[:order_id]
@@ -27,6 +29,12 @@ class OrdersController < ApplicationController
 
   def bag
     ShoppingBag.find(session[:shopping_bag_id])
+  end
+
+  def apply_transition
+    transition = params[:transition]
+    fail('bad transition') unless CUSTOMER_TRANSITIONS.include?(transition)
+    @order.send("#{transition}!")
   end
 
   def update_order_people
