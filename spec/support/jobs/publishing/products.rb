@@ -139,6 +139,19 @@ RSpec.shared_examples 'jobs::publishing::products' do
         before { json[:metadata] = metadata }
 
         it { is_expected.to match(json) }
+
+        context 'with metadata fields' do
+          let(:metadata_fields) do
+            [{ field_key: Faker::Lorem.word, value_key: Faker::Lorem.word }]
+          end
+
+          before do
+            product.metadata_fields = metadata_fields
+            json[:metadata_fields] = metadata_fields
+          end
+
+          it { is_expected.to match(json) }
+        end
       end
 
       context 'with tags' do
@@ -220,6 +233,23 @@ RSpec.shared_examples 'jobs::publishing::products' do
           end
 
           it { is_expected.to match(json) }
+
+          context 'with metadata fields' do
+            let(:metadata_fields) do
+              [{ field_key: Faker::Lorem.word, value_key: Faker::Lorem.word }]
+            end
+
+            before do
+              product.variations.each do |var|
+                var.metadata_fields = metadata_fields
+              end
+              json[:variations].each do |var|
+                var[:metadata_fields] = metadata_fields
+              end
+            end
+
+            it { is_expected.to match(json) }
+          end
         end
 
         context 'variation values have image_instance' do

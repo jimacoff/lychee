@@ -57,6 +57,9 @@ RSpec.shared_examples 'jobs::publishing::images' do
 
     let(:json) { image_instance_json(image_instance) }
     let(:metadata) { { key: Faker::Lorem.word } }
+    let(:metadata_fields) do
+      [{ field_key: Faker::Lorem.word, value_key: Faker::Lorem.word }]
+    end
 
     context 'with minimal data' do
       it { is_expected.to match(json) }
@@ -69,6 +72,16 @@ RSpec.shared_examples 'jobs::publishing::images' do
       before { json[:metadata] = metadata }
 
       it { is_expected.to match(json) }
+
+      context 'with metadata fields' do
+
+        before do
+          image_instance.metadata_fields = metadata_fields
+          json[:metadata_fields] = metadata_fields
+        end
+
+        it { is_expected.to match(json) }
+      end
     end
 
     context 'with tags' do
@@ -87,6 +100,15 @@ RSpec.shared_examples 'jobs::publishing::images' do
         before { json[:image][:metadata] = metadata }
 
         it { is_expected.to match(json) }
+
+        context 'with metadata fields' do
+          before do
+            image.metadata_fields = metadata_fields
+            json[:image][:metadata_fields] = metadata_fields
+          end
+
+          it { is_expected.to match(json) }
+        end
       end
 
       context 'with tags' do
