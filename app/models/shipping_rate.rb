@@ -10,7 +10,6 @@ class ShippingRate < ActiveRecord::Base
       .where('shipping_rate_regions.geographic_hierarchy @> ? AND
              shipping_rate_regions.enabled = true',
              geographic_hierarchy)
-      .uniq
   }
 
   scope :satisfies_price, lambda { |subtotal_cents|
