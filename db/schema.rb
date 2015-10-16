@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20151016044728) do
+ActiveRecord::Schema.define(version: 20151016072121) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -375,7 +375,6 @@ ActiveRecord::Schema.define(version: 20151016044728) do
     t.hstore   "metadata"
     t.integer  "site_id",         limit: 8, null: false
     t.datetime "created_at",                null: false
-    t.json     "metadata_fields"
   end
 
   add_index "shopping_bag_operations", ["shopping_bag_id"], name: "index_shopping_bag_operations_on_shopping_bag_id", using: :btree

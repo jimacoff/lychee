@@ -10,6 +10,8 @@ class ShoppingBagOperation < ActiveRecord::Base
 
   default_scope { order('id') }
 
+  delegate :metadata_fields, to: :product
+
   def self.by_uuid(uuid)
     where(item_uuid: uuid)
   end
