@@ -19,6 +19,7 @@ RSpec.describe ShoppingBagOperation, type: :model, site_scoped: true do
     it { is_expected.to have_db_column(:item_uuid).of_type(:uuid) }
     it { is_expected.to have_db_column(:quantity).of_type(:integer) }
     it { is_expected.to have_db_column(:metadata).of_type(:hstore) }
+    it { is_expected.to have_db_column(:metadata_fields).of_type(:json) }
   end
 
   context 'relationships' do
