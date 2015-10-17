@@ -9,6 +9,8 @@ class OrdersController < ApplicationController
     return redirect_to(shopping_bag_path) unless id
 
     @order = Order.find(id)
+    @countries = Country.all
+    @states = State.all
 
     render("orders/states/#{@order.workflow_state}")
   end

@@ -57,6 +57,7 @@ RSpec.describe OrdersController, type: :controller, site_scoped: true do
 
   describe '#show' do
     let(:order) { create(:order).tap(&:submit!) }
+    let!(:state) { create(:state) }
 
     before do
       session[:order_id] = order.try(:id)
@@ -65,6 +66,17 @@ RSpec.describe OrdersController, type: :controller, site_scoped: true do
 
     it 'assigns the order' do
       expect(assigns[:order]).to eq(order)
+    end
+
+    it 'assigns the countries' do
+      expect(assigns[:countries]).to contain_exactly(*Country.all)
+    end
+
+    it 'assigns the states' do
+      # TODO: Figure out how to handle this correctly. I guess all the states
+      # will still need to be populated for the view to render, but we'll need
+      # to be smarter about rendering the form.
+      expect(assigns[:states]).to contain_exactly(*State.all)
     end
 
     it 'renders the template for a collecting order' do
