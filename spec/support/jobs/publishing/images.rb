@@ -74,7 +74,6 @@ RSpec.shared_examples 'jobs::publishing::images' do
       it { is_expected.to match(json) }
 
       context 'with metadata fields' do
-
         before do
           image_instance.metadata_fields = metadata_fields
           json[:metadata_fields] = metadata_fields
