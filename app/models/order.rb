@@ -55,6 +55,13 @@ class Order < ActiveRecord::Base
     person_must_have_address(:recipient, recipient)
   end
 
+  def use_billing_details_for_shipping
+    customer_id == recipient_id
+  end
+
+  alias_method :use_billing_details_for_shipping?,
+               :use_billing_details_for_shipping
+
   private
 
   def person_must_have_address(sym, person)
