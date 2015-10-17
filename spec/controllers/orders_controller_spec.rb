@@ -123,6 +123,10 @@ RSpec.describe OrdersController, type: :controller, site_scoped: true do
         patch :update, transition_params.merge(order: order_attrs)
       end
 
+      it 'redirects to the order' do
+        expect(response).to redirect_to(order_path)
+      end
+
       shared_examples 'updates person details in order' do
         it 'stores the customer' do
           run

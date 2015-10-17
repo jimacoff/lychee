@@ -20,7 +20,8 @@ class OrdersController < ApplicationController
     update_order_people
     apply_transition if params[:transition]
     @order.save!
-    render nothing: true
+
+    redirect_to order_path
   end
 
   private
