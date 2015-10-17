@@ -1,0 +1,32 @@
+fieldset
+  = f.label(:display_name, 'Name')
+  = f.text_field(:display_name)
+
+fieldset
+  = f.label(:email, 'Email Address')
+  = f.email_field(:email)
+
+= f.fields_for(:address) do |a|
+
+  fieldset
+    label Address
+    div= a.text_field(:line1)
+    div= a.text_field(:line2)
+    div= a.text_field(:line3)
+    div= a.text_field(:line4)
+
+  fieldset
+    = a.label(:locality, 'Locality (Suburb, City, …)'.html_safe)
+    = a.text_field(:locality)
+
+  fieldset
+    = a.label(:postcode)
+    = a.text_field(:postcode)
+
+  fieldset
+    = a.label(:state_id)
+    = a.select(:state_id, options_from_collection_for_select(@states, :id, :name))
+
+  fieldset
+    = a.label(:country_id)
+    = a.select(:country_id, options_from_collection_for_select(@countries, :id, :name))

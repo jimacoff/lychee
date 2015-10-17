@@ -26,7 +26,7 @@ class OrdersController < ApplicationController
 
   private
 
-  CUSTOMER_TRANSITIONS = %w(calculate)
+  CUSTOMER_TRANSITIONS = %w(calculate confirm pay)
 
   def id
     @id ||= session[:order_id]

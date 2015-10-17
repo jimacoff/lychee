@@ -1,21 +1,20 @@
 h1 Absolutely ready-to-ship order page
 
-table#bag(style='min-width: 50%')
-  tbody
-    - @order.commodity_line_items.each do |line_item|
-      - variant = line_item.variant
-      - product = variant.try(:product) || line_item.product
-      - metadata = line_item.metadata
-      tr
-        td= product.name
-        td
-          - metadata.each do |k, v|
-            div
-              strong=> k
-              = v
-          - if variant
-            - variant.variation_instances.each do |instance|
-              div
-                strong= instance.variation.trait.name
-                ' :
-                = instance.variation_value.name
+= render(partial: @order)
+
+= form_for(@order) do |f|
+  h2 Billing Details
+
+  = f.fields_for(:customer) do |f|
+    = render(partial: 'person_details', locals: { f: f })
+
+  h2 Shipping Details
+
+  fieldset
+    = f.check_box(:use_billing_details_for_shipping)
+    = f.label(:use_billing_details_for_shipping, 'Same as billing details')
+
+  = f.fields_for(:recipient) do |f|
+    = render(partial: 'person_details', locals: { f: f })
+
+  button.btn(type='submit' name='transition' value='calculate') Proceed
