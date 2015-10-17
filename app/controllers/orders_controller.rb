@@ -17,7 +17,7 @@ class OrdersController < ApplicationController
 
   def update
     @order = Order.find(id)
-    update_order_people
+    update_order_people if order_params
     apply_transition if params[:transition]
     @order.save!
 
@@ -66,7 +66,7 @@ class OrdersController < ApplicationController
   end
 
   def order_params
-    params.require(:order)
+    params[:order]
   end
 
   def person_params(sym)
