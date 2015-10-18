@@ -7,6 +7,8 @@ FactoryGirl.define do
 
     country
 
+    person
+
     trait :with_state do
       after(:build) do |addr|
         addr.state = create(:state, country: addr.country)

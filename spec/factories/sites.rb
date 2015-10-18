@@ -17,7 +17,8 @@ FactoryGirl.define do
 
       s.preferences = create :preference, site: s
 
-      s.update! subscriber_address: create(:address, site: s),
+      person = create(:person, site: s)
+      s.update! subscriber_address: create(:address, person: person, site: s),
                 enabled: a.enable_on_create
     end
   end

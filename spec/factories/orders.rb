@@ -2,8 +2,8 @@ FactoryGirl.define do
   factory :order do
     metadata(user_agent: 'Firefox')
 
-    association :customer_address, factory: :address
-    association :delivery_address, factory: :address
+    association :customer, factory: [:person, :with_address]
+    association :recipient, factory: [:person, :with_address]
 
     trait :with_products do
       after(:create) do |o|

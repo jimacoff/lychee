@@ -6,34 +6,30 @@ RSpec.feature 'Shopping', site_scoped: true do
 
     background do
       visit '/test-store/products'
-    end
 
-    scenario 'adds a product to the bag' do
       within('form', text: product.name) do
         click_button 'Add to Bag'
       end
+    end
 
+    scenario 'add a product to the bag' do
       expect(current_path).to eq('/shop/bag')
       expect(page).to have_css('tr', text: product.name)
     end
 
-    scenario 'updates the product quantity' do
-      within('form', text: product.name) do
-        click_button 'Add to Bag'
-      end
+    context 'with the product in the bag' do
+      scenario 'update the product quantity' do
+        within('tr', text: product.name) do
+          find('input').set('10')
+        end
 
-      expect(current_path).to eq('/shop/bag')
+        click_button 'Update Bag'
 
-      within('tr', text: product.name) do
-        find('input').set('10')
-      end
+        force_refresh
 
-      click_button 'Update Bag'
-
-      force_refresh
-
-      within('tr', text: product.name) do
-        expect(find('input').value).to eq('10')
+        within('tr', text: product.name) do
+          expect(find('input').value).to eq('10')
+        end
       end
     end
   end

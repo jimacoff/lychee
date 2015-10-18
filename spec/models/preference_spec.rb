@@ -3,8 +3,8 @@ require 'rails_helper'
 RSpec.describe Preference, type: :model, site_scoped: true do
   has_context 'parent site' do
     let(:factory) { :preference }
-    let(:site_factory_instances) { 1 }
   end
+
   has_context 'versioned'
   has_context 'metadata'
 

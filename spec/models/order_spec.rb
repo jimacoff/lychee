@@ -19,8 +19,8 @@ RSpec.describe Order, type: :model, site_scoped: true do
   end
 
   context 'relationships' do
-    it { is_expected.to belong_to :customer_address }
-    it { is_expected.to belong_to :delivery_address }
+    it { is_expected.to belong_to :customer }
+    it { is_expected.to belong_to :recipient }
 
     it { is_expected.to have_many :commodity_line_items }
     it { is_expected.to have_many :shipping_line_items }
@@ -32,13 +32,20 @@ RSpec.describe Order, type: :model, site_scoped: true do
     it { is_expected.to validate_presence_of :weight }
 
     shared_examples 'a state that requires customer details' do
-      it { is_expected.to validate_presence_of :customer_address }
-      it { is_expected.to validate_presence_of :delivery_address }
+      it { is_expected.to validate_presence_of :customer }
+      it { is_expected.to validate_presence_of :recipient }
+
+      context 'with a person with no address' do
+        let(:person) { create(:person) }
+
+        it { is_expected.not_to allow_value(person).for(:customer) }
+        it { is_expected.not_to allow_value(person).for(:recipient) }
+      end
     end
 
     shared_examples 'a state that does not require customer details' do
-      it { is_expected.not_to validate_presence_of :customer_address }
-      it { is_expected.not_to validate_presence_of :delivery_address }
+      it { is_expected.not_to validate_presence_of :customer }
+      it { is_expected.not_to validate_presence_of :recipient }
     end
 
     no_customer_info_states = %i(new collecting cancelled abandoned)
@@ -479,6 +486,29 @@ RSpec.describe Order, type: :model, site_scoped: true do
       end
 
       include_context 'ordering a line item'
+    end
+  end
+
+  describe '#use_billing_details_for_shipping?' do
+    let(:person1) { create(:address).person }
+    let(:person2) { create(:address).person }
+    let(:order) { create(:order) }
+    subject { order.use_billing_details_for_shipping? }
+
+    it 'is an alias for use_billing_details_for_shipping (no question mark)' do
+      expect(order).to respond_to(:use_billing_details_for_shipping)
+      expect(order.use_billing_details_for_shipping)
+        .to eq(order.use_billing_details_for_shipping?)
+    end
+
+    context 'when the billing contact is the shipping contact' do
+      let(:order) { create(:order, customer: person1, recipient: person1) }
+      it { is_expected.to be_truthy }
+    end
+
+    context 'when the billing contact is different to the shipping contact' do
+      let(:order) { create(:order, customer: person1, recipient: person2) }
+      it { is_expected.to be_falsey }
     end
   end
 end

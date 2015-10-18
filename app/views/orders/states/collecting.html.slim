@@ -1,0 +1,20 @@
+h1 Absolutely ready-to-ship order page
+
+= render(partial: @order)
+
+= form_for(:order, html: { method: :patch } ) do |f|
+  h2 Billing Details
+
+  = f.fields_for(:customer) do |f|
+    = render(partial: 'person_details', locals: { f: f })
+
+  h2 Shipping Details
+
+  fieldset
+    = f.check_box(:use_billing_details_for_shipping)
+    = f.label(:use_billing_details_for_shipping, 'Same as billing details')
+
+  = f.fields_for(:recipient) do |f|
+    = render(partial: 'person_details', locals: { f: f })
+
+  button.btn(type='submit' name='transition' value='calculate') Proceed

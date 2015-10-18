@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20151016072121) do
+ActiveRecord::Schema.define(version: 20151018033259) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -32,6 +32,7 @@ ActiveRecord::Schema.define(version: 20151016072121) do
     t.datetime "updated_at",                null: false
     t.integer  "state_id",        limit: 8
     t.json     "metadata_fields"
+    t.integer  "person_id",       limit: 8, null: false
   end
 
   add_index "addresses", ["country_id"], name: "index_addresses_on_country_id", using: :btree
@@ -239,9 +240,9 @@ ActiveRecord::Schema.define(version: 20151016072121) do
     t.integer  "total_shipping_cents",              default: 0,     null: false
     t.integer  "total_tax_cents",                   default: 0,     null: false
     t.string   "workflow_state",                                    null: false
-    t.integer  "customer_address_id",     limit: 8
-    t.integer  "delivery_address_id",     limit: 8
     t.json     "metadata_fields"
+    t.integer  "customer_id",             limit: 8
+    t.integer  "recipient_id",            limit: 8
   end
 
   add_index "orders", ["site_id"], name: "index_orders_on_site_id", using: :btree
@@ -270,6 +271,17 @@ ActiveRecord::Schema.define(version: 20151016072121) do
   add_index "paths", ["site_id", "parent_id", "segment"], name: "index_paths_on_site_id_and_parent_id_and_segment", unique: true, where: "(parent_id IS NOT NULL)", using: :btree
   add_index "paths", ["site_id", "segment"], name: "index_paths_on_site_id_and_segment", unique: true, where: "(parent_id IS NULL)", using: :btree
   add_index "paths", ["site_id"], name: "index_paths_on_site_id", using: :btree
+
+  create_table "people", id: :bigserial, force: :cascade do |t|
+    t.string   "display_name",           null: false
+    t.string   "email"
+    t.string   "phone_number"
+    t.datetime "created_at",             null: false
+    t.datetime "updated_at",             null: false
+    t.integer  "site_id",      limit: 8, null: false
+  end
+
+  add_index "people", ["site_id"], name: "index_people_on_site_id", using: :btree
 
   create_table "preferences", id: :bigserial, force: :cascade do |t|
     t.integer  "site_id",                    limit: 8,                 null: false
@@ -577,6 +589,7 @@ ActiveRecord::Schema.define(version: 20151016072121) do
   add_index "whitelisted_countries", ["site_id"], name: "index_whitelisted_countries_on_site_id", using: :btree
 
   add_foreign_key "addresses", "countries", on_delete: :restrict
+  add_foreign_key "addresses", "people", on_delete: :restrict
   add_foreign_key "addresses", "sites", on_delete: :cascade
   add_foreign_key "addresses", "states", on_delete: :restrict
   add_foreign_key "blacklisted_countries", "countries"
@@ -605,12 +618,13 @@ ActiveRecord::Schema.define(version: 20151016072121) do
   add_foreign_key "order_taxes", "orders", on_delete: :cascade
   add_foreign_key "order_taxes", "sites", on_delete: :cascade
   add_foreign_key "order_taxes", "tax_rates", on_delete: :restrict
-  add_foreign_key "orders", "addresses", column: "customer_address_id", on_delete: :restrict
-  add_foreign_key "orders", "addresses", column: "delivery_address_id", on_delete: :restrict
+  add_foreign_key "orders", "people", column: "customer_id"
+  add_foreign_key "orders", "people", column: "recipient_id"
   add_foreign_key "orders", "sites", on_delete: :cascade
   add_foreign_key "path_hierarchies", "paths", column: "ancestor_id", on_delete: :restrict
   add_foreign_key "path_hierarchies", "paths", column: "descendant_id", on_delete: :restrict
   add_foreign_key "paths", "sites", on_delete: :cascade
+  add_foreign_key "people", "sites", on_delete: :restrict
   add_foreign_key "preferences", "sites", on_delete: :cascade
   add_foreign_key "prioritized_countries", "countries"
   add_foreign_key "prioritized_countries", "sites"
