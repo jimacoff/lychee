@@ -2,7 +2,7 @@ h1 Absolutely ready-to-ship order page
 
 = render(partial: @order)
 
-= form_for(@order) do |f|
+= form_for(:order, html: { method: :patch } ) do |f|
   h2 Billing Details
 
   = f.fields_for(:customer) do |f|
