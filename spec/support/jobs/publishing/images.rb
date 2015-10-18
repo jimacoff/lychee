@@ -130,7 +130,7 @@ RSpec.shared_examples 'jobs::publishing::images' do
         end
 
         context 'with height' do
-          let(:height) { Faker::Lorem.word }
+          let(:height) { "#{rand(100..800)}" }
           before do
             target_instance.update!(height: height)
             target_json[:height] = height
