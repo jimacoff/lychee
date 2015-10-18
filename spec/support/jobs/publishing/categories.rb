@@ -115,6 +115,19 @@ RSpec.shared_examples 'jobs::publishing::categories' do
         before { json[:metadata] = metadata }
 
         it { is_expected.to match(json) }
+
+        context 'with metadata fields' do
+          let(:metadata_fields) do
+            [{ field_key: Faker::Lorem.word, value_key: Faker::Lorem.word }]
+          end
+
+          before do
+            category.metadata_fields = metadata_fields
+            json[:metadata_fields] = metadata_fields
+          end
+
+          it { is_expected.to match(json) }
+        end
       end
 
       context 'with tags' do
@@ -210,6 +223,26 @@ RSpec.shared_examples 'jobs::publishing::categories' do
             end
             json[:category_members].each do |p|
               p[:product][:metadata] = metadata
+            end
+          end
+
+          it { is_expected.to match(json) }
+        end
+
+        context 'with metadata fields' do
+          let(:metadata_fields) do
+            [{ field_key: Faker::Lorem.word, value_key: Faker::Lorem.word }]
+          end
+          let!(:category_members) do
+            create_list :category_member, count, category: category, site: site
+          end
+
+          before do
+            category_members.each do |cm|
+              cm.product.update!(metadata_fields: metadata_fields)
+            end
+            json[:category_members].each do |p|
+              p[:product][:metadata_fields] = metadata_fields
             end
           end
 

@@ -7,10 +7,10 @@ class ShippingRate < ActiveRecord::Base
   scope :supports_location, lambda { |geographic_hierarchy|
     joins(:shipping_rate_regions)
       .enabled
+      .select('DISTINCT ON (shipping_rates.id) shipping_rates.*')
       .where('shipping_rate_regions.geographic_hierarchy @> ? AND
              shipping_rate_regions.enabled = true',
              geographic_hierarchy)
-      .uniq
   }
 
   scope :satisfies_price, lambda { |subtotal_cents|

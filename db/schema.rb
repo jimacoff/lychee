@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20151009102015) do
+ActiveRecord::Schema.define(version: 20151016072121) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -19,18 +19,19 @@ ActiveRecord::Schema.define(version: 20151009102015) do
   enable_extension "ltree"
 
   create_table "addresses", id: :bigserial, force: :cascade do |t|
-    t.string   "line1",                null: false
+    t.string   "line1",                     null: false
     t.string   "line2"
     t.string   "line3"
     t.string   "line4"
     t.string   "locality"
     t.string   "postcode"
     t.hstore   "metadata"
-    t.integer  "country_id", limit: 8, null: false
-    t.integer  "site_id",    limit: 8, null: false
-    t.datetime "created_at",           null: false
-    t.datetime "updated_at",           null: false
-    t.integer  "state_id",   limit: 8
+    t.integer  "country_id",      limit: 8, null: false
+    t.integer  "site_id",         limit: 8, null: false
+    t.datetime "created_at",                null: false
+    t.datetime "updated_at",                null: false
+    t.integer  "state_id",        limit: 8
+    t.json     "metadata_fields"
   end
 
   add_index "addresses", ["country_id"], name: "index_addresses_on_country_id", using: :btree
@@ -57,6 +58,7 @@ ActiveRecord::Schema.define(version: 20151009102015) do
     t.datetime "updated_at",                                  null: false
     t.integer  "site_id",            limit: 8,                null: false
     t.boolean  "enabled",                      default: true, null: false
+    t.json     "metadata_fields"
   end
 
   add_index "categories", ["parent_category_id"], name: "index_categories_on_parent_category_id", using: :btree
@@ -90,34 +92,36 @@ ActiveRecord::Schema.define(version: 20151009102015) do
   add_index "countries", ["name"], name: "index_countries_on_name", unique: true, using: :btree
 
   create_table "image_files", id: :bigserial, force: :cascade do |t|
-    t.integer  "site_id",        limit: 8,                 null: false
-    t.integer  "image_id",       limit: 8,                 null: false
-    t.string   "width",                                    null: false
-    t.string   "height",                                   null: false
+    t.integer  "site_id",         limit: 8,                 null: false
+    t.integer  "image_id",        limit: 8,                 null: false
+    t.string   "width",                                     null: false
+    t.string   "height",                                    null: false
     t.string   "x_dimension"
-    t.boolean  "default_image",            default: false, null: false
-    t.boolean  "original_image",           default: false, null: false
+    t.boolean  "default_image",             default: false, null: false
+    t.boolean  "original_image",            default: false, null: false
     t.hstore   "metadata"
-    t.datetime "created_at",                               null: false
-    t.datetime "updated_at",                               null: false
-    t.boolean  "enabled",                  default: true,  null: false
+    t.datetime "created_at",                                null: false
+    t.datetime "updated_at",                                null: false
+    t.boolean  "enabled",                   default: true,  null: false
+    t.json     "metadata_fields"
   end
 
   add_index "image_files", ["image_id"], name: "index_image_files_on_image_id", using: :btree
   add_index "image_files", ["site_id"], name: "index_image_files_on_site_id", using: :btree
 
   create_table "image_instances", id: :bigserial, force: :cascade do |t|
-    t.integer  "site_id",        limit: 8,              null: false
-    t.integer  "image_id",       limit: 8,              null: false
-    t.integer  "imageable_id",   limit: 8,              null: false
-    t.string   "imageable_type",                        null: false
+    t.integer  "site_id",         limit: 8,              null: false
+    t.integer  "image_id",        limit: 8,              null: false
+    t.integer  "imageable_id",    limit: 8,              null: false
+    t.string   "imageable_type",                         null: false
     t.hstore   "metadata"
-    t.datetime "created_at",                            null: false
-    t.datetime "updated_at",                            null: false
+    t.datetime "created_at",                             null: false
+    t.datetime "updated_at",                             null: false
     t.string   "name"
     t.string   "description"
-    t.integer  "order",                                 null: false
-    t.text     "tags",                     default: [],              array: true
+    t.integer  "order",                                  null: false
+    t.text     "tags",                      default: [],              array: true
+    t.json     "metadata_fields"
   end
 
   add_index "image_instances", ["image_id"], name: "index_image_instances_on_image_id", using: :btree
@@ -126,33 +130,35 @@ ActiveRecord::Schema.define(version: 20151009102015) do
   add_index "image_instances", ["site_id"], name: "index_image_instances_on_site_id", using: :btree
 
   create_table "images", id: :bigserial, force: :cascade do |t|
-    t.integer  "site_id",       limit: 8,                null: false
-    t.string   "description",                            null: false
+    t.integer  "site_id",         limit: 8,                null: false
+    t.string   "description",                              null: false
     t.hstore   "metadata"
-    t.text     "tags",                    default: [],                array: true
-    t.datetime "created_at",                             null: false
-    t.datetime "updated_at",                             null: false
-    t.string   "name",                                   null: false
-    t.string   "extension",                              null: false
-    t.string   "internal_name",                          null: false
-    t.boolean  "enabled",                 default: true, null: false
+    t.text     "tags",                      default: [],                array: true
+    t.datetime "created_at",                               null: false
+    t.datetime "updated_at",                               null: false
+    t.string   "name",                                     null: false
+    t.string   "extension",                                null: false
+    t.string   "internal_name",                            null: false
+    t.boolean  "enabled",                   default: true, null: false
+    t.json     "metadata_fields"
   end
 
   add_index "images", ["site_id", "internal_name"], name: "index_images_on_site_id_and_internal_name", unique: true, using: :btree
   add_index "images", ["site_id"], name: "index_images_on_site_id", using: :btree
 
   create_table "inventories", id: :bigserial, force: :cascade do |t|
-    t.boolean  "tracked",                 default: false, null: false
-    t.integer  "quantity",                default: 0
-    t.boolean  "back_orders",             default: false, null: false
+    t.boolean  "tracked",                   default: false, null: false
+    t.integer  "quantity",                  default: 0
+    t.boolean  "back_orders",               default: false, null: false
     t.datetime "replenish_eta"
     t.datetime "exhausted_on"
     t.hstore   "metadata"
     t.datetime "created_at"
     t.datetime "updated_at"
-    t.integer  "product_id",    limit: 8
-    t.integer  "variant_id",    limit: 8
-    t.integer  "site_id",       limit: 8,                 null: false
+    t.integer  "product_id",      limit: 8
+    t.integer  "variant_id",      limit: 8
+    t.integer  "site_id",         limit: 8,                 null: false
+    t.json     "metadata_fields"
   end
 
   add_index "inventories", ["product_id"], name: "index_inventories_on_product_id", using: :btree
@@ -195,6 +201,7 @@ ActiveRecord::Schema.define(version: 20151009102015) do
     t.integer  "subtotal_cents",                                            default: 0,     null: false
     t.decimal  "total_tax_rate",                    precision: 6, scale: 5, default: 0.0,   null: false
     t.integer  "shipping_rate_region_id", limit: 8
+    t.json     "metadata_fields"
   end
 
   add_index "line_items", ["order_id"], name: "index_line_items_on_order_id", using: :btree
@@ -234,6 +241,7 @@ ActiveRecord::Schema.define(version: 20151009102015) do
     t.string   "workflow_state",                                    null: false
     t.integer  "customer_address_id",     limit: 8
     t.integer  "delivery_address_id",     limit: 8
+    t.json     "metadata_fields"
   end
 
   add_index "orders", ["site_id"], name: "index_orders_on_site_id", using: :btree
@@ -272,6 +280,7 @@ ActiveRecord::Schema.define(version: 20151009102015) do
     t.datetime "updated_at",                                           null: false
     t.boolean  "order_subtotal_include_tax",           default: true,  null: false
     t.hstore   "reserved_uri_paths",                                   null: false
+    t.json     "metadata_fields"
   end
 
   add_index "preferences", ["site_id"], name: "index_preferences_on_site_id", using: :btree
@@ -307,6 +316,7 @@ ActiveRecord::Schema.define(version: 20151009102015) do
     t.string   "description",                               null: false
     t.text     "markup",                                    null: false
     t.integer  "markup_format",             default: 0
+    t.json     "metadata_fields"
   end
 
   add_index "products", ["site_id", "name"], name: "index_products_on_site_id_and_name", unique: true, using: :btree
@@ -328,6 +338,7 @@ ActiveRecord::Schema.define(version: 20151009102015) do
     t.datetime "updated_at",                                     null: false
     t.boolean  "enabled",                        default: true,  null: false
     t.integer  "tax_override_id",      limit: 8
+    t.json     "metadata_fields"
   end
 
   add_index "shipping_rate_regions", ["country_id"], name: "index_shipping_rate_regions_on_country_id", using: :btree
@@ -350,6 +361,7 @@ ActiveRecord::Schema.define(version: 20151009102015) do
     t.datetime "created_at",                                null: false
     t.datetime "updated_at",                                null: false
     t.boolean  "enabled",                   default: true,  null: false
+    t.json     "metadata_fields"
   end
 
   add_index "shipping_rates", ["site_id"], name: "index_shipping_rates_on_site_id", using: :btree
@@ -385,6 +397,7 @@ ActiveRecord::Schema.define(version: 20151009102015) do
     t.hstore   "metadata"
     t.integer  "subscriber_address_id", limit: 8
     t.boolean  "enabled",                         default: false, null: false
+    t.json     "metadata_fields"
   end
 
   create_table "states", id: :bigserial, force: :cascade do |t|
@@ -406,6 +419,7 @@ ActiveRecord::Schema.define(version: 20151009102015) do
     t.hstore   "metadata"
     t.datetime "created_at",                             null: false
     t.datetime "updated_at",                             null: false
+    t.json     "metadata_fields"
   end
 
   add_index "tax_categories", ["site_id"], name: "index_tax_categories_on_site_id", using: :btree
@@ -429,6 +443,7 @@ ActiveRecord::Schema.define(version: 20151009102015) do
     t.integer  "tax_category_id",      limit: 8,                                        null: false
     t.integer  "state_id",             limit: 8
     t.boolean  "enabled",                                                default: true, null: false
+    t.json     "metadata_fields"
   end
 
   add_index "tax_rates", ["country_id"], name: "index_tax_rates_on_country_id", using: :btree
@@ -448,16 +463,17 @@ ActiveRecord::Schema.define(version: 20151009102015) do
   add_index "tenants", ["site_id"], name: "index_tenants_on_site_id", using: :btree
 
   create_table "traits", id: :bigserial, force: :cascade do |t|
-    t.string   "name",                                    null: false
-    t.string   "display_name",                            null: false
+    t.string   "name",                                     null: false
+    t.string   "display_name",                             null: false
     t.text     "description"
     t.hstore   "metadata"
-    t.text     "default_values",           default: [],                array: true
-    t.text     "tags",                     default: [],                array: true
+    t.text     "default_values",            default: [],                array: true
+    t.text     "tags",                      default: [],                array: true
     t.datetime "created_at"
     t.datetime "updated_at"
-    t.integer  "site_id",        limit: 8,                null: false
-    t.boolean  "enabled",                  default: true, null: false
+    t.integer  "site_id",         limit: 8,                null: false
+    t.boolean  "enabled",                   default: true, null: false
+    t.json     "metadata_fields"
   end
 
   add_index "traits", ["site_id"], name: "index_traits_on_site_id", using: :btree
@@ -476,6 +492,7 @@ ActiveRecord::Schema.define(version: 20151009102015) do
     t.datetime "updated_at"
     t.integer  "site_id",            limit: 8,                 null: false
     t.boolean  "enabled",                      default: true,  null: false
+    t.json     "metadata_fields"
   end
 
   add_index "variants", ["product_id"], name: "index_variants_on_product_id", using: :btree
@@ -489,6 +506,7 @@ ActiveRecord::Schema.define(version: 20151009102015) do
     t.datetime "updated_at"
     t.integer  "site_id",            limit: 8, null: false
     t.integer  "variation_value_id", limit: 8, null: false
+    t.json     "metadata_fields"
   end
 
   add_index "variation_instances", ["site_id"], name: "index_variation_instances_on_site_id", using: :btree
@@ -510,14 +528,15 @@ ActiveRecord::Schema.define(version: 20151009102015) do
   add_index "variation_values", ["variation_id"], name: "index_variation_values_on_variation_id", using: :btree
 
   create_table "variations", id: :bigserial, force: :cascade do |t|
-    t.integer  "product_id", limit: 8,             null: false
-    t.integer  "trait_id",   limit: 8,             null: false
-    t.integer  "order",                            null: false
+    t.integer  "product_id",      limit: 8,             null: false
+    t.integer  "trait_id",        limit: 8,             null: false
+    t.integer  "order",                                 null: false
     t.hstore   "metadata"
     t.datetime "created_at"
     t.datetime "updated_at"
-    t.integer  "site_id",    limit: 8,             null: false
-    t.integer  "render_as",            default: 0, null: false
+    t.integer  "site_id",         limit: 8,             null: false
+    t.integer  "render_as",                 default: 0, null: false
+    t.json     "metadata_fields"
   end
 
   add_index "variations", ["product_id", "order"], name: "index_variations_on_product_id_and_order", unique: true, using: :btree

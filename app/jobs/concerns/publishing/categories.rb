@@ -31,7 +31,7 @@ module Publishing
     end
 
     def category_optional_fields(json, c)
-      optional_fields(json, c, [:tags, :metadata])
+      optional_fields(json, c, [:tags, :metadata, :metadata_fields])
       json.parent c.parent_category.id if c.parent_category
     end
 
@@ -64,7 +64,7 @@ module Publishing
         json.call(p, :name, :uri_path, :currency, :weight)
         json.product_id p.id
         json.price_cents p.price.cents
-        optional_fields(json, p, [:tags, :metadata])
+        optional_fields(json, p, [:tags, :metadata, :metadata_fields])
       end
     end
 
