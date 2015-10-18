@@ -16,10 +16,6 @@ class ShoppingBagOperation < ActiveRecord::Base
     where(item_uuid: uuid)
   end
 
-  def self.by_commodity(opts)
-    where(opts.slice(:variant_id, :product_id))
-  end
-
   def matches_commodity?(opts)
     product_id == opts[:product_id].try(:to_i) &&
       variant_id == opts[:variant_id].try(:to_i)

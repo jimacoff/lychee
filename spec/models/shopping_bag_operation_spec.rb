@@ -51,51 +51,6 @@ RSpec.describe ShoppingBagOperation, type: :model, site_scoped: true do
     end
   end
 
-  context '::by_commodity' do
-    let!(:ops) do
-      [{ 'a' => '1' }, { 'b' => '2' }, { 'c' => '3' }].map do |m|
-        create(:shopping_bag_operation,
-               commodity_attr.merge(shopping_bag: bag, metadata: m))
-        create(:shopping_bag_operation,
-               commodity2_attr.merge(shopping_bag: bag, metadata: m))
-      end
-    end
-
-    shared_examples 'a queryable commodity' do |k|
-      it "scopes the operations by #{k}" do
-        op = ops.sample
-        opts = { k => op[k], metadata: op.metadata }
-        expect(ShoppingBagOperation.by_commodity(opts)).to eq(ops)
-      end
-
-      context 'when metadata is not supplied' do
-        it 'returns items with no metadata' do
-          op = ops.sample
-          opts = { k => op[k], metadata: {} }
-          expect(ShoppingBagOperation.by_commodity(opts)).to eq(ops)
-        end
-      end
-    end
-
-    context 'with variant' do
-      let(:variant) { create(:variant) }
-      let(:variant2) { create(:variant) }
-      let(:commodity_attr) { { variant: variant } }
-      let(:commodity2_attr) { { variant: variant2 } }
-
-      it_behaves_like 'a queryable commodity', :variant_id
-    end
-
-    context 'with product' do
-      let(:product) { create(:product) }
-      let(:product2) { create(:product) }
-      let(:commodity_attr) { { product: product } }
-      let(:commodity2_attr) { { product: product2 } }
-
-      it_behaves_like 'a queryable commodity', :product_id
-    end
-  end
-
   context '#matches_commodity?' do
     let(:product) { nil }
     let(:variant) { nil }
