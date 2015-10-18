@@ -30,7 +30,8 @@ module Publishing
     end
 
     def product_optional_fields(json, p)
-      optional_fields(json, p, [:tags, :metadata, :gtin, :sku, :specifications])
+      optional_fields(json, p, [:tags, :metadata, :metadata_fields,
+                                :gtin, :sku, :specifications])
       product_images(json, p.image_instances) if p.images.present?
       product_variations(json, p.variations) if p.variations.present?
       product_categories(json, p.categories) if p.categories.present?
@@ -62,7 +63,7 @@ module Publishing
           variation_value(json, vi)
         end
       end
-      optional_fields(json, var, [:metadata])
+      optional_fields(json, var, [:metadata, :metadata_fields])
     end
 
     def variation_trait(json, t)

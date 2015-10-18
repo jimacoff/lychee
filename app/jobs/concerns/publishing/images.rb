@@ -2,16 +2,16 @@ module Publishing
   module Images
     def image_instance(json, ii)
       json.call(ii, :id, :name, :description, :order)
-      optional_fields(json, ii, [:metadata, :tags])
+      optional_fields(json, ii, [:metadata, :metadata_fields, :tags])
       json.image do
         image(json, ii.image)
       end
     end
 
     def image(json, img)
-      json.call(img, :id, :internal_name, :extension)
+      json.call(img, :id, :internal_name, :extension, :description)
       image_paths(json, img)
-      optional_fields(json, img, [:metadata, :tags])
+      optional_fields(json, img, [:metadata, :metadata_fields, :tags])
       json.default do
         image_file(json, img.image_files.default_image)
       end

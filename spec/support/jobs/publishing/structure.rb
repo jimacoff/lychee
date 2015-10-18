@@ -73,6 +73,18 @@ RSpec.shared_examples 'jobs::publishing::structure' do
         end
 
         it { is_expected.to match(json) }
+
+        context 'with metadata fields' do
+          let(:metadata_fields) do
+            [{ field_key: Faker::Lorem.word, value_key: Faker::Lorem.word }]
+          end
+          before do
+            Site.current.preferences.metadata_fields = metadata_fields
+            json[:preferences][:metadata_fields] = metadata_fields
+          end
+
+          it { is_expected.to match(json) }
+        end
       end
     end
 

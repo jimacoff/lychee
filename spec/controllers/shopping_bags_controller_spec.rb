@@ -136,12 +136,24 @@ RSpec.describe ShoppingBagsController, type: :controller, site_scoped: true do
     end
 
     context 'for a product with metadata' do
-      let(:product) { create(:product) }
-      let(:metadata) { { 'a' => '1', 'b' => '2', 'c' => '3' } }
+      let(:metadata) { { 'a' => '1', 'b' => '2' } }
+      let(:expected_metadata) { metadata }
+      let(:metadata_fields) do
+        { a: { submissible: true }, b: { submissible: true } }
+      end
+      let(:product) { create(:product, metadata_fields: metadata_fields) }
       let(:commodity_attrs) { { product_id: product.id, metadata: metadata } }
-      let(:commodity_item_attrs) { { product: product, metadata: metadata } }
+      let(:commodity_item_attrs) do
+        { product: product, metadata: expected_metadata }
+      end
 
       include_context 'shopping bag updates'
+
+      context 'with non submissible metadata' do
+        let(:metadata) { { 'a' => '1', 'b' => '2', 'c' => '3' } }
+        let(:expected_metadata) { { 'a' => '1', 'b' => '2' } }
+        include_context 'shopping bag updates'
+      end
     end
 
     context 'for a variant' do
@@ -153,12 +165,25 @@ RSpec.describe ShoppingBagsController, type: :controller, site_scoped: true do
     end
 
     context 'for a variant with metadata' do
-      let(:variant) { create(:variant) }
-      let(:metadata) { { 'a' => '1', 'b' => '2', 'c' => '3' } }
+      let(:metadata) { { 'a' => '1', 'b' => '2' } }
+      let(:expected_metadata) { metadata }
+      let(:metadata_fields) do
+        { a: { submissible: true }, b: { submissible: true } }
+      end
+      let(:product) { create(:product, metadata_fields: metadata_fields) }
+      let(:variant) { create(:variant, product: product) }
       let(:commodity_attrs) { { variant_id: variant.id, metadata: metadata } }
-      let(:commodity_item_attrs) { { variant: variant, metadata: metadata } }
+      let(:commodity_item_attrs) do
+        { variant: variant, metadata: expected_metadata }
+      end
 
       include_context 'shopping bag updates'
+
+      context 'with non submissible metadata' do
+        let(:metadata) { { 'a' => '1', 'b' => '2', 'c' => '3' } }
+        let(:expected_metadata) { { 'a' => '1', 'b' => '2' } }
+        include_context 'shopping bag updates'
+      end
     end
   end
 
@@ -248,15 +273,28 @@ RSpec.describe ShoppingBagsController, type: :controller, site_scoped: true do
       include_context 'add to bag'
 
       context 'with metadata' do
+        let(:metadata) { { 'a' => '1', 'b' => '2' } }
+        let(:expected_metadata) { metadata }
+        let(:metadata_fields) do
+          { a: { submissible: true }, b: { submissible: true } }
+        end
+        let(:product) { create(:product, metadata_fields: metadata_fields) }
+
         let(:commodity_opts) do
-          { product_id: product.id, metadata: { x: 'y' } }
+          { product_id: product.id, metadata: metadata }
         end
 
         let(:commodity_item_attrs) do
-          { product: product, quantity: 1, metadata: { 'x' => 'y' } }
+          { product: product, quantity: 1, metadata: expected_metadata }
         end
 
         include_context 'add to bag'
+
+        context 'with non submissible metadata' do
+          let(:metadata) { { 'a' => '1', 'b' => '2', 'c' => '3' } }
+          let(:expected_metadata) { { 'a' => '1', 'b' => '2' } }
+          include_context 'add to bag'
+        end
       end
     end
 
@@ -316,12 +354,19 @@ RSpec.describe ShoppingBagsController, type: :controller, site_scoped: true do
       end
 
       let(:commodity_item_attrs) do
-        { variant: variant, quantity: 1, metadata: {} }
+        { variant: variant, quantity: 1 }
       end
 
       include_context 'add to bag'
 
       context 'with metadata' do
+        let(:metadata) { { 'a' => '1', 'b' => '2' } }
+        let(:expected_metadata) { metadata }
+        let(:metadata_fields) do
+          { a: { submissible: true }, b: { submissible: true } }
+        end
+        let(:product) { create(:product, metadata_fields: metadata_fields) }
+
         let(:commodity_opts) do
           {
             product_id: product.id,
@@ -329,15 +374,21 @@ RSpec.describe ShoppingBagsController, type: :controller, site_scoped: true do
               size.id => size_values['a'].id,
               color.id => color_values['z'].id
             },
-            metadata: { x: 'y' }
+            metadata: metadata
           }
         end
 
         let(:commodity_item_attrs) do
-          { variant: variant, quantity: 1, metadata: { 'x' => 'y' } }
+          { variant: variant, quantity: 1, metadata: expected_metadata }
         end
 
         include_context 'add to bag'
+
+        context 'with non submissible metadata' do
+          let(:metadata) { { 'a' => '1', 'b' => '2', 'c' => '3' } }
+          let(:expected_metadata) { { 'a' => '1', 'b' => '2' } }
+          include_context 'add to bag'
+        end
       end
 
       context 'adding the parent product' do
