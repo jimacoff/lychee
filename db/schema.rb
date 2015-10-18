@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20151009102015) do
+ActiveRecord::Schema.define(version: 20151018033259) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -265,12 +265,15 @@ ActiveRecord::Schema.define(version: 20151009102015) do
   add_index "paths", ["site_id"], name: "index_paths_on_site_id", using: :btree
 
   create_table "people", id: :bigserial, force: :cascade do |t|
-    t.string   "display_name", null: false
+    t.string   "display_name",           null: false
     t.string   "email"
     t.string   "phone_number"
-    t.datetime "created_at",   null: false
-    t.datetime "updated_at",   null: false
+    t.datetime "created_at",             null: false
+    t.datetime "updated_at",             null: false
+    t.integer  "site_id",      limit: 8, null: false
   end
+
+  add_index "people", ["site_id"], name: "index_people_on_site_id", using: :btree
 
   create_table "preferences", id: :bigserial, force: :cascade do |t|
     t.integer  "site_id",                    limit: 8,                 null: false
@@ -602,6 +605,7 @@ ActiveRecord::Schema.define(version: 20151009102015) do
   add_foreign_key "path_hierarchies", "paths", column: "ancestor_id", on_delete: :restrict
   add_foreign_key "path_hierarchies", "paths", column: "descendant_id", on_delete: :restrict
   add_foreign_key "paths", "sites", on_delete: :cascade
+  add_foreign_key "people", "sites", on_delete: :restrict
   add_foreign_key "preferences", "sites", on_delete: :cascade
   add_foreign_key "prioritized_countries", "countries"
   add_foreign_key "prioritized_countries", "sites"
