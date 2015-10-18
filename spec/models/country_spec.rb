@@ -1,6 +1,6 @@
 require 'rails_helper'
 
-RSpec.describe Country, type: :model do
+RSpec.describe Country, type: :model, site_scoped: true do
   has_context 'versioned'
 
   context 'table structure' do

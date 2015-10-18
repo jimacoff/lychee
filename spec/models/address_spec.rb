@@ -3,7 +3,6 @@ require 'rails_helper'
 RSpec.describe Address, type: :model, site_scoped: true do
   has_context 'parent site' do
     let(:factory) { :address }
-    let(:site_factory_instances) { 1 }
   end
   has_context 'parent country' do
     let(:factory) { :address }

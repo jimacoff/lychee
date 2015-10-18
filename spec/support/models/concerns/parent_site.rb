@@ -45,7 +45,7 @@ RSpec.shared_examples 'parent site' do
   end
 
   context 'scoping' do
-    let(:site) { create(:site) }
+    let!(:site) { create(:site) }
     let(:scoped_instances) { 1 }
     let(:unscoped_instances) { site_factory_instances + 2 }
 

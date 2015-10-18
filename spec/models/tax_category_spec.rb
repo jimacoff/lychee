@@ -3,8 +3,8 @@ require 'rails_helper'
 RSpec.describe TaxCategory, type: :model, site_scoped: true do
   has_context 'parent site' do
     let(:factory) { :tax_category }
-    let(:site_factory_instances) { 1 }
   end
+
   has_context 'metadata'
   has_context 'versioned'
 
