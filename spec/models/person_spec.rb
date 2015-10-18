@@ -1,6 +1,10 @@
 require 'rails_helper'
 
-RSpec.describe Person, type: :model do
+RSpec.describe Person, type: :model, site_scoped: true do
+  has_context 'parent site' do
+    let(:factory) { :person }
+  end
+
   context 'relationships' do
     it { is_expected.to have_one(:address) }
   end
