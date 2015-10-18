@@ -5,6 +5,12 @@ RSpec.describe Person, type: :model, site_scoped: true do
     let(:factory) { :person }
   end
 
+  context 'table structure' do
+    it { is_expected.to have_db_column(:display_name).of_type(:string) }
+    it { is_expected.to have_db_column(:email).of_type(:string) }
+    it { is_expected.to have_db_column(:phone_number).of_type(:string) }
+  end
+
   context 'relationships' do
     it { is_expected.to have_one(:address) }
   end
