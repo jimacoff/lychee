@@ -1,23 +1,23 @@
 require 'rails_helper'
 
 RSpec.describe OrdersController, type: :routing do
-  context 'get /shop/order' do
-    subject { { get: '/shop/order' } }
+  context 'get /shop/checkout' do
+    subject { { get: '/shop/checkout' } }
     it { is_expected.to route_to('orders#show') }
   end
 
-  context 'post /shop/order' do
-    subject { { post: '/shop/order' } }
+  context 'post /shop/checkout' do
+    subject { { post: '/shop/checkout' } }
     it { is_expected.to route_to('orders#create') }
   end
 
-  context 'patch /shop/order' do
-    subject { { patch: '/shop/order' } }
+  context 'patch /shop/checkout' do
+    subject { { patch: '/shop/checkout' } }
     it { is_expected.to route_to('orders#update') }
   end
 
-  context 'delete /shop/order' do
-    subject { { delete: '/shop/order' } }
+  context 'delete /shop/checkout' do
+    subject { { delete: '/shop/checkout' } }
     it { is_expected.to route_to('orders#destroy') }
   end
 end
