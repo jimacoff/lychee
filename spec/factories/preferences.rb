@@ -10,7 +10,8 @@ FactoryGirl.define do
         'products' => "/p-#{Faker::Internet.slug}",
         'categories' => "/c-#{Faker::Internet.slug}",
         'images' => "/_assets/i-#{Faker::Internet.slug}",
-        'shopping_bag' => '/shop/bag' }
+        'shopping_bag' => '/shop/bag',
+        'checkout' => '/shop/checkout' }
     end
   end
 end

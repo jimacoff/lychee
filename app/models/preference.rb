@@ -3,9 +3,11 @@ class Preference < ActiveRecord::Base
   include Metadata
 
   REQUIRED_RESERVED_URI_PATHS = %w(blog blog_articles blog_categories blog_tags
-                                   products categories images shopping_bag)
+                                   products categories images shopping_bag
+                                   checkout)
 
-  FIXED_RESERVED_URI_PATHS = { 'shopping_bag' => '/shop/bag' }
+  FIXED_RESERVED_URI_PATHS = { 'shopping_bag' => '/shop/bag',
+                               'checkout' => '/shop/checkout' }
 
   enum tax_basis: { delivery: 0, customer: 1, subscriber: 2 }
 
