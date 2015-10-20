@@ -168,7 +168,9 @@ RSpec.shared_examples 'jobs::publishing::images' do
         include_examples 'image_file behaviour' do
           let(:srcset_instance) { rand(0..2) }
           let(:target_instance) { image.image_files.srcset[srcset_instance] }
-          let(:target_json) { json[:image][:srcset][srcset_instance] }
+          let(:target_json) do
+            json[:image][:srcset].find { |src| src[:id] == target_instance.id }
+          end
         end
       end
     end
