@@ -11,6 +11,7 @@ AllCops:
     - db/migrate/*.rb
     - lib/templates/rspec/**/*
     - Guardfile
+    - db/seeds/private/**/*
 
 MethodLength:
   Exclude:
