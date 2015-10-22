@@ -12,7 +12,7 @@ gem 'stringex', '~> 2.5'
 
 gem 'paper_trail', '~> 4.0'
 gem 'workflow'
-gem 'valhammer', '~> 0.1'
+gem 'valhammer', '~> 0.2'
 gem 'json-schema', '~> 2.5'
 gem 'jbuilder', '~> 2.3'
 gem 'recursive-open-struct', '~> 0.6'
