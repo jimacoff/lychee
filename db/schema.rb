@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20151024040153) do
+ActiveRecord::Schema.define(version: 20151024065428) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -373,6 +373,7 @@ ActiveRecord::Schema.define(version: 20151024040153) do
     t.datetime "created_at",                                null: false
     t.datetime "updated_at",                                null: false
     t.boolean  "enabled",                   default: true,  null: false
+    t.json     "metadata_fields"
   end
 
   add_index "shipping_rates", ["site_id"], name: "index_shipping_rates_on_site_id", using: :btree
