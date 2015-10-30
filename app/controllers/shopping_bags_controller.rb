@@ -38,6 +38,8 @@ class ShoppingBagsController < ApplicationController
 
   def operations
     params.require(:operations).map do |op|
+      op[:quantity] = 0 if op[:additional_action] == 'remove'
+
       op.permit(:product_id, :variant_id, :quantity, :item_uuid)
         .merge(metadata: submissible_metadata(op))
     end

@@ -87,11 +87,11 @@ RSpec.describe ShoppingBagsController, type: :controller, site_scoped: true do
           let(:updates) do
             [commodity_attrs.merge(item_uuid: uuid, quantity: 1, metadata: {})]
           end
-
-          before do
-            attrs = updates.first.merge(quantity: 3)
-            bag.shopping_bag_operations.create!(attrs)
+          let(:attrs) do
+            updates.first.merge(quantity: 3)
           end
+
+          before { bag.shopping_bag_operations.create!(attrs) }
 
           it 'adds an operation' do
             expect { run }.to change { operations.length }.by(1)
@@ -121,6 +121,24 @@ RSpec.describe ShoppingBagsController, type: :controller, site_scoped: true do
             it 'creates no new operations' do
               run
               expect { run }.not_to change { operations.length }
+            end
+          end
+
+          context 'additional specific actions' do
+            context 'remove item' do
+              let(:updates) do
+                [commodity_attrs.merge(item_uuid: uuid, quantity: 1,
+                                       metadata: {},
+                                       additional_action: 'remove')]
+              end
+              let(:attrs) do
+                commodity_attrs.merge(item_uuid: uuid, quantity: 3,
+                                      metadata: {})
+              end
+
+              it 'removes the item from the bag' do
+                expect { run }.to change { bag.reload.contents }.to be_empty
+              end
             end
           end
         end
