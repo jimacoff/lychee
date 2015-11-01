@@ -106,6 +106,11 @@ RSpec.describe ShoppingBagsController, type: :controller, site_scoped: true do
               .and include(quantity: 1, item_uuid: uuid)
           end
 
+          it 'sets flash to indicate update' do
+            run
+            expect(flash[:updated]).to be_truthy
+          end
+
           context 'updating the quantity to 0' do
             let(:updates) do
               [commodity_attrs.merge(item_uuid: uuid, quantity: 0,

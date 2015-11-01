@@ -9,6 +9,7 @@ class ShoppingBagsController < ApplicationController
 
   def update
     operations.each { |op| bag.apply(op) }
+    flash[:updated] = true
     redirect_to :shopping_bag
   rescue ActionController::ParameterMissing
     render nothing: true
