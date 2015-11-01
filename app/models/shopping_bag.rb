@@ -37,6 +37,17 @@ class ShoppingBag < ActiveRecord::Base
     end
   end
 
+  def subtotal
+    contents.values.reduce(0) do |a, e|
+      product = e[:product] || (e[:variant].product)
+      a + product.price * e[:quantity]
+    end
+  end
+
+  def item_count
+    contents.values.reduce(0) { |a, e| a + e[:quantity] }
+  end
+
   private
 
   def apply_item_add(opts)

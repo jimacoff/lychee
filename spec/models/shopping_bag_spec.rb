@@ -3,6 +3,12 @@ require 'rails_helper'
 RSpec.describe ShoppingBag, type: :model, site_scoped: true do
   subject { create(:shopping_bag) }
 
+  def create_op(attrs)
+    attrs[:item_uuid] ||= SecureRandom.uuid
+    attrs[:metadata] ||= {}
+    subject.shopping_bag_operations.create!(attrs)
+  end
+
   has_context 'parent site' do
     let(:factory) { :shopping_bag }
   end
@@ -169,12 +175,6 @@ RSpec.describe ShoppingBag, type: :model, site_scoped: true do
   end
 
   context '#contents' do
-    def create_op(attrs)
-      attrs[:item_uuid] ||= SecureRandom.uuid
-      attrs[:metadata] ||= {}
-      subject.shopping_bag_operations.create!(attrs)
-    end
-
     it 'returns all items' do
       products = create_list(:product, 3)
       variants = create_list(:variant, 3)
@@ -249,6 +249,38 @@ RSpec.describe ShoppingBag, type: :model, site_scoped: true do
       end
 
       expect { subject.reload.contents }.not_to exceed_query_limit(4)
+    end
+  end
+
+  context 'ui helpers' do
+    let(:uuid1) { SecureRandom.uuid }
+    let(:uuid2) { SecureRandom.uuid }
+    let(:uuid3) { SecureRandom.uuid }
+
+    let(:qty1) { rand(5..20) }
+    let(:qty2) { rand(10..50) }
+
+    let(:product1) { create :product }
+    let(:product2) { create :product }
+    let(:product3) { create :product }
+
+    before do
+      create_op(product_id: product1.id, quantity: qty1, item_uuid: uuid1)
+      create_op(product_id: product2.id, quantity: qty2, item_uuid: uuid2)
+      create_op(product_id: product3.id, quantity: 0, item_uuid: uuid3)
+    end
+
+    describe '#subtotal' do
+      it 'equals addition of price * qty for all bag items' do
+        expect(subject.subtotal)
+          .to eq(product1.price * qty1 + product2.price * qty2)
+      end
+    end
+
+    describe 'item_count' do
+      it 'equals tot quantity of items in the bag' do
+        expect(subject.item_count).to eq(qty1 + qty2)
+      end
     end
   end
 end
