@@ -18,6 +18,7 @@ module Lychee
     # Settings in config/environments/* take precedence
     # over those specified here.
 
-    config.autoload_paths << Rails.root.join('app/jobs/concerns')
+    config.eager_load_paths << Rails.root.join('app', 'jobs', 'concerns')
+    config.eager_load_paths << Rails.root.join('lib')
   end
 end
