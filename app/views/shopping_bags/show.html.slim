@@ -1,35 +1,123 @@
-h1 Totes super production ready shopping bag page
+- if @contents.present?
+  h2 Items in your bag
 
-= form_tag({}, method: :patch) do
-  table#bag(style='min-width: 50%')
-    tbody
+  - if flash[:updated] == true
+    div#bag-flash
+      p Changes to your bag have been made successfully.
+
+  div#bag
+    div#bag-item-headings
+      div#bag-heading-description.bag-heading
+
+      div#bag-heading-price.bag-heading
+        span Price
+
+      div#bag-heading-qty.bag-heading
+        span Qty
+
+      div#bag-heading-total.bag-heading
+        span Total
+
+    hr#bag-item-headings-seperator
+
+    div#bag-items
       - @contents.each do |entry|
-        = fields_for('operations[]', []) do |f|
-          - product, variant, metadata = entry.values_at(:product, :variant, :metadata)
-          - product ||= variant.product
-          tr
-            td
+        - product, variant, metadata = entry.values_at(:product, :variant, :metadata)
+        - product ||= variant.product
+
+        div.bag-item(id=entry[:item_uuid])
+          = form_tag({}, method: :patch) do
+            = fields_for('operations[]', [], namespace: entry[:item_uuid]) do |f|
+              - product, variant, metadata = entry.values_at(:product, :variant, :metadata)
+              - product ||= variant.product
               = f.hidden_field(:item_uuid, value: entry[:item_uuid])
               - if variant
                 = f.hidden_field(:variant_id, value: variant.id)
               - else
                 = f.hidden_field(:product_id, value: product.id)
-              - metadata.each do |k, v|
-                = f.hidden_field("metadata[#{k}]", value: v)
-              = product.name
-            td
-              - metadata.each do |k, v|
-                div
-                  strong=> k
-                  = v
-              - if variant
-                - variant.variation_instances.each do |instance|
-                  div
-                    strong= instance.variation.trait.name
-                    ' :
-                    = instance.variation_value.name
 
-            td= f.text_field(:quantity, value: entry[:quantity], size: 3)
-  button.btn(type='submit') Update Bag
-= form_tag(order_path, method: :post) do
-  button.btn(type='submit') Checkout
+              div.name
+                 = product.name
+
+              div.price
+                = @site.currency.symbol
+                = product.price
+
+              div.qty
+                = f.text_field(:quantity, value: entry[:quantity], size: 3)
+
+              div.total
+                span
+                  = @site.currency.symbol
+                  = product.price * entry[:quantity]
+
+              div.image
+                div.no-item-image
+
+              div.description
+                p = product.description
+
+              - if variant
+                div.variation-choices
+                  - if variant.variation_instances.size == 1
+                    h3 = 'Selected Option'
+                  - else
+                    h3 = 'Selected Options'
+
+                  ol
+                    - variant.variation_instances.each do |instance|
+                      li => instance.variation_value.description
+
+              - if product.metadata_fields.present?
+                div.metadata
+                  - product.metadata_fields.each do |k, v|
+                    - if v['submissible']
+                      - if v['type'] == 'string'
+                        - if v['html_control'] == 'textarea'
+                            h3 => v['labels']['name']['en']
+
+                            - if metadata[k].present?
+                                = f.text_area("metadata[#{k}]", value: metadata[k])
+                            - else
+                                = f.text_area("metadata[#{k}]", value: '')
+
+              div.bag-item-actions
+                button(type='submit') Save Changes
+                button(name='operations[][additional_action]' value='remove') Remove Item
+
+        - unless entry == @contents.last
+          hr.items-seperator
+
+    hr#bag-items-end-seperator
+
+    div#bag-footer
+      div#bag-summary
+        h3 Summary
+        div#bag-summary-calculated
+          div.bag-summary-item
+            div.bag-summary-heading
+              | Total Items
+            div#bag-summary-calculated-item-count.bag-summary-information
+              = @bag.item_count
+
+          div.bag-summary-item
+            div.bag-summary-heading
+              | Subtotal
+            div#bag-summary-calculated-subtotal.bag-summary-information
+                = @site.currency.symbol
+                = @bag.subtotal
+
+      div#bag-summary-notice
+        p Shipping will be estimated at checkout.
+
+    div#bag-actions
+      div#bag-actions-buttons
+        a#continue-shopping.bag-action(href="#{@site.preferences.reserved_uri_path('categories')}" alt='Continue Shopping') Continue Shopping
+
+        = form_tag(order_path, method: :post) do
+          button#checkout-securely.bag-action(type='submit') Securely Checkout
+
+- else
+  div#bag-empty
+    p Your bag is empty!
+    a#bag-start-shopping.bag-action(href="#{@site.preferences.reserved_uri_path('categories')}" alt='Start Shopping') Start shopping
