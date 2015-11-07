@@ -11,7 +11,7 @@ RSpec.feature 'Ordering', site_scoped: true do
     end
 
     expect(current_path).to eq(shopping_bag_path)
-    click_button 'Checkout'
+    click_button 'Securely Checkout'
   end
 
   it 'shows stuff' do
