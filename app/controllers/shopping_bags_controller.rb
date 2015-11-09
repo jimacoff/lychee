@@ -4,6 +4,7 @@ class ShoppingBagsController < ApplicationController
     attrs = { quantity: 1, metadata: submissible_metadata(params) }
 
     params[:variations] ? add_variant(attrs) : add_product(attrs)
+    flash[:updated] = false
     redirect_to :shopping_bag
   end
 

@@ -255,6 +255,11 @@ RSpec.describe ShoppingBagsController, type: :controller, site_scoped: true do
             .to contain_exactly(include(commodity_item_attrs))
         end
 
+        it 'sets flash to indicate add' do
+          run
+          expect(flash[:updated]).to be_falsey
+        end
+
         it 'redirects to the bag' do
           run
           expect(response).to redirect_to(shopping_bag_path)
@@ -268,6 +273,11 @@ RSpec.describe ShoppingBagsController, type: :controller, site_scoped: true do
           run
           expect(bag.contents.values)
             .to contain_exactly(include(commodity_item_attrs))
+        end
+
+        it 'sets flash to indicate add' do
+          run
+          expect(flash[:updated]).to be_falsey
         end
 
         it 'redirects to the bag' do
