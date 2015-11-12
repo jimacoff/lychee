@@ -35,7 +35,7 @@ gem 'font-awesome-sass'
 
 group :development, :test do
   gem 'rspec-rails', '~> 3.2'
-  gem 'shoulda-matchers'
+  gem 'shoulda-matchers', '~> 2.8'
   gem 'shoulda-callback-matchers'
   gem 'faker'
   gem 'factory_girl_rails'
@@ -51,6 +51,5 @@ group :development, :test do
   gem 'temping'
   gem 'database_cleaner'
   gem 'capybara'
-  gem 'poltergeist'
-  gem 'phantomjs', require: 'phantomjs/poltergeist'
+  gem 'poltergeist', '~> 1.7'
 end

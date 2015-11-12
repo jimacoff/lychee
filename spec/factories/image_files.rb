@@ -16,9 +16,7 @@ FactoryGirl.define do
     end
 
     trait :routable do
-      after(:create) do |image_file|
-        image_file.create_default_path
-      end
+      after(:create, &:create_default_path)
     end
   end
 end
