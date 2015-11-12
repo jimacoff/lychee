@@ -17,6 +17,20 @@ RSpec.describe Preference, type: :model, site_scoped: true do
     end
     it { is_expected.to have_db_column(:reserved_uri_paths).of_type(:hstore) }
 
+    it { is_expected.to have_db_column(:bag_title).of_type(:string) }
+    it { is_expected.to have_db_column(:bag_flash).of_type(:string) }
+    it { is_expected.to have_db_column(:bag_summary_notice).of_type(:string) }
+    it do
+      is_expected
+        .to have_db_column(:bag_action_continue_shopping).of_type(:string)
+    end
+    it { is_expected.to have_db_column(:bag_action_checkout).of_type(:string) }
+    it { is_expected.to have_db_column(:bag_empty_notice).of_type(:string) }
+    it do
+      is_expected
+        .to have_db_column(:bag_empty_start_shopping).of_type(:string)
+    end
+
     it 'should have non nullable column site_id of type bigint' do
       expect(subject).to have_db_column(:site_id)
         .of_type(:integer)
@@ -31,6 +45,14 @@ RSpec.describe Preference, type: :model, site_scoped: true do
 
   context 'validations' do
     it { is_expected.to validate_presence_of :tax_basis }
+
+    it { is_expected.to validate_presence_of :bag_title }
+    it { is_expected.to validate_presence_of :bag_flash }
+    it { is_expected.to validate_presence_of :bag_summary_notice }
+    it { is_expected.to validate_presence_of :bag_action_continue_shopping }
+    it { is_expected.to validate_presence_of :bag_action_checkout }
+    it { is_expected.to validate_presence_of :bag_empty_notice }
+    it { is_expected.to validate_presence_of :bag_empty_start_shopping }
 
     it 'stores an enum for taxation calculations basis' do
       expect(subject).to define_enum_for(:tax_basis)

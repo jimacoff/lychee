@@ -1,7 +1,14 @@
 require 'rails_helper'
 
 RSpec.feature 'Ordering', site_scoped: true do
+  before do
+    allow_any_instance_of(ShoppingBagsController).to receive(:site_path)
+      .and_return('-1')
+  end
+
   given!(:product) { create(:product) }
+
+  it 'TODO: remove ForceRefresh'
 
   background do
     visit '/test-store/products'

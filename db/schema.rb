@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20151024065428) do
+ActiveRecord::Schema.define(version: 20151107093451) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -284,15 +284,22 @@ ActiveRecord::Schema.define(version: 20151024065428) do
   add_index "people", ["site_id"], name: "index_people_on_site_id", using: :btree
 
   create_table "preferences", id: :bigserial, force: :cascade do |t|
-    t.integer  "site_id",                    limit: 8,                 null: false
-    t.integer  "tax_basis",                            default: 0,     null: false
-    t.boolean  "prices_include_tax",                   default: false, null: false
+    t.integer  "site_id",                      limit: 8,                 null: false
+    t.integer  "tax_basis",                              default: 0,     null: false
+    t.boolean  "prices_include_tax",                     default: false, null: false
     t.hstore   "metadata"
-    t.datetime "created_at",                                           null: false
-    t.datetime "updated_at",                                           null: false
-    t.boolean  "order_subtotal_include_tax",           default: true,  null: false
-    t.hstore   "reserved_uri_paths",                                   null: false
+    t.datetime "created_at",                                             null: false
+    t.datetime "updated_at",                                             null: false
+    t.boolean  "order_subtotal_include_tax",             default: true,  null: false
+    t.hstore   "reserved_uri_paths",                                     null: false
     t.json     "metadata_fields"
+    t.string   "bag_title",                                              null: false
+    t.string   "bag_flash",                                              null: false
+    t.string   "bag_summary_notice",                                     null: false
+    t.string   "bag_action_continue_shopping",                           null: false
+    t.string   "bag_action_checkout",                                    null: false
+    t.string   "bag_empty_notice",                                       null: false
+    t.string   "bag_empty_start_shopping",                               null: false
   end
 
   add_index "preferences", ["site_id"], name: "index_preferences_on_site_id", using: :btree

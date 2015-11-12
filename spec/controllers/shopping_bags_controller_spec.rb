@@ -2,7 +2,12 @@ require 'rails_helper'
 
 RSpec.describe ShoppingBagsController, type: :controller, site_scoped: true do
   let(:bag) { nil }
-  before { session[:shopping_bag_id] = bag.try(:id) }
+
+  before do
+    session[:shopping_bag_id] = bag.try(:id)
+    allow_any_instance_of(ShoppingBagsController).to receive(:site_path)
+      .and_return('-1')
+  end
 
   def operations
     bag.shopping_bag_operations(true)

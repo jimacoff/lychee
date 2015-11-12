@@ -1,12 +1,25 @@
 require 'rails_helper'
 
 RSpec.feature 'Shopping', site_scoped: true do
+  before do
+    allow_any_instance_of(ShoppingBagsController).to receive(:site_path)
+      .and_return('-1')
+  end
+
+  def preferences
+    Site.current.preferences
+  end
+
   def bag_path
     expect(current_path).to eq('/shop/bag')
   end
 
+  def bag_content_header
+    expect(page).to have_css('#bag #bag-header h2', text: preferences.bag_title)
+  end
+
   def flash
-    expect(page).to have_css('#bag-flash')
+    expect(page).to have_css('#bag-flash', text: preferences.bag_flash)
   end
 
   def no_flash
@@ -45,6 +58,7 @@ RSpec.feature 'Shopping', site_scoped: true do
     expect(page).to have_css('.variation-choices')
   end
 
+  # rubocop:disable Metrics/AbcSize, Metrics/MethodLength
   def bag_summary(item_count:, subtotal:)
     within('#bag #bag-footer #bag-summary #bag-summary-calculated') do
       expect(page)
@@ -52,7 +66,14 @@ RSpec.feature 'Shopping', site_scoped: true do
       expect(page)
         .to have_css('#bag-summary-calculated-subtotal', text: subtotal)
     end
+
+    within('#bag #bag-footer') do
+      expect(page)
+        .to have_css('#bag-summary-notice',
+                     text: Site.current.preferences.bag_summary_notice)
+    end
   end
+  # rubocop:enable Metrics/AbcSize, Metrics/MethodLength
 
   # rubocop:disable Metrics/AbcSize
   def bag_actions
@@ -66,8 +87,10 @@ RSpec.feature 'Shopping', site_scoped: true do
   # rubocop:enable Metrics/AbcSize
 
   def bag_empty
-    expect(page).to have_css('#bag-empty')
-    expect(page).to have_css('#bag-start-shopping')
+    expect(page).to have_css('#bag-empty p',
+                             text: preferences.bag_empty_notice)
+    expect(page).to have_link(Site.current.preferences.bag_empty_start_shopping,
+                              href: preferences.reserved_uri_path('categories'))
   end
 
   def add_product(item)
@@ -108,6 +131,7 @@ RSpec.feature 'Shopping', site_scoped: true do
       context 'an empty bag' do
         scenario 'add an item to the bag' do
           bag_path
+          bag_content_header
           shows_each_item(1)
 
           within('#bag #bag-items .bag-item') do
@@ -121,8 +145,6 @@ RSpec.feature 'Shopping', site_scoped: true do
         end
 
         include_examples 'checkout securely'
-        it 'has #bag-summary-notice from Site preferences'
-        it 'has #bag-empty and #bag-start-shopping from Site preferences'
       end
 
       context 'with a single item in the bag' do
@@ -138,6 +160,7 @@ RSpec.feature 'Shopping', site_scoped: true do
             expect(page).not_to have_css('.metadata')
           end
 
+          bag_content_header
           flash
           bag_summary(item_count: quantity, subtotal: total)
           bag_actions
@@ -153,8 +176,6 @@ RSpec.feature 'Shopping', site_scoped: true do
         end
 
         include_examples 'checkout securely'
-        it 'has #bag-summary-notice from Site preferences'
-        it 'has #bag-empty and #bag-start-shopping from Site preferences'
       end
     end
 
@@ -166,6 +187,7 @@ RSpec.feature 'Shopping', site_scoped: true do
       context 'an empty bag' do
         scenario 'add an item to the bag' do
           bag_path
+          bag_content_header
           shows_each_item(1)
 
           within('#bag #bag-items .bag-item') do
@@ -179,8 +201,6 @@ RSpec.feature 'Shopping', site_scoped: true do
         end
 
         include_examples 'checkout securely'
-        it 'has #bag-summary-notice from Site preferences'
-        it 'has #bag-empty and #bag-start-shopping from Site preferences'
       end
 
       context 'with a single item in the bag' do
@@ -196,6 +216,7 @@ RSpec.feature 'Shopping', site_scoped: true do
               item_metadata_textarea(with: '')
             end
 
+            bag_content_header
             flash
             bag_summary(item_count: quantity, subtotal: total)
             bag_actions
@@ -214,6 +235,7 @@ RSpec.feature 'Shopping', site_scoped: true do
               item_metadata_textarea(with: message)
             end
 
+            bag_content_header
             flash
             bag_summary(item_count: quantity, subtotal: total)
             bag_actions
@@ -234,6 +256,7 @@ RSpec.feature 'Shopping', site_scoped: true do
               item_metadata_textarea(with: message)
             end
 
+            bag_content_header
             flash
             bag_summary(item_count: quantity, subtotal: total)
             bag_actions
@@ -252,8 +275,6 @@ RSpec.feature 'Shopping', site_scoped: true do
         end
 
         include_examples 'checkout securely'
-        it 'has #bag-summary-notice from Site preferences'
-        it 'has #bag-empty and #bag-start-shopping from Site preferences'
       end
     end
   end
@@ -341,6 +362,7 @@ RSpec.feature 'Shopping', site_scoped: true do
         end
 
         bag_path
+        bag_content_header
         flash
         bag_summary(item_count: new_item_count, subtotal: new_subtotal)
         bag_actions

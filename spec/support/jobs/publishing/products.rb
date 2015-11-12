@@ -218,7 +218,7 @@ RSpec.shared_examples 'jobs::publishing::products' do
 
         before do
           json[:variations] = []
-          product.variations.each do |var|
+          product.variations.sort_by { |v| v[:id] }.each do |var|
             json[:variations] << variation_json(var)
           end
         end
