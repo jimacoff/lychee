@@ -16,7 +16,10 @@ class Variant < ActiveRecord::Base
   has_many :traits, through: :variations
   has_many :category_members
   has_many :categories, through: :category_members
+
   has_one :inventory
+  has_one :image_instance, as: :imageable
+  has_one :image, through: :image_instance
 
   monies [{ field: :varied_price, calculated: true, allow_nil: true }]
 
