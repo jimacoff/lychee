@@ -4,11 +4,13 @@ class ShoppingBagsController < ApplicationController
     attrs = { quantity: 1, metadata: submissible_metadata(params) }
 
     params[:variations] ? add_variant(attrs) : add_product(attrs)
+    flash[:updated] = false
     redirect_to :shopping_bag
   end
 
   def update
     operations.each { |op| bag.apply(op) }
+    flash[:updated] = true
     redirect_to :shopping_bag
   rescue ActionController::ParameterMissing
     render nothing: true
@@ -16,6 +18,8 @@ class ShoppingBagsController < ApplicationController
 
   def show
     @contents = bag.contents.values
+    render inline: site_template.gsub(/__yield_shopping_bag__/,
+                                      render_to_string(layout: false))
   end
 
   private
@@ -55,12 +59,26 @@ class ShoppingBagsController < ApplicationController
 
   def submissible_metadata_keys(product_id, variant_id)
     product = referenced_product(product_id, variant_id)
-    return [] unless product.metadata_fields
-
+    return [] unless product.metadata_fields.present?
     product.metadata_fields.select { |_, v| v['submissible'] }.keys
   end
 
   def referenced_product(product_id, variant_id)
     product_id ? Product.find(product_id) : Variant.find(variant_id).product
+  end
+
+  def site_template
+    template = File.join(base_path, @site.id.to_s, bag_template)
+    return File.read(template) if File.exist?(template)
+
+    fail(Zepily::CriticalError, "Template file #{template} does not exist")
+  end
+
+  def base_path
+    Rails.configuration.zepily.sites.themes.base
+  end
+
+  def bag_template
+    Rails.configuration.zepily.sites.themes.templates.bag
   end
 end

@@ -1,7 +1,12 @@
 defaults: &defaults
+  sites:
+    themes:
+      base: /tmp/sites
+      templates:
+        bag: build/_backend/templates/shop/bag.html
   publishing:
     paths:
-      base: /tmp
+      base: /tmp/sites
       categories: /categories
       products: /products
 
@@ -9,6 +14,11 @@ development:
   <<: *defaults
 
 test:
+  sites:
+    themes:
+      base: spec/dummy
+      templates:
+        bag: build/_backend/templates/shop/bag.html
   publishing:
     paths:
       # This will be created AND deleted by spec runner

@@ -106,6 +106,11 @@ RSpec.describe ShoppingBagsController, type: :controller, site_scoped: true do
               .and include(quantity: 1, item_uuid: uuid)
           end
 
+          it 'sets flash to indicate update' do
+            run
+            expect(flash[:updated]).to be_truthy
+          end
+
           context 'updating the quantity to 0' do
             let(:updates) do
               [commodity_attrs.merge(item_uuid: uuid, quantity: 0,
@@ -250,6 +255,11 @@ RSpec.describe ShoppingBagsController, type: :controller, site_scoped: true do
             .to contain_exactly(include(commodity_item_attrs))
         end
 
+        it 'sets flash to indicate add' do
+          run
+          expect(flash[:updated]).to be_falsey
+        end
+
         it 'redirects to the bag' do
           run
           expect(response).to redirect_to(shopping_bag_path)
@@ -263,6 +273,11 @@ RSpec.describe ShoppingBagsController, type: :controller, site_scoped: true do
           run
           expect(bag.contents.values)
             .to contain_exactly(include(commodity_item_attrs))
+        end
+
+        it 'sets flash to indicate add' do
+          run
+          expect(flash[:updated]).to be_falsey
         end
 
         it 'redirects to the bag' do

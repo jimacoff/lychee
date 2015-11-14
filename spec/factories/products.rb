@@ -31,6 +31,24 @@ FactoryGirl.define do
       end
     end
 
+    trait :with_message_metadata do
+      after(:create) do |p|
+        metadata_fields = {
+          message: {
+            submissible: true,
+            type: 'string', html_control: 'textarea',
+            labels: {
+              name: { en: 'A message' },
+              control_label: { en: 'A message' },
+              edit: { en: 'Edit message' }
+            },
+            help: { en: 'Help message' }
+          }
+        }
+        p.update!(metadata_fields: metadata_fields)
+      end
+    end
+
     trait :with_variants do
       after(:create) do |p|
         # Subscriber wide product traits
