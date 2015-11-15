@@ -40,7 +40,10 @@ RSpec.describe Variant, type: :model, site_scoped: true do
     it { is_expected.to have_many :variation_instances }
     it { is_expected.to have_many :variations }
     it { is_expected.to have_many :traits }
+
     it { is_expected.to have_one :inventory }
+    it { is_expected.to have_one(:image_instance) }
+    it { is_expected.to have_one(:image) }
   end
 
   context 'validations' do

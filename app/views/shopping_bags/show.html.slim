@@ -52,8 +52,14 @@
                 = product.price * entry[:quantity]
 
               div.image
-                div.no-item-image
-                  img(src="http://lorempixel.com/200/200/")
+                - if variant && variant.image_instance.present?
+                  div.item-image.variant-image
+                    =responsive_image(variant.image_instance, '(min-width 40em) 50vw, 20vw')
+                - elsif product && product.image_instances.present?
+                  div.item-image.product-image
+                    =responsive_image(product.image_instances.first, '(min-width 40em) 50vw, 20vw')
+                -else
+                  div.no-item-image
 
               div.description
                 p = product.description
