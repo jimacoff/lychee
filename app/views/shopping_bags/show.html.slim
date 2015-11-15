@@ -1,11 +1,12 @@
 - if @contents.present?
-  h2 Items in your bag
-
-  - if flash[:updated] == true
-    div#bag-flash
-      p Changes to your bag have been made successfully.
-
   div#bag
+    div#bag-header
+      h2 =@site.preferences.bag_title
+
+    - if flash[:updated] == true
+      div#bag-flash
+        p =@site.preferences.bag_flash
+
     div#bag-item-headings
       div#bag-heading-description.bag-heading
 
@@ -47,12 +48,12 @@
                 = f.text_field(:quantity, value: entry[:quantity], size: 3)
 
               div.total
-                span
-                  = @site.currency.symbol
-                  = product.price * entry[:quantity]
+                = @site.currency.symbol
+                = product.price * entry[:quantity]
 
               div.image
                 div.no-item-image
+                  img(src="http://lorempixel.com/200/200/")
 
               div.description
                 p = product.description
@@ -108,16 +109,23 @@
                 = @bag.subtotal
 
       div#bag-summary-notice
-        p Shipping will be estimated at checkout.
+        p
+          =@site.preferences.bag_summary_notice
 
     div#bag-actions
       div#bag-actions-buttons
-        a#continue-shopping.bag-action(href="#{@site.preferences.reserved_uri_path('categories')}" alt='Continue Shopping') Continue Shopping
+        a#continue-shopping.bag-action(href="#{@site.preferences.reserved_uri_path('categories')}"
+                                       alt="#{@site.preferences.bag_action_continue_shopping}")
+          = @site.preferences.bag_action_continue_shopping
 
         = form_tag(order_path, method: :post) do
-          button#checkout-securely.bag-action(type='submit') Securely Checkout
+          button#checkout-securely.bag-action(type='submit')
+            = @site.preferences.bag_action_checkout
 
 - else
   div#bag-empty
-    p Your bag is empty!
-    a#bag-start-shopping.bag-action(href="#{@site.preferences.reserved_uri_path('categories')}" alt='Start Shopping') Start shopping
+    p =@site.preferences.bag_empty_notice
+
+    a#bag-start-shopping.bag-action(href="#{@site.preferences.reserved_uri_path('categories')}"
+                                    alt="#{@site.preferences.bag_empty_start_shopping}")
+      =@site.preferences.bag_empty_start_shopping

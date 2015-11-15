@@ -12,9 +12,7 @@ FactoryGirl.define do
     end
 
     trait :routable do
-      after(:create) do |c|
-        c.create_default_path
-      end
+      after(:create, &:create_default_path)
     end
   end
 end

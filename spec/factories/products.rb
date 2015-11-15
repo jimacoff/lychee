@@ -26,9 +26,7 @@ FactoryGirl.define do
     end
 
     trait :routable do
-      after(:create) do |p|
-        p.create_default_path
-      end
+      after(:create, &:create_default_path)
     end
 
     trait :with_message_metadata do

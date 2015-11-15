@@ -68,10 +68,14 @@ class ShoppingBagsController < ApplicationController
   end
 
   def site_template
-    template = File.join(base_path, @site.id.to_s, bag_template)
+    template = File.join(base_path, site_path, bag_template)
     return File.read(template) if File.exist?(template)
 
     fail(Zepily::CriticalError, "Template file #{template} does not exist")
+  end
+
+  def site_path
+    @site.id.to_s
   end
 
   def base_path
