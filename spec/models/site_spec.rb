@@ -22,6 +22,7 @@ RSpec.describe Site, type: :model do
     it { is_expected.to have_many :variants }
     it { is_expected.to have_many :categories }
     it { is_expected.to have_many :primary_categories }
+    it { is_expected.to have_many :shipping_rates }
 
     it { is_expected.to belong_to :subscriber_address }
     it { is_expected.to have_one :preferences }
