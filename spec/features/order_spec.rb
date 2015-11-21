@@ -8,8 +8,6 @@ RSpec.feature 'Ordering', site_scoped: true do
 
   given!(:product) { create(:product) }
 
-  it 'TODO: remove ForceRefresh'
-
   background do
     visit '/test-store/products'
 
