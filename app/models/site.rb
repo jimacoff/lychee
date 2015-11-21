@@ -16,6 +16,7 @@ class Site < ActiveRecord::Base
   has_many :categories
   has_many :primary_categories, -> { primary }, foreign_key: :site_id,
                                                 class_name: 'Category'
+  has_many :shipping_rates
 
   belongs_to :subscriber_address, class_name: 'Address'
   delegate :country, to: :subscriber_address
