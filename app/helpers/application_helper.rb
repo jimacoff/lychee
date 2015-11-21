@@ -1,5 +1,5 @@
 module ApplicationHelper
-  def responsive_image(image_instance, sizes, classes)
+  def responsive_image(image_instance, sizes, classes = nil)
     default_image = image_instance.image.image_files.default_image
     options = { src: default_image.uri_path,
                 srcset: image_instance.image.srcset_path,
