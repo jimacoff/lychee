@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20151107093451) do
+ActiveRecord::Schema.define(version: 20151122005925) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -300,6 +300,7 @@ ActiveRecord::Schema.define(version: 20151107093451) do
     t.string   "bag_action_checkout",                                    null: false
     t.string   "bag_empty_notice",                                       null: false
     t.string   "bag_empty_start_shopping",                               null: false
+    t.string   "bag_shipping_notice"
   end
 
   add_index "preferences", ["site_id"], name: "index_preferences_on_site_id", using: :btree
@@ -368,19 +369,20 @@ ActiveRecord::Schema.define(version: 20151107093451) do
   add_index "shipping_rate_regions", ["tax_override_id"], name: "index_shipping_rate_regions_on_tax_override_id", using: :btree
 
   create_table "shipping_rates", id: :bigserial, force: :cascade do |t|
-    t.integer  "site_id",         limit: 8,                 null: false
-    t.string   "name",                                      null: false
-    t.string   "description",                               null: false
+    t.integer  "site_id",             limit: 8,                 null: false
+    t.string   "name",                                          null: false
+    t.string   "description",                                   null: false
     t.integer  "min_weight"
     t.integer  "max_weight"
     t.integer  "min_price_cents"
     t.integer  "max_price_cents"
-    t.string   "currency",                  default: "USD", null: false
+    t.string   "currency",                      default: "USD", null: false
     t.hstore   "metadata"
-    t.datetime "created_at",                                null: false
-    t.datetime "updated_at",                                null: false
-    t.boolean  "enabled",                   default: true,  null: false
+    t.datetime "created_at",                                    null: false
+    t.datetime "updated_at",                                    null: false
+    t.boolean  "enabled",                       default: true,  null: false
     t.json     "metadata_fields"
+    t.boolean  "use_as_bag_shipping",           default: false
   end
 
   add_index "shipping_rates", ["site_id"], name: "index_shipping_rates_on_site_id", using: :btree

@@ -256,30 +256,153 @@ RSpec.describe ShoppingBag, type: :model, site_scoped: true do
     let(:uuid1) { SecureRandom.uuid }
     let(:uuid2) { SecureRandom.uuid }
     let(:uuid3) { SecureRandom.uuid }
+    let(:uuid4) { SecureRandom.uuid }
 
     let(:qty1) { rand(5..20) }
     let(:qty2) { rand(10..50) }
+    let(:qty3) { rand(1..10) }
 
     let(:product1) { create :product }
     let(:product2) { create :product }
     let(:product3) { create :product }
+    let(:variant1) do
+      create :variant, price: rand(1.0...90.9), weight: rand(100...2000)
+    end
 
     before do
       create_op(product_id: product1.id, quantity: qty1, item_uuid: uuid1)
       create_op(product_id: product2.id, quantity: qty2, item_uuid: uuid2)
       create_op(product_id: product3.id, quantity: 0, item_uuid: uuid3)
+      create_op(variant_id: variant1.id, quantity: qty3, item_uuid: uuid4)
     end
 
     describe '#subtotal' do
       it 'equals addition of price * qty for all bag items' do
         expect(subject.subtotal)
-          .to eq(product1.price * qty1 + product2.price * qty2)
+          .to eq(product1.price * qty1 + product2.price * qty2 +
+                 variant1.price * qty3)
+      end
+    end
+
+    describe '#weight' do
+      it 'equals addition of weight * qty for all bag items' do
+        expect(subject.weight)
+          .to eq(product1.weight * qty1 + product2.weight * qty2 +
+                 variant1.weight * qty3)
       end
     end
 
     describe 'item_count' do
       it 'equals tot quantity of items in the bag' do
-        expect(subject.item_count).to eq(qty1 + qty2)
+        expect(subject.item_count).to eq(qty1 + qty2 + qty3)
+      end
+    end
+
+    describe 'shipping_rate?' do
+      it 'is false without a subtotal' do
+        product1.price = 0
+        product2.price = 0
+        variant1. price = 0
+        expect(subject.shipping_rate?).to be_falsey
+      end
+
+      it 'is false without shipping rate' do
+        expect(subject.shipping_rate?).to be_falsey
+      end
+
+      it 'is false without a shipping rate enabled for use in bag shipping' do
+        create :shipping_rate
+        expect(subject.shipping_rate?).to be_falsey
+      end
+
+      it 'is false without a shipping rate that is enabled' do
+        create :shipping_rate, use_as_bag_shipping: true, enabled: false
+        expect(subject.shipping_rate?).to be_falsey
+      end
+
+      it 'is false without a subtotal that falls within range' do
+        create :shipping_rate, use_as_bag_shipping: true, enabled: true,
+                               min_price: subject.subtotal.cents + 1
+        expect(subject.shipping_rate?).to be_falsey
+      end
+
+      it 'is false without a weight that falls within range' do
+        create :shipping_rate, use_as_bag_shipping: true, enabled: true,
+                               min_weight: subject.weight + 1
+        expect(subject.shipping_rate?).to be_falsey
+      end
+
+      it 'is false without a subtotal or weight that falls within range' do
+        create :shipping_rate, use_as_bag_shipping: true, enabled: true,
+                               min_price: subject.subtotal.cents + 1,
+                               min_weight: subject.weight + 1
+        expect(subject.shipping_rate?).to be_falsey
+      end
+
+      it 'is true when a matching shipping rate is found' do
+        create :shipping_rate, use_as_bag_shipping: true, enabled: true
+        expect(subject.shipping_rate?).to be_truthy
+      end
+
+      it 'is true when multiple shipping rates are found' do
+        create :shipping_rate, use_as_bag_shipping: true, enabled: true
+        create :shipping_rate, use_as_bag_shipping: true, enabled: true
+
+        expect(subject.shipping_rate?).to be_truthy
+      end
+    end
+
+    describe 'shipping_rate' do
+      it 'is false without a subtotal' do
+        product1.price = 0
+        product2.price = 0
+        variant1. price = 0
+        expect(subject.shipping_rate).to be_nil
+      end
+
+      it 'is nil without shipping rate' do
+        expect(subject.shipping_rate).to be_nil
+      end
+
+      it 'is nil without a shipping rate enabled for use in bag shipping' do
+        create :shipping_rate
+        expect(subject.shipping_rate).to be_nil
+      end
+
+      it 'is nil without a shipping rate that is enabled' do
+        create :shipping_rate, use_as_bag_shipping: true, enabled: false
+        expect(subject.shipping_rate).to be_nil
+      end
+
+      it 'is nil without a subtotal that falls within range' do
+        create :shipping_rate, use_as_bag_shipping: true, enabled: true,
+                               min_price: subject.subtotal.cents + 1
+        expect(subject.shipping_rate).to be_nil
+      end
+
+      it 'is nil without a weight that falls within range' do
+        create :shipping_rate, use_as_bag_shipping: true, enabled: true,
+                               min_weight: subject.weight + 1
+        expect(subject.shipping_rate).to be_nil
+      end
+
+      it 'is nil without a subtotal or weight that falls within range' do
+        create :shipping_rate, use_as_bag_shipping: true, enabled: true,
+                               min_price: subject.subtotal.cents + 1,
+                               min_weight: subject.weight + 1
+        expect(subject.shipping_rate).to be_nil
+      end
+
+      it 'is provided when a matching shipping rate is found' do
+        sr = create :shipping_rate, use_as_bag_shipping: true, enabled: true
+        expect(subject.shipping_rate).to eq(sr)
+      end
+
+      it 'provides first instance when multiple shipping rates are found' do
+        sr = create :shipping_rate, use_as_bag_shipping: true, enabled: true
+        create :shipping_rate, use_as_bag_shipping: true, enabled: true
+
+        expect(subject.shipping_rate).to eq(sr)
       end
     end
   end

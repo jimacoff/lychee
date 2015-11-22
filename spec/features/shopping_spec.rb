@@ -73,6 +73,36 @@ RSpec.feature 'Shopping', site_scoped: true do
                      text: Site.current.preferences.bag_summary_notice)
     end
   end
+
+  def bag_summary_extended(item_count:, subtotal:, shipping:, total:)
+    bag_summary(item_count: item_count, subtotal: subtotal)
+    within('#bag #bag-footer #bag-summary #bag-summary-calculated') do
+      expect(page)
+        .to have_css('#bag-summary-shipping', text: shipping)
+      expect(page)
+        .to have_css('#bag-summary-current-total', text: total)
+    end
+
+    return unless set_bag_shipping_notice
+
+    within('#bag #bag-footer') do
+      expect(page)
+        .to have_css('#bag-shipping-notice p',
+                     text: Site.current.preferences.bag_shipping_notice)
+    end
+  end
+
+  def bag_summary_not_extended(item_count:, subtotal:)
+    bag_summary(item_count: item_count, subtotal: subtotal)
+    within('#bag #bag-footer #bag-summary #bag-summary-calculated') do
+      expect(page).not_to have_css('#bag-summary-shipping')
+      expect(page).not_to have_css('#bag-summary-current-total')
+    end
+
+    within('#bag #bag-footer') do
+      expect(page).not_to have_css('#bag-shipping-notice')
+    end
+  end
   # rubocop:enable Metrics/AbcSize, Metrics/MethodLength
 
   # rubocop:disable Metrics/AbcSize
@@ -122,48 +152,134 @@ RSpec.feature 'Shopping', site_scoped: true do
     end
   end
 
-  shared_context 'a single item' do
-    context 'with no submissible metadata' do
-      let!(:product) { product_without_metadata }
+  shared_context 'empty_bag' do
+    scenario 'add an item to the bag' do
+      bag_path
+      bag_content_header
+      shows_each_item(1)
 
+      within('#bag #bag-items .bag-item') do
+        common_markup(item_count: 1)
+        if with_metadata
+          item_metadata_textarea(with: '')
+        else
+          expect(page).not_to have_css('.metadata')
+        end
+      end
+
+      no_flash
+      summary
+      bag_actions
+    end
+    include_examples 'checkout securely'
+  end
+
+  shared_context 'update_bag' do
+    scenario 'update the quantity' do
+      within('#bag #bag-items .bag-item') do
+        fill_in 'operations[][quantity]', with: quantity
+        if message.present?
+          fill_in 'operations[][metadata[message]]', with: message
+        end
+
+        click_button 'Save Changes'
+
+        bag_path
+        common_markup(item_count: quantity)
+        if with_metadata
+          expect(page).to have_css('.metadata')
+          item_metadata_textarea(with: message) if message.present?
+        else
+          expect(page).not_to have_css('.metadata')
+        end
+      end
+
+      bag_content_header
+      flash
+      summary
+      bag_actions
+    end
+  end
+
+  shared_context 'a single item' do
+    let(:sr) { Site.current.shipping_rates.first }
+    let(:srr) { Site.current.shipping_rates.first.shipping_rate_regions.first }
+    let(:set_shipping) { false }
+    let(:message) { nil }
+
+    before do
+      if set_shipping
+        Site.current.shipping_rates
+          .create!(name: Faker::Lorem.word, description: Faker::Lorem.word,
+                   use_as_bag_shipping: true, enabled: true)
+        Site.current.shipping_rates.first.shipping_rate_regions
+          .create!(country: Site.current.country, price: rand(1.0..99.99))
+
+        if set_bag_shipping_notice
+          Site.current.preferences
+            .update(bag_shipping_notice: bag_shipping_notice)
+        end
+      end
+    end
+
+    context 'with no submissible metadata' do
+      let(:with_metadata) { false }
+      let!(:product) { product_without_metadata }
       before { add_item }
 
       context 'an empty bag' do
-        scenario 'add an item to the bag' do
-          bag_path
-          bag_content_header
-          shows_each_item(1)
-
-          within('#bag #bag-items .bag-item') do
-            common_markup(item_count: 1)
-            expect(page).not_to have_css('.metadata')
+        context 'without shipping' do
+          let(:summary) do
+            bag_summary_not_extended(item_count: quantity, subtotal: subtotal)
           end
-
-          no_flash
-          bag_summary(item_count: quantity, subtotal: total)
-          bag_actions
+          include_examples 'empty_bag'
         end
 
-        include_examples 'checkout securely'
+        context 'with shipping' do
+          let(:set_shipping) { true }
+          let(:set_bag_shipping_notice) { false }
+          let(:summary) do
+            bag_summary_extended(item_count: quantity, subtotal: subtotal,
+                                 shipping: srr.price,
+                                 total: (subtotal + srr.price).to_s)
+          end
+          include_examples 'empty_bag'
+
+          context 'with shipping notice' do
+            let(:set_bag_shipping_notice) { true }
+            let(:bag_shipping_notice) { Faker::Lorem.sentence }
+            include_examples 'empty_bag'
+          end
+        end
       end
 
       context 'with a single item in the bag' do
         let(:quantity) { rand(2..20) }
 
-        scenario 'update the quantity' do
-          within('#bag #bag-items .bag-item') do
-            fill_in 'operations[][quantity]', with: quantity
-            click_button 'Save Changes'
-
-            bag_path
-            common_markup(item_count: quantity)
-            expect(page).not_to have_css('.metadata')
+        context 'without shipping' do
+          let(:summary) do
+            bag_summary_not_extended(item_count: quantity, subtotal: subtotal)
           end
+          include_examples 'update_bag'
+          include_examples 'checkout securely'
+        end
 
-          bag_content_header
-          flash
-          bag_summary(item_count: quantity, subtotal: total)
-          bag_actions
+        context 'with shipping' do
+          let(:set_shipping) { true }
+          let(:set_bag_shipping_notice) { false }
+          let(:summary) do
+            bag_summary_extended(item_count: quantity, subtotal: subtotal,
+                                 shipping: srr.price,
+                                 total: (subtotal + srr.price).to_s)
+          end
+          include_examples 'update_bag'
+
+          context 'with shipping notice' do
+            let(:set_bag_shipping_notice) { true }
+            let(:bag_shipping_notice) { Faker::Lorem.sentence }
+            include_examples 'update_bag'
+            include_examples 'checkout securely'
+          end
         end
 
         scenario 'remove the item' do
@@ -174,92 +290,128 @@ RSpec.feature 'Shopping', site_scoped: true do
           bag_path
           bag_empty
         end
-
-        include_examples 'checkout securely'
       end
     end
 
     context 'with submissible metadata as textarea' do
+      let(:with_metadata) { true }
       let!(:product) { product_with_metadata }
 
       before { add_item }
 
       context 'an empty bag' do
-        scenario 'add an item to the bag' do
-          bag_path
-          bag_content_header
-          shows_each_item(1)
-
-          within('#bag #bag-items .bag-item') do
-            common_markup(item_count: 1)
-            item_metadata_textarea(with: '')
+        context 'without shipping' do
+          let(:summary) do
+            bag_summary_not_extended(item_count: quantity, subtotal: subtotal)
           end
-
-          no_flash
-          bag_summary(item_count: quantity, subtotal: total)
-          bag_actions
+          include_examples 'empty_bag'
         end
 
-        include_examples 'checkout securely'
+        context 'with shipping' do
+          let(:set_shipping) { true }
+          let(:set_bag_shipping_notice) { false }
+          let(:summary) do
+            bag_summary_extended(item_count: quantity, subtotal: subtotal,
+                                 shipping: srr.price,
+                                 total: (subtotal + srr.price).to_s)
+          end
+          include_examples 'empty_bag'
+
+          context 'with shipping notice' do
+            let(:set_bag_shipping_notice) { true }
+            let(:bag_shipping_notice) { Faker::Lorem.sentence }
+
+            include_examples 'empty_bag'
+          end
+        end
       end
 
       context 'with a single item in the bag' do
         context 'quantity changes' do
           let(:quantity) { rand(2..20) }
-          scenario 'updates the quantity' do
-            within('#bag #bag-items .bag-item') do
-              fill_in 'operations[][quantity]', with: quantity
-              click_button 'Save Changes'
-
-              bag_path
-              common_markup(item_count: quantity)
-              item_metadata_textarea(with: '')
+          context 'without shipping' do
+            let(:summary) do
+              bag_summary_not_extended(item_count: quantity, subtotal: subtotal)
             end
+            include_examples 'update_bag'
+            include_examples 'checkout securely'
+          end
 
-            bag_content_header
-            flash
-            bag_summary(item_count: quantity, subtotal: total)
-            bag_actions
+          context 'with shipping' do
+            let(:set_shipping) { true }
+            let(:set_bag_shipping_notice) { false }
+            let(:summary) do
+              bag_summary_extended(item_count: quantity, subtotal: subtotal,
+                                   shipping: srr.price,
+                                   total: (subtotal + srr.price).to_s)
+            end
+            include_examples 'update_bag'
+
+            context 'with shipping notice' do
+              let(:set_bag_shipping_notice) { true }
+              let(:bag_shipping_notice) { Faker::Lorem.sentence }
+              include_examples 'update_bag'
+              include_examples 'checkout securely'
+            end
           end
         end
 
         context 'metadata changes' do
           let(:message) { Faker::Lorem.paragraph }
-          scenario 'update the metadata message' do
-            within('#bag #bag-items .bag-item') do
-              fill_in 'operations[][metadata[message]]', with: message
-              click_button 'Save Changes'
-
-              bag_path
-              common_markup(item_count: 1)
-              item_metadata_textarea(with: message)
+          context 'without shipping' do
+            let(:summary) do
+              bag_summary_not_extended(item_count: quantity, subtotal: subtotal)
             end
+            include_examples 'update_bag'
+            include_examples 'checkout securely'
+          end
 
-            bag_content_header
-            flash
-            bag_summary(item_count: quantity, subtotal: total)
-            bag_actions
+          context 'with shipping' do
+            let(:set_shipping) { true }
+            let(:set_bag_shipping_notice) { false }
+            let(:summary) do
+              bag_summary_extended(item_count: quantity, subtotal: subtotal,
+                                   shipping: srr.price,
+                                   total: (subtotal + srr.price).to_s)
+            end
+            include_examples 'update_bag'
+
+            context 'with shipping notice' do
+              let(:set_bag_shipping_notice) { true }
+              let(:bag_shipping_notice) { Faker::Lorem.sentence }
+              include_examples 'update_bag'
+              include_examples 'checkout securely'
+            end
           end
         end
 
         context 'quantity and metadata changes' do
           let(:quantity) { rand(2..20) }
           let(:message) { Faker::Lorem.paragraph }
-          scenario 'update quantity and the metadata message' do
-            within('#bag #bag-items .bag-item') do
-              fill_in 'operations[][quantity]', with: quantity
-              fill_in 'operations[][metadata[message]]', with: message
-              click_button 'Save Changes'
-
-              bag_path
-              common_markup(item_count: quantity)
-              item_metadata_textarea(with: message)
+          context 'without shipping' do
+            let(:summary) do
+              bag_summary_not_extended(item_count: quantity, subtotal: subtotal)
             end
+            include_examples 'update_bag'
+            include_examples 'checkout securely'
+          end
 
-            bag_content_header
-            flash
-            bag_summary(item_count: quantity, subtotal: total)
-            bag_actions
+          context 'with shipping' do
+            let(:set_shipping) { true }
+            let(:set_bag_shipping_notice) { false }
+            let(:summary) do
+              bag_summary_extended(item_count: quantity, subtotal: subtotal,
+                                   shipping: srr.price,
+                                   total: (subtotal + srr.price).to_s)
+            end
+            include_examples 'update_bag'
+
+            context 'with shipping notice' do
+              let(:set_bag_shipping_notice) { true }
+              let(:bag_shipping_notice) { Faker::Lorem.sentence }
+              include_examples 'update_bag'
+              include_examples 'checkout securely'
+            end
           end
         end
 
@@ -273,8 +425,6 @@ RSpec.feature 'Shopping', site_scoped: true do
           shows_each_item(0)
           bag_empty
         end
-
-        include_examples 'checkout securely'
       end
     end
   end
@@ -283,6 +433,7 @@ RSpec.feature 'Shopping', site_scoped: true do
     let(:quantity) { 1 }
     let(:price) { product.price }
     let(:total) { product.price * quantity }
+    let(:subtotal) { total }
 
     context 'a single product without variants' do
       include_examples 'a single item' do
@@ -317,6 +468,33 @@ RSpec.feature 'Shopping', site_scoped: true do
     end
   end
 
+  shared_context 'added_multiple_items' do
+    scenario 'bag is populated correctly' do
+      bag_path
+      no_flash
+      shows_each_item(item_count)
+      summary
+      bag_actions
+    end
+    include_examples 'checkout securely'
+  end
+
+  shared_context 'modify_specific_item' do
+    scenario 'can modify an item' do
+      within all('#bag #bag-items .bag-item')[target] do
+        fill_in 'operations[][quantity]', with: quantity
+        click_button 'Save Changes'
+      end
+
+      bag_path
+      bag_content_header
+      flash
+      summary
+      bag_actions
+    end
+    include_examples 'checkout securely'
+  end
+
   context 'multiple items in the bag' do
     let(:products) { [] }
     let(:product_count) { rand(1..10) }
@@ -324,7 +502,24 @@ RSpec.feature 'Shopping', site_scoped: true do
     let(:item_count) { product_count + variant_count }
     let(:subtotal) { products.map(&:price).sum }
 
+    let(:set_bag_shipping_notice) { false }
+    let(:sr) { Site.current.shipping_rates.first }
+    let(:srr) { Site.current.shipping_rates.first.shipping_rate_regions.first }
+
     before do
+      if set_shipping
+        Site.current.shipping_rates
+          .create!(name: Faker::Lorem.word, description: Faker::Lorem.word,
+                   use_as_bag_shipping: true, enabled: true)
+        Site.current.shipping_rates.first.shipping_rate_regions
+          .create!(country: Site.current.country, price: rand(1.0..99.99))
+
+        if set_bag_shipping_notice
+          Site.current.preferences
+            .update(bag_shipping_notice: bag_shipping_notice)
+        end
+      end
+
       (0...product_count).each do
         product = create :standalone_product
         products << product
@@ -338,12 +533,28 @@ RSpec.feature 'Shopping', site_scoped: true do
     end
 
     context 'after adding all items' do
-      scenario 'bag is populated correctly' do
-        bag_path
-        no_flash
-        shows_each_item(item_count)
-        bag_summary(item_count: item_count, subtotal: subtotal)
-        bag_actions
+      context 'without shipping' do
+        let(:set_shipping) { false }
+        let(:summary) do
+          bag_summary_not_extended(item_count: item_count, subtotal: subtotal)
+        end
+        include_examples 'added_multiple_items'
+      end
+
+      context 'with shipping' do
+        let(:set_shipping) { true }
+        let(:summary) do
+          bag_summary_extended(item_count: item_count, subtotal: subtotal,
+                               shipping: srr.price.to_s,
+                               total: (subtotal + srr.price).to_s)
+        end
+        include_examples 'added_multiple_items'
+
+        context 'with shipping notice' do
+          let(:set_bag_shipping_notice) { true }
+          let(:bag_shipping_notice) { Faker::Lorem.sentence }
+          include_examples 'added_multiple_items'
+        end
       end
     end
 
@@ -355,20 +566,31 @@ RSpec.feature 'Shopping', site_scoped: true do
         subtotal - products[target].price + products[target].price * quantity
       end
 
-      scenario 'can modify an item' do
-        within all('#bag #bag-items .bag-item')[target] do
-          fill_in 'operations[][quantity]', with: quantity
-          click_button 'Save Changes'
+      context 'without shipping' do
+        let(:set_shipping) { false }
+        let(:summary) do
+          bag_summary_not_extended(item_count: new_item_count,
+                                   subtotal: new_subtotal.to_s)
         end
+        include_examples 'modify_specific_item'
+      end
 
-        bag_path
-        bag_content_header
-        flash
-        bag_summary(item_count: new_item_count, subtotal: new_subtotal)
-        bag_actions
+      context 'with shipping' do
+        let(:set_shipping) { true }
+        let(:summary) do
+          bag_summary_extended(item_count: new_item_count,
+                               subtotal: new_subtotal.to_s,
+                               shipping: srr.price.to_s,
+                               total: (new_subtotal + srr.price).to_s)
+        end
+        include_examples 'modify_specific_item'
+
+        context 'with shipping notice' do
+          let(:set_bag_shipping_notice) { true }
+          let(:bag_shipping_notice) { Faker::Lorem.sentence }
+          include_examples 'modify_specific_item'
+        end
       end
     end
-
-    include_examples 'checkout securely'
   end
 end

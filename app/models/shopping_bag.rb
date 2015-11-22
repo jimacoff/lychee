@@ -39,13 +39,38 @@ class ShoppingBag < ActiveRecord::Base
 
   def subtotal
     contents.values.reduce(0) do |a, e|
-      product = e[:product] || (e[:variant].product)
-      a + product.price * e[:quantity]
+      price = e[:product] ? e[:product].price : e[:variant].price
+      a + (price * e[:quantity])
+    end
+  end
+
+  def weight
+    contents.values.reduce(0) do |a, e|
+      weight = e[:product] ? e[:product].weight : e[:variant].weight
+      a + (weight * e[:quantity])
     end
   end
 
   def item_count
     contents.values.reduce(0) { |a, e| a + e[:quantity] }
+  end
+
+  def shipping_rate?
+    return unless subtotal > 0
+
+    ShippingRate.where(use_as_bag_shipping: true, enabled: true)
+      .satisfies_price(subtotal_cents)
+      .satisfies_weight(weight)
+      .count > 0
+  end
+
+  def shipping_rate
+    return unless subtotal > 0
+
+    ShippingRate.where(use_as_bag_shipping: true, enabled: true)
+      .satisfies_price(subtotal_cents)
+      .satisfies_weight(weight)
+      .first
   end
 
   private
@@ -60,5 +85,12 @@ class ShoppingBag < ActiveRecord::Base
     return nil unless prev.try(:matches_commodity?, opts)
     return prev if prev && opts.all? { |k, v| prev[k].to_s == v.to_s }
     shopping_bag_operations.create!(opts)
+  end
+
+  def subtotal_cents
+    contents.values.reduce(0) do |a, e|
+      price = e[:product] ? e[:product].price.cents : e[:variant].price.cents
+      a + (price * e[:quantity])
+    end
   end
 end

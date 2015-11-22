@@ -20,6 +20,7 @@ RSpec.describe Preference, type: :model, site_scoped: true do
     it { is_expected.to have_db_column(:bag_title).of_type(:string) }
     it { is_expected.to have_db_column(:bag_flash).of_type(:string) }
     it { is_expected.to have_db_column(:bag_summary_notice).of_type(:string) }
+    it { is_expected.to have_db_column(:bag_shipping_notice).of_type(:string) }
     it do
       is_expected
         .to have_db_column(:bag_action_continue_shopping).of_type(:string)

@@ -20,6 +20,7 @@ RSpec.describe ShippingRate, type: :model, site_scoped: true do
 
     it { is_expected.to have_db_column(:min_weight).of_type(:integer) }
     it { is_expected.to have_db_column(:max_weight).of_type(:integer) }
+    it { is_expected.to have_db_column(:use_as_bag_shipping).of_type(:boolean) }
   end
 
   context 'relationships' do

@@ -114,9 +114,35 @@
                 = @site.currency.symbol
                 = @bag.subtotal
 
+          - if @bag.shipping_rate?
+              div.bag-summary-item
+                div.bag-summary-heading
+                  | Shipping
+                  - if @site.preferences.bag_shipping_notice.present?
+                    a href="#bag-shipping-notice"
+                      span#bag-shipping-notice-link
+                div#bag-summary-shipping.bag-summary-information
+                  = @site.currency.symbol
+                  = @bag.shipping_rate.shipping_rate_regions.first.price
+
+              hr
+
+              div.bag-summary-item
+                div.bag-summary-heading
+                  | Current Total
+                div#bag-summary-current-total.bag-summary-information
+                  = @site.currency.symbol
+                  = @bag.subtotal + @bag.shipping_rate.shipping_rate_regions.first.price
+
       div#bag-summary-notice
         p
           =@site.preferences.bag_summary_notice
+
+      - if @bag.shipping_rate? && @site.preferences.bag_shipping_notice.present?
+        div#bag-shipping-notice
+          h4 Shipping
+          p
+            =@site.preferences.bag_shipping_notice
 
     div#bag-actions
       div#bag-actions-buttons
