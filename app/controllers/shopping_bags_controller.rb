@@ -18,8 +18,8 @@ class ShoppingBagsController < ApplicationController
 
   def show
     @contents = bag.contents.values
-    render inline: site_template.gsub(/__yield_shopping_bag__/,
-                                      render_to_string(layout: false))
+    render inline: template.gsub(/__yield_shopping_bag__/,
+                                 render_to_string(layout: false))
   end
 
   private
@@ -67,22 +67,7 @@ class ShoppingBagsController < ApplicationController
     product_id ? Product.find(product_id) : Variant.find(variant_id).product
   end
 
-  def site_template
-    template = File.join(base_path, site_path, bag_template)
-    return File.read(template) if File.exist?(template)
-
-    fail(Zepily::CriticalError, "Template file #{template} does not exist")
-  end
-
-  def site_path
-    @site.id.to_s
-  end
-
-  def base_path
-    Rails.configuration.zepily.sites.themes.base
-  end
-
-  def bag_template
+  def controller_template
     Rails.configuration.zepily.sites.themes.templates.bag
   end
 end
