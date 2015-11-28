@@ -56,7 +56,7 @@ class ShoppingBag < ActiveRecord::Base
   end
 
   def shipping_rate?
-    return unless subtotal > 0
+    return false unless subtotal > 0
 
     ShippingRate.where(use_as_bag_shipping: true, enabled: true)
       .satisfies_price(subtotal_cents)
