@@ -14,7 +14,7 @@
         span Price
 
       div#bag-heading-qty.bag-heading
-        span Qty
+        span Quantity
 
       div#bag-heading-total.bag-heading
         span Total
@@ -117,7 +117,7 @@
           - if @bag.shipping_rate?
               div.bag-summary-item
                 div.bag-summary-heading
-                  | Shipping
+                  | Shipping Estimate
                   - if @site.preferences.bag_shipping_notice.present?
                     a href="#bag-shipping-notice"
                       span#bag-shipping-notice-link
