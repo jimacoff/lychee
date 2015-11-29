@@ -80,6 +80,16 @@ class Site < ActiveRecord::Base
     fail 'Site#currency_iso_code= cannot be called, use Site#currency='
   end
 
+  def countries
+    if whitelisted_countries.present?
+      whitelisted_countries.map(&:country)
+    elsif blacklisted_countries
+      (Country.all - blacklisted_countries.map(&:country))
+    else
+      Country.all
+    end
+  end
+
   class << self
     def current
       Thread.current[:current_site]

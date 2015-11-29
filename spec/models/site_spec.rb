@@ -210,6 +210,44 @@ RSpec.describe Site, type: :model do
             end
           end
         end
+
+        describe '#countries' do
+          before { create_list(:country, 10) }
+          context 'whitelisted countries' do
+            before do
+              subject.whitelisted_countries <<
+                create_list(:whitelisted_country, 3, site: subject)
+            end
+
+            it 'only supplies whitelisted countries' do
+              expect(Country.count).to eq(14)
+              expect(subject.countries.size).to eq(3)
+              expect(subject.countries)
+                .to contain_exactly(
+                  *subject.whitelisted_countries.map(&:country))
+            end
+          end
+          context 'blacklisted countries' do
+            before do
+              subject.blacklisted_countries <<
+                create_list(:blacklisted_country, 3, site: subject)
+            end
+
+            it 'only supplies non blacklisted countries' do
+              expect(Country.count).to eq(14)
+              expect(subject.countries.size).to eq(11)
+              expect(subject.countries)
+                .to contain_exactly(
+                  *(Country.all - subject.blacklisted_countries.map(&:country)))
+            end
+          end
+          context 'neither white nor blacklisted countries' do
+            it 'provides all known countries' do
+              expect(subject.countries.size).to eq(11)
+              expect(subject.countries).to contain_exactly(*Country.all)
+            end
+          end
+        end
       end
     end
   end
