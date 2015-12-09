@@ -88,11 +88,8 @@ class OrdersController < ApplicationController
   end
 
   def create_recipient
-    if order_params[:use_billing_details_for_shipping]
-      @order.create_recipient!(person_params(:recipient).merge(person_params(:customer)[:display_name]))
-    else
-      @order.recipient.create_address!(address_params(:recipient))
-    end
+    @order.create_recipient!(person_params(:recipient))
+    @order.recipient.create_address!(address_params(:recipient))
   end
 
   def controller_template

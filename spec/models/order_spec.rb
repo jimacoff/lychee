@@ -489,16 +489,16 @@ RSpec.describe Order, type: :model, site_scoped: true do
     end
   end
 
-  describe '#use_shipping_details_for_billing?' do
+  describe '#use_billing_details_for_shipping?' do
     let(:person1) { create(:address).person }
     let(:person2) { create(:address).person }
     let(:order) { create(:order) }
-    subject { order.use_shipping_details_for_billing? }
+    subject { order.use_billing_details_for_shipping? }
 
-    it 'is an alias for use_shipping_details_for_billing (no question mark)' do
-      expect(order).to respond_to(:use_shipping_details_for_billing)
-      expect(order.use_shipping_details_for_billing)
-        .to eq(order.use_shipping_details_for_billing?)
+    it 'is an alias for use_billing_details_for_shipping (no question mark)' do
+      expect(order).to respond_to(:use_billing_details_for_shipping)
+      expect(order.use_billing_details_for_shipping)
+        .to eq(order.use_billing_details_for_shipping?)
     end
 
     context 'when the billing contact is the shipping contact' do

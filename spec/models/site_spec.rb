@@ -220,7 +220,6 @@ RSpec.describe Site, type: :model do
             end
 
             it 'only supplies whitelisted countries' do
-              expect(Country.count).to eq(14)
               expect(subject.countries.size).to eq(3)
               expect(subject.countries)
                 .to contain_exactly(
@@ -234,8 +233,7 @@ RSpec.describe Site, type: :model do
             end
 
             it 'only supplies non blacklisted countries' do
-              expect(Country.count).to eq(14)
-              expect(subject.countries.size).to eq(11)
+              expect(subject.countries.size).to eq(Country.count - 3)
               expect(subject.countries)
                 .to contain_exactly(
                   *(Country.all - subject.blacklisted_countries.map(&:country)))
@@ -243,7 +241,7 @@ RSpec.describe Site, type: :model do
           end
           context 'neither white nor blacklisted countries' do
             it 'provides all known countries' do
-              expect(subject.countries.size).to eq(11)
+              expect(subject.countries.size).to eq(Country.count)
               expect(subject.countries).to contain_exactly(*Country.all)
             end
           end

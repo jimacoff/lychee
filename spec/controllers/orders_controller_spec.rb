@@ -1,7 +1,6 @@
 require 'rails_helper'
 
 RSpec.describe OrdersController, type: :controller, site_scoped: true do
-
   context 'Using spec/dummy bag layout' do
     describe '#site_path' do
       let(:order) { create(:order) }
@@ -171,7 +170,8 @@ RSpec.describe OrdersController, type: :controller, site_scoped: true do
 
         shared_examples 'a transition to :pending' do
           it 'updates the workflow_state' do
-            expect { run }.to change { order.reload.workflow_state }.to('pending')
+            expect { run }
+              .to change { order.reload.workflow_state }.to('pending')
           end
 
           it 'redirects to the order' do
@@ -194,7 +194,7 @@ RSpec.describe OrdersController, type: :controller, site_scoped: true do
 
           let(:order_attrs) do
             { customer: customer_attrs.merge(address: customer_address_attrs),
-              use_billing_details_for_shipping: '1' }
+              use_billing_details_for_shipping: 1 }
           end
 
           it 'creates exactly one person' do
@@ -234,7 +234,8 @@ RSpec.describe OrdersController, type: :controller, site_scoped: true do
 
           let(:order_attrs) do
             { customer: customer_attrs.merge(address: customer_address_attrs),
-              recipient: recipient_attrs.merge(address: recipient_address_attrs) }
+              recipient:
+                recipient_attrs.merge(address: recipient_address_attrs) }
           end
 
           include_examples 'updates person details in order'
