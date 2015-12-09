@@ -489,16 +489,16 @@ RSpec.describe Order, type: :model, site_scoped: true do
     end
   end
 
-  describe '#use_billing_details_for_shipping?' do
+  describe '#use_shipping_details_for_billing?' do
     let(:person1) { create(:address).person }
     let(:person2) { create(:address).person }
     let(:order) { create(:order) }
-    subject { order.use_billing_details_for_shipping? }
+    subject { order.use_shipping_details_for_billing? }
 
-    it 'is an alias for use_billing_details_for_shipping (no question mark)' do
-      expect(order).to respond_to(:use_billing_details_for_shipping)
-      expect(order.use_billing_details_for_shipping)
-        .to eq(order.use_billing_details_for_shipping?)
+    it 'is an alias for use_shipping_details_for_billing (no question mark)' do
+      expect(order).to respond_to(:use_shipping_details_for_billing)
+      expect(order.use_shipping_details_for_billing)
+        .to eq(order.use_shipping_details_for_billing?)
     end
 
     context 'when the billing contact is the shipping contact' do
@@ -509,6 +509,186 @@ RSpec.describe Order, type: :model, site_scoped: true do
     context 'when the billing contact is different to the shipping contact' do
       let(:order) { create(:order, customer: person1, recipient: person2) }
       it { is_expected.to be_falsey }
+    end
+  end
+
+  describe 'transient_subtotal' do
+    let(:order) { create(:order, :with_cli) }
+    subject { order.transient_subtotal }
+
+    it { is_expected.to be > 0 }
+    it do
+      is_expected.to eq(
+        order.commodity_line_items.map { |cli| cli.price * cli.quantity }.sum)
+    end
+  end
+
+  describe 'transient_subtotal_cents' do
+    let(:order) { create(:order, :with_cli) }
+    subject { order.transient_subtotal_cents }
+
+    it { is_expected.to be > 0 }
+    it do
+      is_expected.to eq(
+        order.commodity_line_items
+          .map { |cli| cli.price.cents * cli.quantity }.sum)
+    end
+  end
+
+  describe 'transient_weight' do
+    let(:order) { create(:order, :with_cli) }
+    subject { order.transient_weight }
+
+    before do
+      # cheat, this normally comes from the product/variant on assignment
+      order.commodity_line_items.map do |cli|
+        cli.update(weight: rand(50..2000))
+      end
+    end
+
+    it { is_expected.to be > 0 }
+    it do
+      is_expected.to eq(
+        order.commodity_line_items.map { |cli| cli.weight * cli.quantity }.sum)
+    end
+  end
+
+  describe 'transient_shipping_rate_estimate?' do
+    subject(:order) { create(:order, :with_cli) }
+
+    it 'is false without a transient_subtotal' do
+      order.commodity_line_items.each { |cli| cli.price = 0 }
+      expect(subject.transient_shipping_rate_estimate?)
+        .to be_falsey
+    end
+
+    it 'is false without shipping rate' do
+      expect(subject.transient_shipping_rate_estimate?)
+        .to be_falsey
+    end
+
+    it 'is false without a shipping rate enabled for use in bag shipping' do
+      create :shipping_rate
+      expect(subject.transient_shipping_rate_estimate?).to be_falsey
+    end
+
+    it 'is false without a shipping rate that is enabled' do
+      create :shipping_rate, use_as_bag_shipping: true, enabled: false
+      expect(subject.transient_shipping_rate_estimate?).to be_falsey
+    end
+
+    it 'is false without a subtotal that falls within range' do
+      create :shipping_rate, use_as_bag_shipping: true, enabled: true,
+                             min_price: subject.transient_subtotal.cents + 1
+      expect(subject.transient_shipping_rate_estimate?).to be_falsey
+    end
+
+    it 'is false without a weight that falls within range' do
+      create :shipping_rate, use_as_bag_shipping: true, enabled: true,
+                             min_weight: subject.transient_weight + 1
+      expect(subject.transient_shipping_rate_estimate?).to be_falsey
+    end
+
+    it 'is false without a subtotal or weight that falls within range' do
+      create :shipping_rate, use_as_bag_shipping: true, enabled: true,
+                             min_price: subject.transient_subtotal_cents + 1,
+                             min_weight: subject.transient_weight + 1
+      expect(subject.transient_shipping_rate_estimate?).to be_falsey
+    end
+
+    it 'is true when a matching shipping rate is found' do
+      create :shipping_rate, use_as_bag_shipping: true, enabled: true
+      expect(subject.transient_shipping_rate_estimate?).to be_truthy
+    end
+
+    it 'is true when multiple shipping rates are found' do
+      create :shipping_rate, use_as_bag_shipping: true, enabled: true
+      create :shipping_rate, use_as_bag_shipping: true, enabled: true
+
+      expect(subject.transient_shipping_rate_estimate?).to be_truthy
+    end
+  end
+
+  describe 'transient_shipping_rate_estimate' do
+    subject(:order) { create(:order, :with_cli) }
+
+    it 'is false without a transient_subtotal' do
+      order.commodity_line_items.each { |cli| cli.price = 0 }
+      expect(subject.transient_shipping_rate_estimate)
+        .to be_nil
+    end
+
+    it 'is false without shipping rate' do
+      expect(subject.transient_shipping_rate_estimate)
+        .to be_nil
+    end
+
+    it 'is false without a shipping rate enabled for use in bag shipping' do
+      create :shipping_rate
+      expect(subject.transient_shipping_rate_estimate).to be_nil
+    end
+
+    it 'is false without a shipping rate that is enabled' do
+      create :shipping_rate, use_as_bag_shipping: true, enabled: false
+      expect(subject.transient_shipping_rate_estimate).to be_nil
+    end
+
+    it 'is false without a subtotal that falls within range' do
+      create :shipping_rate, use_as_bag_shipping: true, enabled: true,
+                             min_price: subject.transient_subtotal.cents + 1
+      expect(subject.transient_shipping_rate_estimate).to be_nil
+    end
+
+    it 'is false without a weight that falls within range' do
+      create :shipping_rate, use_as_bag_shipping: true, enabled: true,
+                             min_weight: subject.transient_weight + 1
+      expect(subject.transient_shipping_rate_estimate).to be_nil
+    end
+
+    it 'is false without a subtotal or weight that falls within range' do
+      create :shipping_rate, use_as_bag_shipping: true, enabled: true,
+                             min_price: subject.transient_subtotal_cents + 1,
+                             min_weight: subject.transient_weight + 1
+      expect(subject.transient_shipping_rate_estimate).to be_nil
+    end
+
+    it 'is true when a matching shipping rate is found' do
+      sr = create :shipping_rate, use_as_bag_shipping: true, enabled: true
+      expect(subject.transient_shipping_rate_estimate).to eq(sr)
+    end
+
+    it 'is true when multiple shipping rates are found' do
+      sr = create :shipping_rate, use_as_bag_shipping: true, enabled: true
+      create :shipping_rate, use_as_bag_shipping: true, enabled: true
+
+      expect(subject.transient_shipping_rate_estimate).to eq(sr)
+    end
+  end
+
+  describe '#transient_total' do
+    subject(:order) { create(:order, :with_cli) }
+
+    context 'without shipping rate' do
+      it 'is equivalent to transient_subtotal' do
+        expect(subject.transient_total).to eq(subject.transient_subtotal)
+      end
+    end
+
+    context 'with shipping rate' do
+      let!(:sr) do
+        create(:shipping_rate, :with_regions,
+               use_as_bag_shipping: true, enabled: true)
+      end
+
+      it 'has a shipping rate with cost' do
+        expect(sr.shipping_rate_regions.first.price).to be > 0
+      end
+
+      it 'is equivalent to transient_subtotal + shipping rate price' do
+        expect(subject.transient_total)
+          .to eq(subject.transient_subtotal +
+                 sr.shipping_rate_regions.first.price)
+      end
     end
   end
 end

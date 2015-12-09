@@ -29,6 +29,10 @@ FactoryGirl.define do
       after(:create, &:create_default_path)
     end
 
+    trait :with_weight do
+      weight { rand(10..1000) }
+    end
+
     trait :with_message_metadata do
       after(:create) do |p|
         metadata_fields = {

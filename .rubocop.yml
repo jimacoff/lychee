@@ -12,6 +12,7 @@ AllCops:
     - lib/templates/rspec/**/*
     - Guardfile
     - db/seeds/private/**/*
+    - db/seeds/clothing_shop.rb
 
 MethodLength:
   Exclude:

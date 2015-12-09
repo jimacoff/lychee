@@ -1,0 +1,17 @@
+fieldset
+    = f.label(:display_name, 'Name')
+    = f.text_field(:display_name, autofocus: true, required: true, 'data-msg-required': 'Please provide your name')
+    p
+      = help[:display_name]
+
+fieldset
+  = f.label(:email, 'Email Address')
+  = f.email_field(:email, required: true, 'data-msg-required': 'Please provide your email address')
+  p
+    | We'll send <strong>updates about your order</strong> to this email address.
+
+fieldset
+  = f.label(:phone_number, 'Phone Number')
+  = f.text_field(:phone_number)
+  p
+    | An <strong>optional</strong> phone number to contact you on, during business hours.

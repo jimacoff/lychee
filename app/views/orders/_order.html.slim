@@ -1,19 +1,84 @@
-table#bag(style='min-width: 50%')
-  tbody
-    - @order.commodity_line_items.each do |line_item|
-      - variant = line_item.variant
-      - product = variant.try(:product) || line_item.product
-      - metadata = line_item.metadata
-      tr
-        td= product.name
-        td
-          - metadata.each do |k, v|
-            div
-              strong=> k
-              = v
-          - if variant
-            - variant.variation_instances.each do |instance|
-              div
-                strong= instance.variation.trait.name
-                ' :
-                = instance.variation_value.name
+div#order-summary
+  div(role="button" data-toggle="collapse" data-target="#order-details")
+    div#order-summary-total
+      - if @order.total > 0
+        h3#order-summary-total-desc
+          | Total
+
+        div#order-summary-total-value
+          = @site.currency.symbol
+          = @order.total
+
+      - else
+        div#order-summary-total-desc
+          | Current Total
+          div#order-summary-expander
+            | Tap to show details
+
+        div#order-summary-total-value
+          = @site.currency.symbol
+          = @order.transient_total
+
+div#order-details
+  h2 Your Order
+  div#order-details-items.order-details-segment
+    h3 Items
+    - @order.commodity_line_items.each do |cli|
+      - product = cli.product ||= cli.variant.product
+      div.order-item
+        div.image
+          - if cli.variant && cli.variant.image_instance.present?
+            div.item-image.variant-image
+              =responsive_image(cli.variant.image_instance, '(min-width 40em) 50vw, 20vw')
+          - elsif cli.product && cli.product.image_instances.present?
+            div.item-image.product-image
+              =responsive_image(cli.product.image_instances.first, '(min-width 40em) 50vw, 20vw')
+          -else
+            div.no-item-image
+
+        div.details
+          div.name
+            = product.name
+
+          - if cli.variant
+            div.variation-choices
+              ol
+                - cli.variant.variation_instances.each do |instance|
+                  li => instance.variation_value.description
+
+          - if cli.quantity > 1
+            div.qty
+              span.qty-desc
+                | Quantity:
+              = cli.quantity
+
+        div.item-total
+            = @site.currency.symbol
+            = cli.price * cli.quantity
+
+  div#order-details-shipping.order-details-segment
+      h3 Shipping
+      - if @order.shipping_line_items.present?
+        - @order.shipping_line_items.each do |sli|
+          div.order-shipping-item
+      - elsif @order.transient_shipping_rate_estimate?
+        div.shipping-desc
+          | Shipping Estimate
+        div.shipping-value
+          = @site.currency.symbol
+          = @order.transient_shipping_rate_estimate.shipping_rate_regions.first.price
+      - else
+        div#order-details-shipping-not-selected
+          | Not yet selected
+
+  div#order-details-total.order-details-segment
+    hr
+    h3 Current Total
+    - if @order.total > 0
+      div#order-details-total-value
+        = @site.currency.symbol
+        = @order.total
+    - else
+      div#order-details-total-value
+        = @site.currency.symbol
+        = @order.transient_total

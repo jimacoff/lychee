@@ -5,9 +5,10 @@ FactoryGirl.define do
     association :customer, factory: [:person, :with_address]
     association :recipient, factory: [:person, :with_address]
 
-    trait :with_products do
+    trait :with_cli do
       after(:create) do |o|
-        o.line_items = create_list(:commodity_line_item, 5, order: o)
+        create_list(:commodity_line_item, 2, :with_product, order: o)
+        create_list(:commodity_line_item, 2, :with_variant, order: o)
       end
     end
   end

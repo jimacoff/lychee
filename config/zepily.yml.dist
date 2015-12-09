@@ -4,6 +4,7 @@ defaults: &defaults
       base: /tmp/sites
       templates:
         bag: build/_backend/templates/shop/bag.html
+        checkout: build/_backend/templates/shop/checkout.html
   publishing:
     paths:
       base: /tmp/sites
@@ -19,6 +20,7 @@ test:
       base: spec/dummy
       templates:
         bag: build/_backend/templates/shop/bag.html
+        checkout: build/_backend/templates/shop/checkout.html
   publishing:
     paths:
       # This will be created AND deleted by spec runner

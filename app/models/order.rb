@@ -7,6 +7,7 @@ class Order < ActiveRecord::Base
 
   include OrderWorkflow
   include OrderCalculation
+  include OrderTransientHelpers
 
   belongs_to :customer, class_name: 'Person'
   belongs_to :recipient, class_name: 'Person'

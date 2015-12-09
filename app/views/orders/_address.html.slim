@@ -1,0 +1,38 @@
+= f.fields_for(:address) do |a|
+  fieldset
+    = a.label(:country_id)
+    - if @countries.size == 1
+      = a.hidden_field(:country_id, value: @countries.first.id)
+      p.highlight
+       = "This store only operates within <strong>#{h @countries.first.name}</strong>.".html_safe
+    - else
+      = a.select(:country_id, options_from_collection_for_select(@countries, :id, :name), { include_blank: true }, { required: true })
+      p
+        | The destination country for this order.
+
+  fieldset
+    = a.label(:line1, 'Address line 1')
+    = a.text_field(:line1, required: true, 'data-msg-required': 'Please provide at least the first line of your postal address')
+
+  fieldset
+    = a.label(:line2, 'Address line 2')
+    = a.text_field(:line2)
+
+  fieldset
+    = a.label(:locality, 'Suburb')
+    = a.text_field(:locality, required: true, 'data-msg-required': 'Please provide your suburb')
+    p
+      | Suburb, Locality, City or Post Town.
+
+  fieldset
+    = a.label(:state, 'State')
+    = a.select(:state_id, options_from_collection_for_select(@states, :id, :name), { include_blank: true }, { required: true, 'data-msg-required': 'Please provide your state' })
+    p
+      | State, Province or Region.
+
+  fieldset
+    = a.label(:postcode, 'Postal code')
+    = a.text_field(:postcode, class: 'zip', required: true, 'data-msg-required': 'Please provide your postal code')
+    p
+      | Zip Code, Post Code, Postal Code or other routing details.
+

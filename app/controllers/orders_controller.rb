@@ -9,10 +9,13 @@ class OrdersController < ApplicationController
     return redirect_to(shopping_bag_path) unless id
 
     @order = Order.find(id)
-    @countries = Country.all
-    @states = State.all
+    @countries = @site.countries
+    @states = @countries.first.states
 
-    render("orders/states/#{@order.workflow_state}")
+    state_template = "orders/states/#{@order.workflow_state}"
+    render inline: template.gsub(/__yield_checkout__/,
+                                 render_to_string(layout: false,
+                                                  template: state_template))
   end
 
   def update
@@ -70,7 +73,7 @@ class OrdersController < ApplicationController
   end
 
   def person_params(sym)
-    order_params.require(sym).permit(:display_name)
+    order_params.require(sym).permit(:display_name, :email, :phone_number)
   end
 
   def address_params(sym)
@@ -85,7 +88,14 @@ class OrdersController < ApplicationController
   end
 
   def create_recipient
-    @order.create_recipient!(person_params(:recipient))
-    @order.recipient.create_address!(address_params(:recipient))
+    if order_params[:use_billing_details_for_shipping]
+      @order.create_recipient!(person_params(:recipient).merge(person_params(:customer)[:display_name]))
+    else
+      @order.recipient.create_address!(address_params(:recipient))
+    end
+  end
+
+  def controller_template
+    Rails.configuration.zepily.sites.themes.templates.checkout
   end
 end

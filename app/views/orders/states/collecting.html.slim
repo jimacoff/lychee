@@ -1,20 +1,59 @@
-h1 Absolutely ready-to-ship order page
+div#checkout
+  h2
+    | Complete Your Order
 
-= render(partial: @order)
+  div.row
+    div#progress.col-xs-12
+      div#stages
+        h3 Checkout Steps
+        div.row
+          div.stage.active
+            div.icon
+            h4 Step 1
+            | Order Details
+          div.stage
+            div.icon
+            h4 Step 2
+            | Shipping
+          div.stage
+            div.icon
+            h4 Step 3
+            | Confirmation and Payment
 
-= form_for(:order, html: { method: :patch } ) do |f|
-  h2 Billing Details
+  div.row
+    div#order
+      = render(partial: @order)
 
-  = f.fields_for(:customer) do |f|
-    = render(partial: 'person_details', locals: { f: f })
+    div#checkout-content
+      h3.stage
+        | Step 1 of 3
 
-  h2 Shipping Details
+      = form_for(:order, html: { method: :patch, class: 'checkout-flow-form' } ) do |f|
 
-  fieldset
-    = f.check_box(:use_billing_details_for_shipping)
-    = f.label(:use_billing_details_for_shipping, 'Same as billing details')
+        h3 Your Details
 
-  = f.fields_for(:recipient) do |f|
-    = render(partial: 'person_details', locals: { f: f })
+        = f.fields_for(:customer) do |f|
+          = render(partial: 'customer_details', locals: { f: f, help: { display_name: 'Your full name.' } })
+          = render(partial: 'address', locals: { f: f, address_required: true } )
 
-  button.btn(type='submit' name='transition' value='calculate') Proceed
+        hr
+
+        h3. Shipping Address
+        div#use_billing_for_shipping
+          = f.label(:use_billing_details_for_shipping)
+            = f.check_box(:use_billing_details_for_shipping, { checked: true } )
+            | I would like to ship my order to the address entered above
+
+        div.checkout-content-nonunique-billing.collapse
+          = f.fields_for(:recipient) do |f|
+            fieldset
+              = f.label(:display_name, 'Recipient Name')
+              = f.text_field(:display_name, required: true, 'data-msg-required': 'Please provide the recipients name')
+              p
+                | The full name of the recipient.
+
+            = render(partial: 'address', locals: { f: f, address_required: true })
+
+        div#checkout-buttons
+          button(type='submit' name='transition' value='calculate') Next step
+
