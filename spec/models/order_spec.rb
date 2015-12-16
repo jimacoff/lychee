@@ -48,7 +48,7 @@ RSpec.describe Order, type: :model, site_scoped: true do
       it { is_expected.not_to validate_presence_of :recipient }
     end
 
-    no_customer_info_states = %i(new collecting cancelled abandoned)
+    no_customer_info_states = %i(new details cancelled abandoned)
 
     no_customer_info_states.each do |state|
       context "when #{state}" do
@@ -333,44 +333,48 @@ RSpec.describe Order, type: :model, site_scoped: true do
 
     # From :new
     it_behaves_like 'workflow object', transitions: %i(submit),
-                                       state: :collecting
+                                       state: :details
 
-    # From :collecting
-    it_behaves_like 'workflow object', transitions: %i(submit calculate),
-                                       state: :pending
+    # From :details
+    it_behaves_like 'workflow object', transitions: %i(submit store_details),
+                                       state: :shipping
     it_behaves_like 'workflow object', transitions: %i(submit cancel),
                                        state: :cancelled
     it_behaves_like 'workflow object', transitions: %i(submit abandon),
                                        state: :abandoned
 
+    # From :shipping
+    it_behaves_like 'workflow object',
+                    transitions: %i(submit store_details store_shipping),
+                    state: :pending
+    it_behaves_like 'workflow object',
+                    transitions: %i(submit store_details cancel),
+                    state: :cancelled
+    it_behaves_like 'workflow object',
+                    transitions: %i(submit store_details abandon),
+                    state: :abandoned
+
     # From :pending
     it_behaves_like 'workflow object',
-                    transitions: %i(submit calculate confirm),
-                    state: :confirmed
+                    transitions:
+                      %i(submit store_details store_shipping confirm),
+                    state: :finalized
     it_behaves_like 'workflow object',
-                    transitions: %i(submit calculate cancel),
+                    transitions: %i(submit store_details store_shipping cancel),
                     state: :cancelled
     it_behaves_like 'workflow object',
-                    transitions: %i(submit calculate abandon),
+                    transitions:
+                      %i(submit store_details store_shipping abandon),
                     state: :abandoned
 
-    # From :confirmed
-    it_behaves_like 'workflow object',
-                    transitions: %i(submit calculate confirm pay),
-                    state: :paid
-    it_behaves_like 'workflow object',
-                    transitions: %i(submit calculate confirm cancel),
-                    state: :cancelled
-    it_behaves_like 'workflow object',
-                    transitions: %i(submit calculate confirm abandon),
-                    state: :abandoned
-
-    context 'when paid' do
+    context 'when finalized' do
       before do
-        %i(submit calculate confirm pay).each { |s| subject.send(:"#{s}!") }
+        %i(submit store_details store_shipping confirm).each do |s|
+          subject.send(:"#{s}!")
+        end
       end
 
-      # From :paid
+      # From :finalized
       it_behaves_like 'workflow object', transitions: %i(accept),
                                          state: :accepted
       it_behaves_like 'workflow object', transitions: %i(hold),
@@ -430,8 +434,8 @@ RSpec.describe Order, type: :model, site_scoped: true do
       expect(run).to have_attributes(attrs)
     end
 
-    it 'has the order in `collecting` state' do
-      expect(run).to be_collecting
+    it 'has the order in `details` state' do
+      expect(run).to be_details
     end
 
     shared_examples 'ordering a line item' do

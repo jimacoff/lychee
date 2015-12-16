@@ -11,6 +11,7 @@ class OrdersController < ApplicationController
     @order = Order.find(id)
     @countries = @site.countries
     @states = @countries.first.states
+    @shipping_rates = shipping_rates
 
     state_template = "orders/states/#{@order.workflow_state}"
     render inline: template.gsub(/__yield_checkout__/,
@@ -20,16 +21,18 @@ class OrdersController < ApplicationController
 
   def update
     @order = Order.find(id)
-    update_order_people if order_params
+    update_order_people if @order.current_state == :details
+    update_order_shipping if @order.current_state == :shipping
     apply_transition if params[:transition]
     @order.save!
 
+    @order.calculate_total if @order.current_state == :pending
     redirect_to order_path
   end
 
   private
 
-  CUSTOMER_TRANSITIONS = %w(calculate confirm pay)
+  CUSTOMER_TRANSITIONS = %w(store_details store_shipping confirm cancel)
 
   def id
     @id ||= session[:order_id]
@@ -57,6 +60,16 @@ class OrdersController < ApplicationController
     @order.save!
 
     destroy.each(&:destroy!)
+  end
+
+  def update_order_shipping
+    @order.shipping_line_items.each(&:destroy!)
+    shipping_rate = ShippingRate.find(params[:shipping_rate])
+    location = @order.recipient.address.to_geographic_hierarchy
+    sr_region =
+      shipping_rate.shipping_rate_regions.supports_location(location).first
+
+    @order.shipping_line_items.create(shipping_rate_region: sr_region)
   end
 
   def order_metadata
@@ -90,6 +103,17 @@ class OrdersController < ApplicationController
   def create_recipient
     @order.create_recipient!(person_params(:recipient))
     @order.recipient.create_address!(address_params(:recipient))
+  end
+
+  def shipping_rates
+    return unless @order.recipient.present?
+
+    location = @order.recipient.address.to_geographic_hierarchy
+    subtotal = @order.transient_subtotal_cents
+    weight = @order.transient_weight
+
+    ShippingRate.supports_location(location)
+      .satisfies_price(subtotal).satisfies_weight(weight)
   end
 
   def controller_template

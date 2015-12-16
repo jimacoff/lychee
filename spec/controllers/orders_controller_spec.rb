@@ -78,7 +78,7 @@ RSpec.describe OrdersController, type: :controller, site_scoped: true do
 
       it 'submits the order' do
         run
-        expect(Order.last.workflow_state).to eq('collecting')
+        expect(Order.last.workflow_state).to eq('details')
       end
     end
 
@@ -106,15 +106,15 @@ RSpec.describe OrdersController, type: :controller, site_scoped: true do
         expect(assigns[:states]).to contain_exactly(state)
       end
 
-      it 'renders the template for a collecting order' do
-        expect(response).to render_template('orders/states/collecting')
+      it 'renders the template for gathering purchaser details' do
+        expect(response).to render_template('orders/states/details')
       end
 
       context 'when the order is pending' do
-        let(:order) { create(:order).tap { |o| o.submit! && o.calculate! } }
+        let(:order) { create(:order).tap { |o| o.submit! && o.store_details! } }
 
         it 'renders the template for a pending order' do
-          expect(response).to render_template('orders/states/pending')
+          expect(response).to render_template('orders/states/shipping')
         end
       end
 
@@ -136,7 +136,7 @@ RSpec.describe OrdersController, type: :controller, site_scoped: true do
 
       context 'supplying customer details' do
         let(:customer_attrs) { attributes_for(:person) }
-        let(:transition_params) { { transition: 'calculate' } }
+        let(:transition_params) { { transition: 'store_details' } }
 
         let(:customer_address_attrs) do
           attributes_for(:address, country_id: country.id, state_id: state.id)
@@ -168,10 +168,10 @@ RSpec.describe OrdersController, type: :controller, site_scoped: true do
           end
         end
 
-        shared_examples 'a transition to :pending' do
+        shared_examples 'a transition to :shipping' do
           it 'updates the workflow_state' do
             expect { run }
-              .to change { order.reload.workflow_state }.to('pending')
+              .to change { order.reload.workflow_state }.to('shipping')
           end
 
           it 'redirects to the order' do
@@ -209,13 +209,11 @@ RSpec.describe OrdersController, type: :controller, site_scoped: true do
             expect(order.customer).to eq(order.recipient)
           end
 
-          it_behaves_like 'a transition to :pending'
+          it_behaves_like 'a transition to :shipping'
 
           context 'when the order already has people' do
             let(:order) { create(:order) }
             let(:transition_params) { {} }
-
-            before { order.calculate! }
 
             it 'removes the additional person' do
               expect { run }.to change(Person, :count).by(-1)
@@ -240,13 +238,11 @@ RSpec.describe OrdersController, type: :controller, site_scoped: true do
 
           include_examples 'updates person details in order'
 
-          it_behaves_like 'a transition to :pending'
+          it_behaves_like 'a transition to :shipping'
 
           context 'when the order already has people' do
             let(:order) { create(:order) }
             let(:transition_params) { {} }
-
-            before { order.calculate! }
 
             it 'does not change the total number of people' do
               expect { run }.not_to change(Person, :count)

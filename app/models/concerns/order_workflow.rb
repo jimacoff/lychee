@@ -2,7 +2,7 @@ module OrderWorkflow
   extend ActiveSupport::Concern
 
   def can_omit_customer_details?
-    new? || collecting? || cancelled? || abandoned?
+    new? || details? || cancelled? || abandoned?
   end
 
   included do
@@ -11,13 +11,17 @@ module OrderWorkflow
     workflow do
       # New order has been built, and is being saved.
       state :new do
-        event :submit, transitions_to: :collecting
+        event :submit, transitions_to: :details
       end
 
-      # Order has been saved and inventory reserved. Now progressing through UI
-      # to collect customer details and address, and select a shipping option.
-      state :collecting do
-        event :calculate, transitions_to: :pending
+      state :details do
+        event :store_details, transitions_to: :shipping
+        event :cancel, transitions_to: :cancelled
+        event :abandon, transitions_to: :abandoned
+      end
+
+      state :shipping do
+        event :store_shipping, transitions_to: :pending
         event :cancel, transitions_to: :cancelled
         event :abandon, transitions_to: :abandoned
       end
@@ -25,14 +29,15 @@ module OrderWorkflow
       # Order total has been calculated. Now showing details and total price to
       # customer for confirmation.
       state :pending do
-        event :confirm, transitions_to: :confirmed
+        event :confirm, transitions_to: :finalized
         event :cancel, transitions_to: :cancelled
         event :abandon, transitions_to: :abandoned
       end
 
       # Confirmed by customer, order finalised and ready for payment.
-      state :confirmed do
-        event :pay, transitions_to: :paid
+      state :finalized do
+        event :accept, transitions_to: :accepted
+        event :hold, transitions_to: :on_hold
         event :cancel, transitions_to: :cancelled
         event :abandon, transitions_to: :abandoned
       end
@@ -42,13 +47,6 @@ module OrderWorkflow
 
       # Order timed out and was automatically cancelled.
       state :abandoned
-
-      # Customer has completed payment. Order is submitted to the store and
-      # awaiting processing.
-      state :paid do
-        event :accept, transitions_to: :accepted
-        event :hold, transitions_to: :on_hold
-      end
 
       # Order was accepted by the store and is being processed internally.
       state :accepted do
