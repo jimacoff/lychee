@@ -34,9 +34,6 @@ class Order < ActiveRecord::Base
             presence: { unless: :can_omit_customer_details? }
   validate :people_must_have_addresses
 
-  # TODO: Store environment details about order, country, IP, browser etc
-  # as many details as possible for use with risk APIs
-
   def self.create_from_bag(bag, attrs)
     create!(attrs).tap do |o|
       o.create_line_items_from_bag(bag)
