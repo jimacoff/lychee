@@ -3,11 +3,15 @@ module OrderCalculation
 
   def calculate_weight
     change_weight(0) && return unless commodity_line_items.present?
+
+    commodity_line_items.each(&:calculate_total_weight!)
     change_weight(commodity_line_items.map(&:total_weight).sum)
   end
 
   def calculate_subtotal
     change_subtotal(0) && return unless commodity_line_items.present?
+
+    commodity_line_items.each(&:calculate_total!)
 
     if site.preferences.order_subtotal_include_tax
       calculate_subtotal_tax_inclusive

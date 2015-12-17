@@ -33,6 +33,11 @@ class LineItem < ActiveRecord::Base
     finalise_total
   end
 
+  def calculate_total!
+    calculate_total
+    save!
+  end
+
   private
 
   def calculate_subtotal

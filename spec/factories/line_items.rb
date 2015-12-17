@@ -11,6 +11,10 @@ FactoryGirl.define do
       association :product, factory: :standalone_product
     end
 
+    trait :with_weighted_product do
+      association :product, factory: [:standalone_product, :with_weight]
+    end
+
     trait :with_variant do
       variant
     end

@@ -24,6 +24,11 @@ class CommodityLineItem < LineItem
     self.total_weight = weight * quantity
   end
 
+  def calculate_total_weight!
+    calculate_total_weight
+    save!
+  end
+
   private
 
   def overloaded_tax_rates

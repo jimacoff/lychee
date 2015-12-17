@@ -374,17 +374,32 @@ RSpec.shared_examples 'line item' do
         let(:expected_total) do
           subject.subtotal + subject.subtotal * subject.total_tax_rate
         end
-        before { subject.calculate_total }
 
-        it 'stores the expected value' do
-          expect(subject.total).to eq(expected_total)
+        describe '#calculate_total' do
+          before { subject.calculate_total }
+
+          it 'stores the expected value' do
+            expect(subject.total).to eq(expected_total)
+          end
+
+          it { is_expected.to be_changed }
+        end
+
+        describe '#calculate_total!' do
+          before { subject.calculate_total! }
+
+          it 'stores the expected value' do
+            expect(subject.total).to eq(expected_total)
+          end
+
+          it { is_expected.not_to be_changed }
         end
       end
+
       context 'prices inclusive of tax' do
         before do
           Site.current.preferences.prices_include_tax = true
           Site.current.preferences.save
-          subject.calculate_total
         end
 
         after do
@@ -392,8 +407,22 @@ RSpec.shared_examples 'line item' do
           Site.current.preferences.save
         end
 
-        it 'stores the expected value' do
-          expect(subject.total).to eq(subject.subtotal)
+        describe '#calculate_total' do
+          before { subject.calculate_total }
+          it 'stores the expected value' do
+            expect(subject.total).to eq(subject.subtotal)
+          end
+
+          it { is_expected.to be_changed }
+        end
+
+        describe '#calculate_total!' do
+          before { subject.calculate_total! }
+          it 'stores the expected value' do
+            expect(subject.total).to eq(subject.subtotal)
+          end
+
+          it { is_expected.not_to be_changed }
         end
       end
     end

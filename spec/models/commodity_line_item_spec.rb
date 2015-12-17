@@ -83,28 +83,46 @@ RSpec.describe CommodityLineItem, type: :model, site_scoped: true do
 
   describe '#calculate_total_weight' do
     context 'product referencing line item' do
-      subject { create :commodity_line_item, :with_product }
       before { subject.calculate_total_weight }
 
       context 'product has weight' do
         let(:expected_weight) { subject.weight * subject.quantity }
-        let(:product) do
-          create :standalone_product, weight: Faker::Number.number(5)
-        end
+        subject { create :commodity_line_item, :with_weighted_product }
+
         it 'sets expected total_weight' do
           expect(subject.total_weight).to eq(expected_weight)
+        end
+
+        it do
+          expect(subject).to be_changed
         end
       end
 
       context 'product has zero weight' do
         let(:expected_weight) { 0 }
-        let(:product) do
-          create :standalone_product, weight: nil
-        end
+        subject { create :commodity_line_item, :with_product }
+
         it 'sets expected total_weight' do
           expect(subject.total_weight).to eq(expected_weight)
         end
+
+        it { is_expected.not_to be_changed }
       end
     end
+  end
+
+  describe '#calculate_total_weight!' do
+    let(:expected_weight) { subject.weight * subject.quantity }
+    let(:product) do
+      create :standalone_product, weight: Faker::Number.number(5)
+    end
+    subject { create :commodity_line_item, :with_product }
+    before { subject.calculate_total_weight! }
+
+    it 'sets expected total_weight' do
+      expect(subject.total_weight).to eq(expected_weight)
+    end
+
+    it { is_expected.not_to be_changed }
   end
 end
