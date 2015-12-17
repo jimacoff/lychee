@@ -122,7 +122,7 @@ class LineItem < ActiveRecord::Base
   end
 
   def tax_prices_inclusive(amount, rate)
-    (amount / (1 + rate)).cents
+    (amount - (amount / (1 + rate))).cents
   end
 
   def tax_prices_exclusive(amount, rate)

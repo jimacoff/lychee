@@ -346,7 +346,10 @@ RSpec.shared_examples 'line item' do
         end
       end
       context 'prices inclusive of tax' do
-        let(:expected_tax) { subject.subtotal / (1 + subject.total_tax_rate) }
+        let(:expected_tax) do
+         subject.subtotal - (subject.subtotal / (1 + subject.total_tax_rate))
+        end
+
         before do
           Site.current.preferences.prices_include_tax = true
           Site.current.preferences.save
