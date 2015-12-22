@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20151222000743) do
+ActiveRecord::Schema.define(version: 20151222040007) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -244,6 +244,7 @@ ActiveRecord::Schema.define(version: 20151222000743) do
     t.integer  "recipient_id",            limit: 8
     t.json     "metadata_fields"
     t.integer  "shopping_bag_id",                                   null: false
+    t.text     "transaction_history",               default: [],                 array: true
   end
 
   add_index "orders", ["site_id"], name: "index_orders_on_site_id", using: :btree

@@ -16,6 +16,12 @@ RSpec.describe Order, type: :model, site_scoped: true do
 
   context 'table structure' do
     it { is_expected.to have_db_column(:weight).of_type(:integer) }
+    it do
+      is_expected
+        .to have_db_column(:transaction_history)
+        .of_type(:text)
+        .with_options(array: false, default: [])
+    end
   end
 
   context 'relationships' do
@@ -324,7 +330,7 @@ RSpec.describe Order, type: :model, site_scoped: true do
     # From :pending
     it_behaves_like 'workflow object',
                     transitions:
-                      %i(submit store_details store_shipping confirm),
+                      %i(submit store_details store_shipping finalize),
                     state: :finalized
     it_behaves_like 'workflow object',
                     transitions: %i(submit store_details store_shipping cancel),
@@ -336,7 +342,7 @@ RSpec.describe Order, type: :model, site_scoped: true do
 
     context 'when finalized' do
       before do
-        %i(submit store_details store_shipping confirm).each do |s|
+        %i(submit store_details store_shipping finalize).each do |s|
           subject.send(:"#{s}!")
         end
       end

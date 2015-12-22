@@ -29,7 +29,7 @@ module OrderWorkflow
       # Order total has been calculated. Now showing details and total price to
       # customer for confirmation.
       state :pending do
-        event :confirm, transitions_to: :finalized
+        event :finalize, transitions_to: :finalized
         event :cancel, transitions_to: :cancelled
         event :abandon, transitions_to: :abandoned
       end
