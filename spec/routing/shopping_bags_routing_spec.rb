@@ -15,9 +15,4 @@ RSpec.describe ShoppingBagsController, type: :routing do
     subject { { patch: '/shop/bag' } }
     it { is_expected.to route_to('shopping_bags#update') }
   end
-
-  context 'delete /shop/bag' do
-    subject { { delete: '/shop/bag' } }
-    it { is_expected.to route_to('shopping_bags#destroy') }
-  end
 end

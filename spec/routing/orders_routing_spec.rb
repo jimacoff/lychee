@@ -15,9 +15,4 @@ RSpec.describe OrdersController, type: :routing do
     subject { { patch: '/shop/checkout' } }
     it { is_expected.to route_to('orders#update') }
   end
-
-  context 'delete /shop/checkout' do
-    subject { { delete: '/shop/checkout' } }
-    it { is_expected.to route_to('orders#destroy') }
-  end
 end
