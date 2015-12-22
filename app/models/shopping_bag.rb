@@ -4,21 +4,18 @@ class ShoppingBag < ActiveRecord::Base
 
   workflow do
     state :active do
-      event :checkout, transitions_to: :checked_out
+      event :finalize, transitions_to: :finalized
       event :abandon, transitions_to: :abandoned
       event :cancel, transitions_to: :cancelled
     end
 
-    state :checked_out do
-      event :abandon, transitions_to: :abandoned
-      event :cancel, transitions_to: :cancelled
-    end
-
+    state :finalized
     state :cancelled
     state :abandoned
   end
 
   has_many :shopping_bag_operations
+  has_many :orders
 
   valhammer
 

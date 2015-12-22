@@ -20,13 +20,11 @@ RSpec.describe ShoppingBag, type: :model, site_scoped: true do
   context 'relationships' do
     it { is_expected.to belong_to(:site) }
     it { is_expected.to have_many(:shopping_bag_operations) }
+    it { is_expected.to have_many(:orders) }
   end
 
   context 'validations' do
     it { is_expected.to validate_presence_of :site }
-
-    # Error condition can't be triggered, but the validation is there:
-    # it { is_expected.to validate_presence_of :workflow_state }
   end
 
   context 'workflow' do
@@ -35,12 +33,8 @@ RSpec.describe ShoppingBag, type: :model, site_scoped: true do
                                        state: :abandoned
     it_behaves_like 'workflow object', transitions: [:cancel],
                                        state: :cancelled
-    it_behaves_like 'workflow object', transitions: [:checkout],
-                                       state: :checked_out
-    it_behaves_like 'workflow object', transitions: [:checkout, :abandon],
-                                       state: :abandoned
-    it_behaves_like 'workflow object', transitions: [:checkout, :cancel],
-                                       state: :cancelled
+    it_behaves_like 'workflow object', transitions: [:finalize],
+                                       state: :finalized
   end
 
   context '#apply' do
