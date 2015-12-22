@@ -9,6 +9,7 @@ gem 'postgres_ext', '~> 2.3'
 
 gem 'money-rails', '~> 1.4'
 gem 'stringex', '~> 2.5'
+gem 'braintree', '2.56'
 
 gem 'paper_trail', '~> 4.0'
 gem 'workflow'
