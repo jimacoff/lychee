@@ -347,7 +347,7 @@ RSpec.shared_examples 'line item' do
       end
       context 'prices inclusive of tax' do
         let(:expected_tax) do
-         subject.subtotal - (subject.subtotal / (1 + subject.total_tax_rate))
+          subject.subtotal - (subject.subtotal / (1 + subject.total_tax_rate))
         end
 
         before do

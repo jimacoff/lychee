@@ -87,7 +87,7 @@ RSpec.describe CommodityLineItem, type: :model, site_scoped: true do
 
       context 'product has weight' do
         let(:expected_weight) { subject.weight * subject.quantity }
-        subject { create :commodity_line_item, :with_weighted_product }
+        subject { create :commodity_line_item, :with_product }
 
         it 'sets expected total_weight' do
           expect(subject.total_weight).to eq(expected_weight)
@@ -96,17 +96,6 @@ RSpec.describe CommodityLineItem, type: :model, site_scoped: true do
         it do
           expect(subject).to be_changed
         end
-      end
-
-      context 'product has zero weight' do
-        let(:expected_weight) { 0 }
-        subject { create :commodity_line_item, :with_product }
-
-        it 'sets expected total_weight' do
-          expect(subject.total_weight).to eq(expected_weight)
-        end
-
-        it { is_expected.not_to be_changed }
       end
     end
   end

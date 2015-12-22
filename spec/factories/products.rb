@@ -7,6 +7,7 @@ FactoryGirl.define do
     description { Faker::Lorem.sentence }
     active true
     markup { "<p>#{Faker::Lorem.paragraph}</p>" }
+    weight { rand(10..1000) }
 
     after(:build) do |p|
       p.price = Faker::Number.number(4).to_i
@@ -27,10 +28,6 @@ FactoryGirl.define do
 
     trait :routable do
       after(:create, &:create_default_path)
-    end
-
-    trait :with_weight do
-      weight { rand(10..1000) }
     end
 
     trait :with_message_metadata do

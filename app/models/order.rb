@@ -9,6 +9,8 @@ class Order < ActiveRecord::Base
   include OrderCalculation
   include OrderTransientHelpers
 
+  belongs_to :shopping_bag
+
   belongs_to :customer, class_name: 'Person'
   belongs_to :recipient, class_name: 'Person'
 
@@ -35,7 +37,7 @@ class Order < ActiveRecord::Base
   validate :people_must_have_addresses
 
   def self.create_from_bag(bag, attrs)
-    create!(attrs).tap do |o|
+    create!(attrs.merge(shopping_bag: bag)).tap do |o|
       o.create_line_items_from_bag(bag)
       o.submit!
     end

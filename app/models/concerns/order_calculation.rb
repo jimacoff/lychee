@@ -1,41 +1,48 @@
 module OrderCalculation
   extend ActiveSupport::Concern
 
-  def calculate_weight
-    change_weight(0) && return unless commodity_line_items.present?
-
-    commodity_line_items.each(&:calculate_total_weight!)
-    change_weight(commodity_line_items.map(&:total_weight).sum)
-  end
-
-  def calculate_subtotal
-    change_subtotal(0) && return unless commodity_line_items.present?
-
-    commodity_line_items.each(&:calculate_total!)
-
-    if site.preferences.order_subtotal_include_tax
-      calculate_subtotal_tax_inclusive
-    else
-      calculate_subtotal_tax_exclusive
-    end
-  end
-
-  def calculate_total
+  def perform_calculations
     unless commodity_line_items.present? && shipping_line_items.present?
       fail 'attempt to calculate total with invalid state'
     end
 
     calculate_total_commodities
     calculate_total_shipping
-    calculate_total_tax
-    finalise_total
+    calculate_total_weight
+    calculate_subtotal
     calculate_tax_rates
+    calculate_total_tax
+
+    calculate_final_total
   end
 
   private
 
   def change_weight(weight)
     self[:weight] = weight
+  end
+
+  def calculate_total_commodities
+    commodity_line_items.each(&:calculate_total)
+    change_total_commodities(commodity_line_items.map(&:total).sum.cents)
+  end
+
+  def calculate_total_shipping
+    shipping_line_items.each(&:calculate_total)
+    change_total_shipping(shipping_line_items.map(&:total).sum.cents)
+  end
+
+  def calculate_total_weight
+    commodity_line_items.each(&:calculate_total_weight)
+    change_weight(commodity_line_items.map(&:total_weight).sum)
+  end
+
+  def calculate_subtotal
+    if site.preferences.order_subtotal_include_tax
+      calculate_subtotal_tax_inclusive
+    else
+      calculate_subtotal_tax_exclusive
+    end
   end
 
   def calculate_subtotal_tax_inclusive
@@ -46,13 +53,6 @@ module OrderCalculation
     change_subtotal(commodity_line_items.map(&:subtotal).sum.cents)
   end
 
-  def calculate_total_commodities
-    change_total_commodities(commodity_line_items.map(&:total).sum.cents)
-  end
-
-  def calculate_total_shipping
-    change_total_shipping(shipping_line_items.map(&:total).sum.cents)
-  end
 
   def calculate_total_tax
     change_total_tax(shipping_line_items.map(&:tax).sum.cents +
@@ -90,7 +90,7 @@ module OrderCalculation
     shipping_line_items.flat_map(&:line_item_taxes)
   end
 
-  def finalise_total
+  def calculate_final_total
     change_total(total_commodities.cents + total_shipping.cents)
   end
 end

@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20151122005925) do
+ActiveRecord::Schema.define(version: 20151222000743) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -243,6 +243,7 @@ ActiveRecord::Schema.define(version: 20151122005925) do
     t.integer  "customer_id",             limit: 8
     t.integer  "recipient_id",            limit: 8
     t.json     "metadata_fields"
+    t.integer  "shopping_bag_id",                                   null: false
   end
 
   add_index "orders", ["site_id"], name: "index_orders_on_site_id", using: :btree
@@ -629,6 +630,7 @@ ActiveRecord::Schema.define(version: 20151122005925) do
   add_foreign_key "order_taxes", "tax_rates", on_delete: :restrict
   add_foreign_key "orders", "people", column: "customer_id", on_delete: :restrict
   add_foreign_key "orders", "people", column: "recipient_id", on_delete: :restrict
+  add_foreign_key "orders", "shopping_bags", on_delete: :restrict
   add_foreign_key "orders", "sites", on_delete: :cascade
   add_foreign_key "path_hierarchies", "paths", column: "ancestor_id", on_delete: :restrict
   add_foreign_key "path_hierarchies", "paths", column: "descendant_id", on_delete: :restrict
