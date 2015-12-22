@@ -668,4 +668,27 @@ RSpec.describe Order, type: :model, site_scoped: true do
       end
     end
   end
+
+  describe '#last_payment_transaction' do
+    subject { create :order }
+
+    it 'returns nil with no transactions' do
+      expect(subject.last_payment_transaction).to eq(nil)
+    end
+
+    context 'with transactions' do
+      let(:transaction_1) { { status: 'test', key: 'value' } }
+      let(:transaction_2) { { status: 'test2', key: 'value2' } }
+
+      before do
+        subject.transaction_history << transaction_1.to_json
+        subject.transaction_history << transaction_2.to_json
+        subject.save!
+      end
+
+      it 'returns the last transaction, symbolized' do
+        expect(subject.last_payment_transaction).to eq(transaction_2)
+      end
+    end
+  end
 end

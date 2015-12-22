@@ -53,7 +53,6 @@ module OrderCalculation
     change_subtotal(commodity_line_items.map(&:subtotal).sum.cents)
   end
 
-
   def calculate_total_tax
     change_total_tax(shipping_line_items.map(&:tax).sum.cents +
                      commodity_line_items.map(&:tax).sum.cents)

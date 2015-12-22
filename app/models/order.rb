@@ -62,6 +62,11 @@ class Order < ActiveRecord::Base
   alias_method :use_billing_details_for_shipping?,
                :use_billing_details_for_shipping
 
+  def last_payment_transaction
+    return unless transaction_history.present?
+    JSON.parse(transaction_history.last).symbolize_keys
+  end
+
   private
 
   def person_must_have_address(sym, person)
