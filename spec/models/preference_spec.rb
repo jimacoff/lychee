@@ -32,6 +32,22 @@ RSpec.describe Preference, type: :model, site_scoped: true do
         .to have_db_column(:bag_empty_start_shopping).of_type(:string)
     end
 
+    it do
+      is_expected.to have_db_column(:braintree_configured).of_type(:boolean)
+    end
+    it do
+      is_expected.to have_db_column(:braintree_environment).of_type(:integer)
+    end
+    it do
+      is_expected.to have_db_column(:braintree_merchant_id).of_type(:string)
+    end
+    it do
+      is_expected.to have_db_column(:braintree_public_key).of_type(:string)
+    end
+    it do
+      is_expected.to have_db_column(:braintree_private_key).of_type(:string)
+    end
+
     it 'should have non nullable column site_id of type bigint' do
       expect(subject).to have_db_column(:site_id)
         .of_type(:integer)
@@ -46,6 +62,7 @@ RSpec.describe Preference, type: :model, site_scoped: true do
 
   context 'validations' do
     it { is_expected.to validate_presence_of :tax_basis }
+    it { is_expected.to validate_presence_of :braintree_environment }
 
     it { is_expected.to validate_presence_of :bag_title }
     it { is_expected.to validate_presence_of :bag_flash }
@@ -54,6 +71,11 @@ RSpec.describe Preference, type: :model, site_scoped: true do
     it { is_expected.to validate_presence_of :bag_action_checkout }
     it { is_expected.to validate_presence_of :bag_empty_notice }
     it { is_expected.to validate_presence_of :bag_empty_start_shopping }
+
+    it 'stores an enum for taxation calculations basis' do
+      expect(subject).to define_enum_for(:braintree_environment)
+        .with([:sandbox, :production])
+    end
 
     it 'stores an enum for taxation calculations basis' do
       expect(subject).to define_enum_for(:tax_basis)

@@ -10,6 +10,7 @@ class Preference < ActiveRecord::Base
                                'checkout' => '/shop/checkout' }
 
   enum tax_basis: { delivery: 0, customer: 1, subscriber: 2 }
+  enum braintree_environment: { sandbox: 0, production: 1 }
 
   # TODO: prices_include_tax likey means order_subtotal_include_tax should
   # also be false, i.e. American orders - when create pref screen.
