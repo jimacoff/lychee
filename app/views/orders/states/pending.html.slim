@@ -1,4 +1,238 @@
-h1 The best order confirmation page ever written
+div#checkout
+  h2
+    | Secure Checkout
 
-= form_for(:order, html: { method: :patch } ) do |f|
-  button.btn(type='submit' name='transition' value='confirm') Looks good, confirm that
+  div.row
+    div#progress.col-xs-12
+      div#stages
+        h3 Checkout Steps
+        div.row
+          div.stage.complete
+            div.icon
+            h4 Step 1
+            | Your Details
+          div.stage.complete
+            div.icon
+            h4 Step 2
+            | Shipping
+          div.stage.active
+            div.icon
+            h4 Step 3
+            | Confirmation and Payment
+
+    div#checkout-summary-order
+      h3.stage
+        | Step 3 of 3
+
+      h4 Order Details
+
+      div#billing
+        div.address
+          h5 This order will be billed to
+          = render(partial: 'person', locals: { person: @order.customer } )
+
+        div.address
+          h5 This order will be shipped to
+          = render(partial: 'person', locals: { person: @order.recipient } )
+
+      div#items
+        h5 Items in your order
+
+        - @order.commodity_line_items.each do |cli|
+          - product = cli.product ||= cli.variant.product
+          div.order-item
+            div.image
+              - if cli.variant && cli.variant.image_instance.present?
+                div.item-image.variant-image
+                  =responsive_image(cli.variant.image_instance, '(min-width 40em) 50vw, 20vw')
+              - elsif cli.product && cli.product.image_instances.present?
+                div.item-image.product-image
+                  =responsive_image(cli.product.image_instances.first, '(min-width 40em) 50vw, 20vw')
+              -else
+                div.no-item-image
+
+            div.details
+              div.name
+                = product.name
+
+              - if cli.variant
+                div.variation-choices
+                  ol
+                    - cli.variant.variation_instances.each do |instance|
+                      li => instance.variation_value.description
+
+              - if product.metadata_fields.present?
+                div.metadata
+                  - product.metadata_fields.each do |k, v|
+                    - if v['submissible'] && cli.metadata[k].present?
+                      div.metadata-name => v['labels']['name']['en']
+                      = cli.metadata[k]
+
+              - if cli.quantity > 1
+                div.qty
+                  span.qty-desc
+                    | Quantity:
+                  = cli.quantity
+
+            div.item-total
+                = @site.currency.symbol
+                = cli.price * cli.quantity
+
+      div#summary
+        h5 Summary
+
+        div.order-summary-item
+          div.order-summary-heading
+            | Total Items
+          div#order-summary-item-count.order-summary-information
+            = @order.commodity_line_items.map(&:quantity).sum
+
+        div.order-summary-item
+          div.order-summary-heading
+            | Subtotal
+          div.order-summary-information
+              = @site.currency.symbol
+              = @order.subtotal
+
+        div.order-summary-item
+          div.order-summary-heading
+            | Shipping
+          div.order-summary-information
+            = @site.currency.symbol
+            = @order.total_shipping
+
+        - if @order.order_taxes.present?
+          div.order-summary-item
+            div.order-summary-heading
+              - if @site.preferences.prices_include_tax
+                | Included Taxes
+              - else
+                | Taxes
+            div.order-summary-information
+              ul
+                - @order.order_taxes.each do |order_tax|
+                  li
+                    span.tax-name
+                      = order_tax.tax_rate.name
+                    | &nbsp;
+                    = @site.currency.symbol
+                    = order_tax.tax_amount
+
+        div#total.order-summary-item
+          div.order-summary-heading
+            | Total
+          div.order-summary-information
+              = @site.currency.symbol
+              = @order.total
+              | &nbsp;
+              = @site.currency.iso_code
+
+  div.row
+    div#checkout-order-payment
+
+      h4 Payment Method
+      = form_for(:order, url: payment_order_path, html: {method: :post, id: 'hosted-form'} ) do |f|
+        div#payment-methods
+          div#paypal.payment-method
+            h5 1. Using Paypal
+            p Click the Paypal button below to enter your Paypal details.
+            div#paypal-container
+
+          div#credit-card.payment-method
+            h5 2. Using a Credit Card
+            a(href="https://www.braintreegateway.com/merchants/#{@braintree[:merchant_id]}/verified" target="_blank")
+              img(src="https://s3.amazonaws.com/braintree-badges/braintree-badge-dark.png" width="164px" height ="44px" border="0")
+            p Enter your credit card details below.
+            div.row
+              div.form-group.col-xs-12
+                label(for="card-number")
+                  | Card Number
+
+                div#card-number.input
+
+            div.row
+              div.form-group.col-xs-6.col-md-4
+                label(for="card-exp")
+                 | Card Expiry
+                div#card-exp.input(placeholder="MM/YY")
+
+              div.form-group.col-xs-6.col-md-4
+                label#card-cvv-label(for="card-cvv")
+                  | CVV
+                div#card-cvv.input
+
+        div.row
+          div#checkout-buttons
+            p#valid-payment-method-required.collapse.alert.alert-danger
+              strong Your payment details are required. &nbsp;
+              | Please login to Paypal or enter valid credit card information.
+
+            hr.visible-xs
+
+            button(type='submit' id='submit-payment-request') Complete Order
+
+= javascript_include_tag "https://js.braintreegateway.com/v2/braintree.js"
+javascript:
+  braintree.setup("#{@braintree[:client_token]}", "custom", {
+    id: "hosted-form",
+    paypal: {
+      container: "paypal-container",
+      singleUse: true,
+      amount: '#{@order.total}',
+      currency: '#{@site.currency.iso_code}',
+      enableShippingAddress: false,
+      shippingAddressOverride: {
+        recipientName: '#{@order.recipient.display_name}',
+        streetAddress: '#{@order.recipient.address.line1}',
+        extendedAddress: '#{@order.recipient.address.line2}',
+        locality: '#{@order.recipient.address.locality}',
+        countryCodeAlpha2: '#{@order.recipient.address.country.iso_alpha2}',
+        postalCode: '#{@order.recipient.address.postcode}',
+        region: '#{@order.recipient.address.state.postal_format}',
+        editable: false
+      }
+    },
+    onError: function (error) {
+      $('#valid-payment-method-required').removeClass('collapse');
+    },
+    onReady: function() {
+      $('#submit-payment-request').prop('disabled', false).show();
+    },
+    hostedFields: {
+      number: {
+        selector: "#card-number"
+      },
+      cvv: {
+        selector: "#card-cvv"
+      },
+      expirationDate: {
+        selector: "#card-exp",
+        placeholder: "MM/YY"
+      },
+      styles: {
+        "input": {
+          "font-size": "1.0em",
+        },
+        ":focus": {
+          "color": "#333333"
+        },
+        ".valid": {
+          "color": "#a9c379"
+        },
+        ".invalid": {
+          "color": "#db6161"
+        }
+      },
+      onFieldEvent: function (event) {
+        if(event.isValid) {
+          $('#valid-payment-method-required').addClass('collapse');
+        }
+
+        if (event.type === "fieldStateChange") {
+          if (event.card) {
+            $('#card-cvv-label').text(event.card.code.name);
+          }
+        }
+      }
+    }
+  });

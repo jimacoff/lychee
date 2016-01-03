@@ -1,0 +1,55 @@
+div#checkout
+  h2
+    | Completing Your Order
+
+  div.row
+    div#progress.col-xs-12
+      div#stages
+        h3 Checkout Steps
+        div.row
+          div.stage.complete
+            div.icon
+            h4 Step 1
+            | Your Details
+          div.stage.active
+            div.icon
+            h4 Step 2
+            | Shipping
+          div.stage
+            div.icon
+            h4 Step 3
+            | Confirmation and Payment
+
+  div.row
+    div#order
+      = render(partial: @order)
+
+    div#checkout-content
+      h3.stage
+        | Step 2 of 3
+
+      = form_for(:order, html: { method: :patch, class: 'checkout-flow-form' } ) do |f|
+
+        h3 Shipping
+
+        p
+          | Please select a shipping method for your order below.
+
+          div.shipping-rates
+            - @shipping_rates.each do |sr|
+              div.shipping-rate
+                div.details
+                  = radio_button_tag(:shipping_rate, sr.id, sr == @shipping_rates.first, required: true)
+                  = label_tag("shipping_rate_#{sr.id}")
+                    span.name
+                      = sr.name
+
+                div.price
+                  | $
+                  = sr.price(@order.recipient.address.to_geographic_hierarchy)
+
+                p.description
+                  = sr.description
+
+        div#checkout-buttons
+          button(type='submit' name='transition' value='store_shipping') Next Step

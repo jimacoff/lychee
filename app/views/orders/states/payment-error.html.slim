@@ -1,0 +1,28 @@
+div#checkout
+  h2
+    | Secure Checkout
+
+  div.row
+    div#checkout-summary-order
+
+      div#payment-error
+        h3 Payment Failed
+        div.icon
+
+        div#processor-error-message
+          - transaction = @order.last_payment_transaction
+          - if transaction
+            - if transaction[:id].present?
+              h5 Transaction Reference
+              p
+                = transaction[:id]
+
+            h5 Error Message
+            p
+              = transaction[:processor_response_text] || transaction[:message]
+
+        div#payment-error-retry
+          h3 Retry Payment
+          p If you've corrected the cause of this problem or you'd like to use a different payment method you can try to complete your order again.
+
+          = link_to('Return to Confirmation and Payment', order_path, id: 'payment-error-retry')

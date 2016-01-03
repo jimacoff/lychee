@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20151222234203) do
+ActiveRecord::Schema.define(version: 20160102031158) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -308,6 +308,12 @@ ActiveRecord::Schema.define(version: 20151222234203) do
     t.string   "braintree_merchant_id"
     t.string   "braintree_public_key"
     t.string   "braintree_private_key"
+    t.string   "hostname",                                               null: false
+    t.string   "protocol",                                               null: false
+    t.string   "email_from_address",                                     null: false
+    t.string   "email_from_name",                                        null: false
+    t.string   "email_subaccount_identifier",                            null: false
+    t.string   "email_api_key",                                          null: false
   end
 
   add_index "preferences", ["site_id"], name: "index_preferences_on_site_id", using: :btree

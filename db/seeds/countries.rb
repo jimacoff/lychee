@@ -1,3 +1,4 @@
+# rubocop:disable Metrics/MethodLength
 def australia
   postal_address_template = %(%{line1}
 %{line2}
@@ -26,5 +27,6 @@ def australia
   State.create!(name: 'Northern Territory', iso_code: 'AU-NT',
                 postal_format: 'NT', country: au)
 end
+# rubocop:enable Metrics/MethodLength
 
 australia

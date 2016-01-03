@@ -1,0 +1,129 @@
+div#checkout
+  h2
+    | Secure Checkout
+
+  div.row
+    div#checkout-summary-order
+
+      div#order-complete
+        h3 Your order is complete!
+        div.icon
+        p Thankyou for submitting your order.
+        p
+          ' Your order number is:
+          strong
+            = @order.id
+        p We have sent you a copy of your order details via email to <strong>#{@order.customer.email}</strong>.
+        p
+          ' Please don't hestiate to
+          a(href="/contact-us") contact us
+          ' &nbsp;if you need further information.
+
+        a#continue-shopping.bag-action(href="/"
+                                       alt="#{@site.preferences.bag_action_continue_shopping}")
+          |  Return to our website
+
+      hr
+
+      h3 Order Details
+
+      div#billing
+        div.address
+          h5 Your order has been be billed to
+          = render(partial: 'person', locals: { person: @order.customer } )
+
+        div.address
+          h5 Your order will be shipped to
+          = render(partial: 'person', locals: { person: @order.recipient } )
+
+      div#items
+        h5 Items in your order
+
+        - @order.commodity_line_items.each do |cli|
+          - product = cli.product ||= cli.variant.product
+          div.order-item
+            div.image
+              - if cli.variant && cli.variant.image_instance.present?
+                div.item-image.variant-image
+                  =responsive_image(cli.variant.image_instance, '(min-width 40em) 50vw, 20vw')
+              - elsif cli.product && cli.product.image_instances.present?
+                div.item-image.product-image
+                  =responsive_image(cli.product.image_instances.first, '(min-width 40em) 50vw, 20vw')
+              -else
+                div.no-item-image
+
+            div.details
+              div.name
+                = product.name
+
+              - if cli.variant
+                div.variation-choices
+                  ol
+                    - cli.variant.variation_instances.each do |instance|
+                      li => instance.variation_value.description
+
+              - if product.metadata_fields.present?
+                div.metadata
+                  - product.metadata_fields.each do |k, v|
+                    - if v['submissible'] && cli.metadata[k].present?
+                      div.metadata-name => v['labels']['name']['en']
+                      = cli.metadata[k]
+
+              - if cli.quantity > 1
+                div.qty
+                  span.qty-desc
+                    | Quantity:
+                  = cli.quantity
+
+            div.item-total
+                = @site.currency.symbol
+                = cli.price * cli.quantity
+
+      div#summary
+        h5 Summary
+
+        div.order-summary-item
+          div.order-summary-heading
+            | Total Items
+          div#order-summary-item-count.order-summary-information
+            = @order.commodity_line_items.map(&:quantity).sum
+
+        div.order-summary-item
+          div.order-summary-heading
+            | Subtotal
+          div.order-summary-information
+              = @site.currency.symbol
+              = @order.subtotal
+
+        div.order-summary-item
+          div.order-summary-heading
+            | Shipping
+          div.order-summary-information
+            = @site.currency.symbol
+            = @order.total_shipping
+
+        - if @order.order_taxes.present?
+          div.order-summary-item
+            div.order-summary-heading
+              - if @site.preferences.prices_include_tax
+                | Included Taxes
+              - else
+                | Taxes
+            div.order-summary-information
+              ul
+                - @order.order_taxes.each do |order_tax|
+                  li
+                    span.tax-name
+                      = order_tax.tax_rate.name
+                    | &nbsp;
+                    = @site.currency.symbol
+                    = order_tax.tax_amount
+
+        div#total.order-summary-item
+          div.order-summary-heading
+            | Total Paid
+          div.order-summary-information
+              = @site.currency.symbol
+              = @order.total
+              | &nbsp;
+              = @site.currency.iso_code

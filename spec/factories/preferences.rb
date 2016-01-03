@@ -21,5 +21,12 @@ FactoryGirl.define do
     bag_action_checkout { 'Securely Checkout' }
     bag_empty_notice { Faker::Lorem.sentence }
     bag_empty_start_shopping { Faker::Lorem.word }
+
+    hostname { Faker::Internet.domain_name }
+    protocol 'https'
+    email_from_address { Faker::Internet.email }
+    email_from_name { Faker::Name.name }
+    email_subaccount_identifier { Faker::Internet.domain_name }
+    email_api_key { Faker::Lorem.word }
   end
 end

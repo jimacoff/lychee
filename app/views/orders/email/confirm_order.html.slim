@@ -1,0 +1,127 @@
+table
+  tr
+    td
+      h5 Billing Details
+      p
+        pre
+          = @order.customer.display_name
+          br
+          = @order.customer.email
+          br
+          - if @order.customer.phone_number.present?
+            = @order.customer.phone_number
+            br
+          br
+          = @order.customer.address.country.format_postal_address(@order.customer.address, true)
+
+br
+
+table
+  tr
+    td
+      h5 Shipping Details
+      p
+        pre
+          = @order.recipient.display_name
+          br
+          br
+          = @order.recipient.address.country.format_postal_address(@order.recipient.address, true)
+
+br
+
+h5 Ordered Items
+table.columns(width="100%")
+  - @order.commodity_line_items.each do |cli|
+    - product = cli.product ||= cli.variant.product
+    tr
+      td.item-image
+        - if cli.variant && cli.variant.image_instance.present?
+          div.variant-image
+            =email_image_thumbnail(cli.variant.image_instance, '100px')
+        - elsif cli.product && cli.product.image_instances.present?
+          div.product-image
+            =email_image_thumbnail(cli.product.image_instances.first, '100px')
+
+      td.item-description
+        p
+          = product.name
+
+        - if cli.variant
+          - cli.variant.variation_instances.each do |instance|
+            p
+              = instance.variation_value.description
+
+        - if product.metadata_fields.present?
+            - product.metadata_fields.each do |k, v|
+              - if v['submissible'] && cli.metadata[k].present?
+                p
+                  b
+                    = v['labels']['name']['en']
+                p
+                  = cli.metadata[k]
+
+        - if cli.quantity > 1
+            p.qty
+              ' Quantity:
+              = cli.quantity
+
+      td.price
+        p
+          = @site.currency.symbol
+          = cli.price * cli.quantity
+
+br
+
+h5 Summary
+table.columns(width="100%")
+  tr
+    td
+      p Total Items
+    td.price
+      p
+       = @order.commodity_line_items.map(&:quantity).sum
+
+  tr
+    td
+      p Subtotal
+    td.price
+      p
+        = @site.currency.symbol
+        = @order.subtotal
+
+  tr
+    td
+      p Shipping
+    td.price
+      p
+        = @site.currency.symbol
+        = @order.total_shipping
+
+  - if @order.order_taxes.present?
+    tr
+      td
+        - if @site.preferences.prices_include_tax
+          p Included Taxes
+        - else
+          p Taxes
+      td.price
+        - @order.order_taxes.each do |order_tax|
+          p
+            span.tax-name
+              = order_tax.tax_rate.name
+            | &nbsp;&nbsp;&nbsp;&nbsp;
+            = @site.currency.symbol
+            = order_tax.tax_amount
+
+  tr.spacer
+    td
+    td
+
+  tr.total
+    td
+      ' Total Paid
+    td.price
+      = @site.currency.symbol
+      = @order.total
+      | &nbsp;
+      = @site.currency.iso_code

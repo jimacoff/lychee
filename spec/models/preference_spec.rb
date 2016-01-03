@@ -48,6 +48,17 @@ RSpec.describe Preference, type: :model, site_scoped: true do
       is_expected.to have_db_column(:braintree_private_key).of_type(:string)
     end
 
+    it { is_expected.to have_db_column(:hostname).of_type(:string) }
+    it { is_expected.to have_db_column(:protocol).of_type(:string) }
+    it { is_expected.to have_db_column(:email_from_address).of_type(:string) }
+    it { is_expected.to have_db_column(:email_from_name).of_type(:string) }
+    it { is_expected.to have_db_column(:email_api_key).of_type(:string) }
+    it do
+      is_expected
+        .to have_db_column(:email_subaccount_identifier)
+        .of_type(:string)
+    end
+
     it 'should have non nullable column site_id of type bigint' do
       expect(subject).to have_db_column(:site_id)
         .of_type(:integer)

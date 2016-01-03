@@ -1,6 +1,6 @@
 div#checkout
   h2
-    | Complete Your Order
+    | Completing Your Order
 
   div.row
     div#progress.col-xs-12
@@ -10,7 +10,7 @@ div#checkout
           div.stage.active
             div.icon
             h4 Step 1
-            | Order Details
+            | Your Details
           div.stage
             div.icon
             h4 Step 2
@@ -39,6 +39,7 @@ div#checkout
         hr
 
         h3. Shipping Address
+
         div#use_billing_for_shipping
           = f.label(:use_billing_details_for_shipping)
             = f.check_box(:use_billing_details_for_shipping, { checked: true } )
@@ -55,5 +56,5 @@ div#checkout
             = render(partial: 'address', locals: { f: f, address_required: true })
 
         div#checkout-buttons
-          button(type='submit' name='transition' value='calculate') Next step
+          button(type='submit' name='transition' value='store_details') Next Step
 

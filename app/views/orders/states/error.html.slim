@@ -1,0 +1,17 @@
+div#checkout
+  h2
+    | Secure Checkout
+
+  div.row
+    div#checkout-summary-order
+
+      div#payment-error
+        h3 Unable to process payment
+        div.icon
+
+        div#processor-error-message
+          p An internal error is preventing this store from processing payments at this time.
+          p
+          ' Please
+          a(href="/contact-us") contact the store owner
+          ' &nbsp;if you need further information.

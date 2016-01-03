@@ -1,0 +1,11 @@
+pre
+  = person.display_name
+  br
+  - if person.email.present?
+    = person.email
+    br
+  - if person.phone_number.present?
+    = person.phone_number
+    br
+  br
+  = person.address.country.format_postal_address(person.address, true)

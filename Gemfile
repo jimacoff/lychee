@@ -10,6 +10,8 @@ gem 'postgres_ext', '~> 2.3'
 gem 'money-rails', '~> 1.4'
 gem 'stringex', '~> 2.5'
 gem 'braintree', '2.56'
+gem 'mandrill-api'
+gem 'roadie', '~> 3.1'
 
 gem 'paper_trail', '~> 4.0'
 gem 'workflow'
@@ -17,15 +19,15 @@ gem 'valhammer', '~> 0.2'
 gem 'json-schema', '~> 2.5'
 gem 'jbuilder', '~> 2.3'
 gem 'recursive-open-struct', '~> 0.6'
-
 gem 'closure_tree', '~> 5.2'
 
 # Security
 # Use ActiveModel has_secure_password
-gem 'bcrypt', '~> 3.1'
+# gem 'bcrypt', '~> 3.1'
 
 # Deployment
 gem 'unicorn', require: false
+gem 'rack-timeout'
 
 source 'https://rails-assets.org' do
   gem 'rails-assets-jquery', '~> 2.1'
