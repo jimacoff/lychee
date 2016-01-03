@@ -1,18 +1,15 @@
-defaults: &defaults
+development:
   sites:
     themes:
-      base: /tmp/sites
+      base: /path/to/base/dir
       templates:
         bag: build/_backend/templates/shop/bag.html
         checkout: build/_backend/templates/shop/checkout.html
   publishing:
     paths:
-      base: /tmp/sites
+      base: /path/to/base/dir
       categories: /categories
       products: /products
-
-development:
-  <<: *defaults
 
 test:
   sites:
@@ -29,4 +26,14 @@ test:
       products: /products
 
 production:
-  <<: *defaults
+  sites:
+    themes:
+      base: /var/www
+      templates:
+        bag: _backend/templates/shop/bag.html
+        checkout: _backend/templates/shop/checkout.html
+  publishing:
+    paths:
+      base: /var/www
+      categories: /categories
+      products: /products
