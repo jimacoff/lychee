@@ -1,4 +1,5 @@
 require 'rails_helper'
+require 'zepily/critical_error'
 
 RSpec.describe OrdersController, type: :controller, site_scoped: true do
   context 'Using spec/dummy bag layout' do

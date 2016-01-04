@@ -1,4 +1,5 @@
 require 'rails_helper'
+require 'zepily/critical_error'
 
 RSpec.describe ShoppingBagsController, type: :controller, site_scoped: true do
   def operations

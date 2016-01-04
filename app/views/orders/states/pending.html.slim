@@ -169,9 +169,9 @@ div#checkout
 
             hr.visible-xs
 
-            button(type='submit' id='submit-payment-request') Complete Order
+            button(type='submit' id='submit-payment-request' disabled) Complete Order
 
-= javascript_include_tag "https://js.braintreegateway.com/v2/braintree.js"
+= javascript_include_tag 'https://js.braintreegateway.com/v2/braintree.js', async: false
 javascript:
   braintree.setup("#{@braintree[:client_token]}", "custom", {
     id: "hosted-form",

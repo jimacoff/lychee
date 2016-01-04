@@ -10,7 +10,7 @@ require 'sprockets/railtie'
 # Require the gems listed in Gemfile
 Bundler.require(*Rails.groups)
 
-# TODO: fuck this off
+# TODO: remove?
 ActiveRecord::Base.extend Valhammer::Validations
 
 module Lychee
@@ -19,6 +19,5 @@ module Lychee
     # over those specified here.
 
     config.eager_load_paths << Rails.root.join('app', 'jobs', 'concerns')
-    config.eager_load_paths << Rails.root.join('lib')
   end
 end
