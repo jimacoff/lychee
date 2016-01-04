@@ -52,8 +52,10 @@ module MandrillSupport
   end
 
   def email_template
-    template = File.join(base_path, site_path,
-                         'build/_backend/templates/email/confirm_order.html')
+    email_templates = Rails.configuration.zepily.sites.themes.templates.email
+    template =
+      File.join(base_path, site_path, email_templates.confirm_order)
+
     return File.read(template) if File.exist?(template)
 
     fail(Zepily::CriticalError,

@@ -5,6 +5,8 @@ development:
       templates:
         bag: build/_backend/templates/shop/bag.html
         checkout: build/_backend/templates/shop/checkout.html
+        email:
+          confirm_order: build/_backend/templates/email/confirm_order.html
   publishing:
     paths:
       base: /path/to/base/dir
@@ -18,6 +20,8 @@ test:
       templates:
         bag: build/_backend/templates/shop/bag.html
         checkout: build/_backend/templates/shop/checkout.html
+        email:
+          confirm_order: build/_backend/templates/email/confirm_order.html
   publishing:
     paths:
       # This will be created AND deleted by spec runner
@@ -32,6 +36,8 @@ production:
       templates:
         bag: _backend/templates/shop/bag.html
         checkout: _backend/templates/shop/checkout.html
+        email:
+          confirm_order: _backend/templates/email/confirm_order.html
   publishing:
     paths:
       base: /var/www
