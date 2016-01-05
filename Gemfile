@@ -1,8 +1,7 @@
 source 'https://rubygems.org'
 
 gem 'rails', '~> 4.2'
-gem 'sass-rails', '~> 5.0'
-gem 'slim'
+gem 'slim-rails', '~> 3.0'
 
 gem 'pg', '~> 0.18'
 gem 'postgres_ext', '~> 2.3'
@@ -28,13 +27,6 @@ gem 'closure_tree', '~> 5.2'
 # Deployment
 gem 'unicorn', require: false
 gem 'rack-timeout'
-
-source 'https://rails-assets.org' do
-  gem 'rails-assets-jquery', '~> 2.1'
-  gem 'rails-assets-bootstrap', '4.0.0.alpha'
-end
-
-gem 'font-awesome-sass'
 
 group :development, :test do
   gem 'rspec-rails', '~> 3.2'
