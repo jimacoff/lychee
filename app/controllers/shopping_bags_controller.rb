@@ -1,4 +1,6 @@
 class ShoppingBagsController < ApplicationController
+  after_action :saas_template, only: :show
+
   def add
     @product = Product.find(params[:product_id])
     attrs = { quantity: 1, metadata: submissible_metadata(params) }
@@ -18,11 +20,15 @@ class ShoppingBagsController < ApplicationController
 
   def show
     @contents = bag.contents.values
-    render inline: template.gsub(/__yield_shopping_bag__/,
-                                 render_to_string(layout: false))
+    render layout: false
   end
 
   private
+
+  def saas_template
+    new_body = template.gsub(/__yield_shopping_bag__/, response.body)
+    response.body = new_body
+  end
 
   def add_product(attrs)
     fail("Product #{@product.id} needs variations") if @product.variants.any?

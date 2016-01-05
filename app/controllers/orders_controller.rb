@@ -1,4 +1,6 @@
 class OrdersController < ApplicationController
+  after_action :saas_template, only: [:show, :payment]
+
   include OrderSupport
   include BraintreeProcessor
   include MandrillSupport
@@ -43,6 +45,10 @@ class OrdersController < ApplicationController
   end
 
   private
+  def saas_template
+    new_body = template.gsub(/__yield_checkout__/, response.body)
+    response.body = new_body
+  end
 
   def populate_show_data
     populate_order
@@ -116,9 +122,7 @@ class OrdersController < ApplicationController
   end
 
   def render_state_template(state_template)
-    render inline: template.gsub(/__yield_checkout__/,
-                                 render_to_string(layout: false,
-                                                  template: state_template))
+    render template: state_template, layout: false
   end
 
   def controller_template
