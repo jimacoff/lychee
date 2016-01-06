@@ -2,7 +2,8 @@ require 'zepily/critical_error'
 
 class ApplicationController < ActionController::Base
   before_action do
-    @site = Site.current = Tenant.where(identifier: request.host).take!.site
+    @site = Site.current =
+      Tenant.eager_load(:site).where(identifier: request.host).take!.site
   end
 
   private

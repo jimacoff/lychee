@@ -6,6 +6,7 @@ AllCops:
   RunRailsCops: true
   Exclude:
     - config/initializers/secret_token.rb
+    - config/unicorn.rb
     - bin/**/*
     - db/schema.rb
     - db/migrate/*.rb

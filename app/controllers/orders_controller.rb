@@ -45,6 +45,7 @@ class OrdersController < ApplicationController
   end
 
   private
+
   def saas_template
     new_body = template.gsub(/__yield_checkout__/, response.body)
     response.body = new_body

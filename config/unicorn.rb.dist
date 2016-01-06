@@ -6,7 +6,7 @@ user 'unprivuser'
 working_directory APP_PATH
 
 listen "#{APP_PATH}/tmp/sockets/unicorn.sock", :backlog => 64
-# listen 8080, :tcp_nopush => true
+listen 8080, tcp_nopush: true
 
 # This must be greater than
 # config/initializers/timeout.rb - Rack::Timeout.timeout

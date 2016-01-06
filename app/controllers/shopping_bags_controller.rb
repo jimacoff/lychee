@@ -42,7 +42,7 @@ class ShoppingBagsController < ApplicationController
 
   def bag
     id = session[:shopping_bag_id]
-    @bag = ShoppingBag.find_by_id(id) if id
+    @bag = ShoppingBag.find_by(id: id) if id
     @bag ||= ShoppingBag.create!.tap { |c| session[:shopping_bag_id] = c.id }
   end
 
