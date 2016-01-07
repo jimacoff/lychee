@@ -178,7 +178,7 @@ javascript:
     paypal: {
       container: "paypal-container",
       singleUse: true,
-      amount: '#{@order.total}',
+      amount: #{@order.total},
       currency: '#{@site.currency.iso_code}',
       enableShippingAddress: false,
       shippingAddressOverride: {
