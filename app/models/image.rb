@@ -39,8 +39,7 @@ class Image < ActiveRecord::Base
   end
 
   def srcset_path
-    image_files.eager_load(path: [:self_and_ancestors, :ancestor_hierarchies])
-      .srcset.map(&:srcset_path).join(', ')
+    image_files.srcset.map(&:srcset_path).join(', ')
   end
 
   def routable?
