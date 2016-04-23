@@ -3,7 +3,7 @@ class OrdersController < ApplicationController
 
   include OrderSupport
   include BraintreeProcessor
-  include MandrillSupport
+  include SparkpostSupport
 
   def create
     unless @site.preferences.braintree_configured
