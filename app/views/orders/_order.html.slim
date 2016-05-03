@@ -11,7 +11,7 @@ div#order-summary
 
       - else
         div#order-summary-total-desc
-          | Current Total
+          | Total
           div#order-summary-expander
             | Tap to show details
 
@@ -73,7 +73,7 @@ div#order-details
 
   div#order-details-total.order-details-segment
     hr
-    h3 Current Total
+    h3 Total
     - if @order.total > 0
       div#order-details-total-value
         = @site.currency.symbol

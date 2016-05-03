@@ -129,7 +129,7 @@
 
               div.bag-summary-item
                 div.bag-summary-heading
-                  | Current Total
+                  | Total
                 div#bag-summary-current-total.bag-summary-information
                   = @site.currency.symbol
                   = @bag.subtotal + @bag.shipping_rate.shipping_rate_regions.first.price
