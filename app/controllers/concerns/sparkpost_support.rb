@@ -13,12 +13,12 @@ module SparkpostSupport
     sp = SparkPost::Client.new @site.preferences.email_api_key
 		sp.transmission.send_message(@order.customer.email,
 																 @site.preferences.email_from_address,
-																 'Thankyou for placing an order',
+																 'Thank you for placing an order',
 																 document.transform)
 
 		sp.transmission.send_message(@site.preferences.email_from_address,
 																 @site.preferences.email_from_address,
-																 'thankyou for placing an order',
+																 'Thank you for placing an order',
 																 document.transform)
 
   rescue SparkPost::DeliveryException => e
