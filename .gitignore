@@ -4,12 +4,12 @@ capybara-*.html
 /log
 /tmp
 /db/*.sqlite3
-/public/system
-/coverage/
-/spec/tmp
-**.orig
-rerun.txt
-pickle-email-*.html
+     /public/system
+     /coverage/
+     /spec/tmp
+    **.orig
+    rerun.txt
+    pickle-email-*.html
 
 ## Bower Supplied
 vendor/assets/frontend/*
@@ -23,6 +23,11 @@ config/unicorn.rb
 config/god.rb
 
 /db/seeds/private
+
+erd.pdf
+coverage/
+
+    *.swp
 
 # these should all be checked in to normalise the environment:
 # Gemfile.lock, .ruby-version, .ruby-gemset
