@@ -17,7 +17,7 @@ gem 'workflow'
 gem 'valhammer', '~> 0.2'
 gem 'json-schema', '~> 2.5'
 gem 'jbuilder', '~> 2.3'
-gem 'recursive-open-struct', '~> 0.6'
+gem 'recursive-open-struct', '~> 1.0'
 gem 'closure_tree', '~> 6.0'
 
 # Security
