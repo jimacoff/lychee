@@ -1,4 +1,4 @@
 Rails.application.configure do
-  config.zepily =
-    RecursiveOpenStruct.new(config_for(:zepily).deep_symbolize_keys)
+  config.lychee =
+    RecursiveOpenStruct.new(config_for(:lychee).deep_symbolize_keys)
 end
